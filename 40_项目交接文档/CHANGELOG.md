@@ -30,6 +30,9 @@
 - 增加单局船移动状态机、串行操作锁和类型化完成结果。
 - 增加点击视图、Grid 世界坐标映射、默认 Transform 动画与可配置时间参数。
 - 增加移动系统 EditMode 测试和默认视图 PlayMode 测试。
+- 增加四边航道路线解析、并行转场时钟和中央入口 ExitSequence FIFO。
+- 增加平滑航道路径、缩略船影视图、航道表现协调器及暂停恢复。
+- 增加航道 EditMode、PlayMode 测试和 TestLevel_001 七船完整入舰验证。
 
 ### Changed
 
@@ -38,6 +41,7 @@
 - 将审计、设计、架构和验证资料集中到 `40_项目交接文档/`。
 - `GameSession.Board` 暴露当前已提交棋盘，`InitialBoard` 固定保留开局快照。
 - ShipRuntimeData 的位置、方向和状态只允许受信程序集写入，避免表现层绕过规则。
+- 船完成中央入口融入后由航道核心将状态从 InLane 提交为 InFleet，并发布一次 ShipEnterFleetEvent。
 
 ### Fixed
 
