@@ -15,7 +15,8 @@ namespace Tidebound.Core
         public int Height { get; }
         public IReadOnlyList<ShipRuntimeData> Ships { get; }
         public BossRuntimeData Boss { get; }
-        public BoardModel InitialBoard { get; }
+        public BoardModel Board { get; }
+        public BoardModel InitialBoard => Board;
         public GameState State { get; set; } = GameState.Prepare;
         public IEventBus Events { get; } = new SessionEventBus();
 
@@ -23,7 +24,7 @@ namespace Tidebound.Core
         {
             SessionId = Guid.NewGuid().ToString("N"); LevelId = levelId; Width = width; Height = height;
             Ships = Array.AsReadOnly(ships); Boss = boss;
-            InitialBoard = new BoardModel(width, height, ships);
+            Board = new BoardModel(width, height, ships);
         }
         public void Dispose() => Events.Dispose();
     }

@@ -1,6 +1,6 @@
 # Tidebound Fleet 开发计划
 
-版本：1.0；日期：2026-09-18。每个阶段只有在入口条件满足后启动，不在前一阶段夹带下一阶段功能。
+版本：1.1；日期：2026-09-18。每个阶段只有在入口条件满足后启动，不在前一阶段夹带下一阶段功能。
 
 | 阶段 | 状态 | 目标 | 主要交付与退出条件 |
 |---|---|---|---|
@@ -8,25 +8,32 @@
 | Phase 0.5 游戏设计冻结 | 已完成 | 将概念变成可开发的产品规则 | GAME_DESIGN.md，核心循环、占格、攻击和 MVP 范围明确 |
 | Phase 0.8 项目治理体系 | 已完成 | 建立目录、Git、文档、私密和临时文件规范 | PROJECT_STRUCTURE、AGENTS、gitignore、Changelog、Git 状态报告 |
 | Phase 1 Unity 架构搭建 | 已完成 | 隔离 Tidebound 业务，建立数据与配置底座 | asmdef、namespace、JSON、SO、复制、校验、事件接口；65 项 EditMode 测试通过 |
-| Phase 2 棋盘系统 | 未开始 | 建立纯 Grid 棋盘与可验证的移动判定 | 占格事务、前向扫描、阻挡落点、出界判定；纯逻辑测试通过 |
+| Phase 2 棋盘系统 | 已完成 | 建立纯 Grid 棋盘与可验证的移动判定 | 不可变占格事务、前向扫描、阻挡落点、完整出界判定；79 项 EditMode 测试通过 |
 | Phase 3 船移动 | 未开始 | 把棋盘结果映射为点击、状态与表现 | 点击输入、串行动作、BlockedFeedback、动画同步和暂停恢复 |
 | Phase 4 航道 | 未开始 | 完成四边出场到中央入口的转场 | 出场序号、并行航道、FIFO 入战；不丢船、不乱序 |
 | Phase 5 海怪战斗 | 未开始 | 完成同型舰队聚合及每船一次攻击 | FleetAggregation、AttackToken、Boss 扣血、结算一次性 |
 | Phase 6 成长商业化 | 未开始 | 在完整离线核心上接成长、广告和发布服务 | 金币、升级、广告容错、渠道 SDK、存档和发布验证 |
 
-## Phase 2 入口条件
+## Phase 2 完成记录
 
-- 当前 Git 治理文件进入版本控制，并建立基线提交。
-- 明确 Unity 最终开发补丁版本策略；2022.3.25f1 只用于恢复与当前验证，发布前必须迁移到安全修复版本。
-- 保持既有 JSON/SO 配置和 Grid 坐标契约，不引入 Transform/Collider 占格。
-- 确认 Phase 2 只开发纯棋盘规则，不同时接动画、航道或战斗。
+- Git 治理基线已提交并推送，Phase 2 在 `feat/board-grid` 分支实施。
+- 保持 JSON/SO 和船尾 Grid 坐标契约，没有引入 Transform、Collider 或模型尺寸。
+- `BoardModel` 复制并索引完整占格；`ForwardPathResult` 明确遇阻与完整离界。
+- `ApplyPathResult` 返回新棋盘并原子替换或释放占格，旧快照不变；过期结果被拒绝。
+- TestLevel_001 的指定 7 船顺序已通过数据层清盘测试；没有加入场景、输入、动画、航道或战斗。
+- 完整结论见 [Phase 2 验收记录](验证记录/Phase2_棋盘系统/PHASE2_VALIDATION.md)。
 
-## Phase 2 建议拆分
+## Phase 2 实际拆分
 
-1. `BoardState`：唯一占格所有者，读取关卡运行时船快照。
-2. `MoveQuery`：计算前方最近阻挡、最大移动格数和是否完整出界。
-3. `MoveTransaction`：一次性提交旧占格释放、新占格写入或离场；失败不得留下半更新。
-4. 状态规则测试：四方向、长度 2/3/4、零位移、受阻停新位置、多次移动不回退、边界与溢出输入。
-5. 使用 TestLevel_001 做数据集成测试，但不创建动画或场景表现。
+1. `BoardModel` 与 `BoardShipSnapshot`：不可变占格所有者和船逻辑快照。
+2. `QueryForwardPath` 与 `ForwardPathResult`：最近阻挡、空格序列、移动距离、落点及完整出界。
+3. `ApplyPathResult`：返回新棋盘的原子事务；0 位移不丢占格，旧结果不能提交到新状态。
+4. `BoardQueryTests`：四方向离界、零位移、受阻落点、快照隔离、事务和 TestLevel_001 清盘序列。
+5. 不创建动画、场景表现、输入状态机或玩法事件。
 
-完成 Phase 2 后先评审数据契约与测试，再进入 Phase 3 船移动。
+## Phase 3 入口条件
+
+- 评审 `ForwardPathResult` 与不可变事务契约，保持棋盘为移动规则唯一来源。
+- 决定棋盘事务与 `ShipRuntimeData`、ShipState、事件和动画完成点的一致提交顺序。
+- 继续使用逻辑格控制占位，MonoBehaviour 只负责输入和表现映射。
+- Phase 3 不提前接航道、Boss 战斗或商业 SDK。
