@@ -202,7 +202,8 @@ namespace Tidebound.Tests
             new ShipPlacementData
             {
                 Id = id,
-                TypeId = "TF_SPEEDBOAT",
+                TypeId = "TF_BASE_SHIP",
+                Length = 2,
                 Position = new GridPosition(x, y),
                 Direction = direction
             };
@@ -211,7 +212,7 @@ namespace Tidebound.Tests
         {
             var level = new LevelData
             {
-                SchemaVersion = 1,
+                SchemaVersion = 2,
                 LevelId = "ShipMovementTest",
                 Width = width,
                 Height = height,
@@ -220,7 +221,7 @@ namespace Tidebound.Tests
             };
             return LevelSessionFactory.Create(
                 level,
-                new[] { new ShipDefinition("TF_SPEEDBOAT", 2, 10) },
+                new[] { new ShipDefinition("TF_BASE_SHIP", 10) },
                 new[] { new BossDefinition("TF_KRAKEN_01") });
         }
     }

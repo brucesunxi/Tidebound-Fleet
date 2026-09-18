@@ -20,8 +20,11 @@ namespace Tidebound.Core
             for (var i = 0; i < level.Ships.Length; i++)
             {
                 var placement = level.Ships[i]; var definition = byType[placement.TypeId];
-                runtime[i] = new ShipRuntimeData(placement.Id, placement.TypeId, placement.Position,
-                    placement.Direction, definition.Length, definition.DamageLv1);
+                var skinId = placement.Length == FoundationLimits.MaxShipLength
+                    ? FoundationLimits.DefaultLongSkinId
+                    : FoundationLimits.DefaultStandardSkinId;
+                runtime[i] = new ShipRuntimeData(placement.Id, placement.TypeId, skinId, placement.Position,
+                    placement.Direction, placement.Length, definition.DamageLv1);
                 initialHp = checked(initialHp + definition.DamageLv1);
             }
             // Compute exactly once from all initial Lv1 instances. No callbacks or live list binding.

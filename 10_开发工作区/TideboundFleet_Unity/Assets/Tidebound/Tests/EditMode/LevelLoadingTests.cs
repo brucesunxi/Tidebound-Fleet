@@ -13,10 +13,18 @@ namespace Tidebound.Tests
     public sealed class LevelLoadingTests
     {
         internal const string FixturePath = "Assets/Tidebound/Config/Levels/TestLevel_001.asset";
+        internal const string DenseFixturePath = "Assets/Tidebound/Config/Levels/TestLevel_002.asset";
         internal static LevelConfigSO Fixture()
         {
             var config = AssetDatabase.LoadAssetAtPath<LevelConfigSO>(FixturePath);
             Assert.That(config, Is.Not.Null, "The committed SO fixture must import with all references intact.");
+            return config;
+        }
+
+        internal static LevelConfigSO DenseFixture()
+        {
+            var config = AssetDatabase.LoadAssetAtPath<LevelConfigSO>(DenseFixturePath);
+            Assert.That(config, Is.Not.Null, "The committed dense fixture must import with all references intact.");
             return config;
         }
 
@@ -31,7 +39,8 @@ namespace Tidebound.Tests
                 Assert.That(session.Ships.Select(x => x.Id).Distinct().Count(), Is.EqualTo(7));
                 foreach (var ship in session.Ships)
                 {
-                    Assert.That(ship.TypeId, Is.EqualTo("TF_SPEEDBOAT"));
+                    Assert.That(ship.TypeId, Is.EqualTo(FoundationLimits.BaseShipTypeId));
+                    Assert.That(ship.SkinId, Is.EqualTo(FoundationLimits.DefaultStandardSkinId));
                     Assert.That(ship.Length, Is.EqualTo(2)); Assert.That(ship.Damage, Is.EqualTo(10));
                     Assert.That(ship.State, Is.EqualTo(ShipState.Idle));
                 }
@@ -41,6 +50,22 @@ namespace Tidebound.Tests
                 Assert.That(session.InitialBoard.OccupiedCellCount, Is.EqualTo(14));
                 Assert.That(session.InitialBoard.GetShipId(new GridPosition(3, 4)), Is.EqualTo("S005"));
                 Assert.That(session.InitialBoard.GetShipId(new GridPosition(0, 5)), Is.Null);
+            }
+        }
+
+        [Test]
+        public void DenseFixtureLoadsTwelveByEighteenWithEightyShipsAndEightHundredHp()
+        {
+            using (var session = LevelConfigLoader.Load(DenseFixture()))
+            {
+                Assert.That(session.LevelId, Is.EqualTo("TestLevel_002"));
+                Assert.That(session.Width, Is.EqualTo(12));
+                Assert.That(session.Height, Is.EqualTo(18));
+                Assert.That(session.Ships.Count, Is.EqualTo(80));
+                Assert.That(session.InitialBoard.OccupiedCellCount, Is.EqualTo(160));
+                Assert.That(session.Width * session.Height - session.InitialBoard.OccupiedCellCount, Is.EqualTo(56));
+                Assert.That(session.Boss.InitialHp, Is.EqualTo(800));
+                Assert.That(session.Ships.All(x => x.Length == 2 && x.Damage == 10), Is.True);
             }
         }
 
@@ -114,7 +139,7 @@ namespace Tidebound.Tests
         }
 
         [Test]
-        public void ConfigChangesOnlyAffectSubsequentLoads()
+        public void FixedDamageConfigRejectsAccidentalBalanceChanges()
         {
             var original = Fixture(); var level = Object.Instantiate(original);
             var ship = Object.Instantiate(original.GetShipConfigs()[0]);
@@ -127,11 +152,9 @@ namespace Tidebound.Tests
                 {
                     var shipFields = new SerializedObject(ship); shipFields.FindProperty("damageLv1").intValue = 20;
                     shipFields.ApplyModifiedPropertiesWithoutUndo();
-                    using (var after = LevelConfigLoader.Load(level))
-                    {
-                        Assert.That(before.Boss.InitialHp, Is.EqualTo(70)); Assert.That(before.Boss.Hp, Is.EqualTo(70));
-                        Assert.That(before.Ships[0].Damage, Is.EqualTo(10)); Assert.That(after.Boss.Hp, Is.EqualTo(140));
-                    }
+                    Assert.That(before.Boss.InitialHp, Is.EqualTo(70)); Assert.That(before.Boss.Hp, Is.EqualTo(70));
+                    Assert.That(before.Ships[0].Damage, Is.EqualTo(10));
+                    Assert.Throws<LevelValidationException>(() => LevelConfigLoader.Load(level));
                 }
             }
             finally { Object.DestroyImmediate(level); Object.DestroyImmediate(ship); }

@@ -33,6 +33,11 @@
 - 增加四边航道路线解析、并行转场时钟和中央入口 ExitSequence FIFO。
 - 增加平滑航道路径、缩略船影视图、航道表现协调器及暂停恢复。
 - 增加航道 EditMode、PlayMode 测试和 TestLevel_001 七船完整入舰验证。
+- 增加 schema v2 严格 JSON 写入、12×18 容量校验和单基础船配置。
+- 增加 TestLevel_002：80 艘船、160 占格、56 空格、Boss HP 800，并保存可清盘的 80 步参考序列。
+- 增加 SafeArea 棋盘布局计算、集中 Grid 点击路由和空格不吸附规则。
+- 增加 Tidebound Level Studio V0，可视化编辑并在保存前复用运行时校验。
+- 增加高密度布局、点击映射、JSON 往返、数据复制和解法回放自动测试。
 
 ### Changed
 
@@ -50,6 +55,8 @@
 - 可收集皮肤只适配 1×2 标准船；1×3 长船固定外观并进入支援计数，长度 4 从目标规则移除。
 - 规划 Tidebound Level Studio：借鉴 Cocos 网格方向笔刷，使用 Unity EditorWindow 直接编辑 JSON、实时校验并录制解法。
 - 冻结正式棋盘为 12×18：第 2 关 80 艘，后续 78–82 艘；至少保留 44 空格，长船最多 8 艘，总占格最多 172。
+- 将关卡数据迁移至 schema v2：`length` 成为关卡实例字段，逻辑船型统一为 `TF_BASE_SHIP`，运行时事件携带稳定 `skinId`。
+- `ShipConfigSO` 不再保存长度；Boss HP 继续只在开局按初始船数×10计算一次。
 
 ### Fixed
 

@@ -234,7 +234,7 @@ namespace Tidebound.Tests
         {
             var ship = session.GetShip(shipId);
             return new ShipExitBoardEvent(
-                new ShipEventContext(session.SessionId, ship.Id, ship.TypeId),
+                new ShipEventContext(session.SessionId, ship.Id, ship.TypeId, ship.SkinId),
                 ship.Position,
                 direction,
                 sequence);

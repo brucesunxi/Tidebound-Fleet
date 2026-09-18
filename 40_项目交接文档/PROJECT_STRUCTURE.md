@@ -70,6 +70,7 @@ Unity 工程内：
 | `ARCHITECTURE.md` | Unity 模块、配置和数据流 |
 | `DEVELOPMENT_PLAN.md` | 阶段、入口条件和交付物 |
 | `PHASE5_PLUS_PLAN.md` | 高密度正式玩法从 Phase 5 起的实施顺序与阶段门槛 |
+| `PHASE5_IMPLEMENTATION_SPEC.md` | Phase 5 schema、容量、输入、编辑器与验收规格 |
 | `LEVEL_EDITOR_PLAN.md` | 已购项目关卡工具审计与 Tidebound Level Studio 规格 |
 | `BOARD_LAYOUT_CAPACITY_PLAN.md` | 棋盘尺寸、屏幕分区、触控命中、空白率与正式船数上限 |
 | `CHANGELOG.md` | 面向版本和团队的变化记录 |

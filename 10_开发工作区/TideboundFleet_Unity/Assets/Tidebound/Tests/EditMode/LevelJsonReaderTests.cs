@@ -16,7 +16,7 @@ namespace Tidebound.Tests
 
         [TestCase("missing")]
         [TestCase("hp")]
-        [TestCase("length")]
+        [TestCase("missingLength")]
         [TestCase("damage")]
         [TestCase("state")]
         [TestCase("stringWidth")]
@@ -37,7 +37,7 @@ namespace Tidebound.Tests
             {
                 case "missing": root.Remove("bossId"); break;
                 case "hp": root["hp"] = 70; break;
-                case "length": ship["length"] = 2; break;
+                case "missingLength": ship.Remove("length"); break;
                 case "damage": ship["damage"] = 10; break;
                 case "state": ship["state"] = "Idle"; break;
                 case "stringWidth": root["width"] = "4"; break;
@@ -52,6 +52,20 @@ namespace Tidebound.Tests
             }
             var text = root.ToString() + (mutation == "trailingDocument" ? " {}" : "");
             Assert.Throws<LevelFormatException>(() => LevelJsonReader.Read(text));
+        }
+
+        [Test]
+        public void CanonicalWriterRoundTripsSchemaTwoWithoutRuntimeFields()
+        {
+            var source = LevelJsonReader.Read(LevelLoadingTests.DenseFixture().LevelJson.text);
+            var json = LevelJsonWriter.Write(source);
+            var copy = LevelJsonReader.Read(json);
+            Assert.That(copy.SchemaVersion, Is.EqualTo(2));
+            Assert.That(copy.Ships.Length, Is.EqualTo(80));
+            Assert.That(copy.Ships[0].Length, Is.EqualTo(2));
+            Assert.That(json, Does.Not.Contain("damage"));
+            Assert.That(json, Does.Not.Contain("state"));
+            Assert.That(json, Does.Not.Contain("skinId"));
         }
     }
 }

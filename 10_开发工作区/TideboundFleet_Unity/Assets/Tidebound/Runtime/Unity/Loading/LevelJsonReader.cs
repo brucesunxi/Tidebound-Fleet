@@ -31,14 +31,14 @@ namespace Tidebound.Config
                     for (var i = 0; i < array.Count; i++)
                     {
                         if (!(array[i] is JObject item)) throw new LevelFormatException($"ships[{i}] must be an object.");
-                        Fields(item, $"ships[{i}]", "id", "typeId", "position", "direction");
+                        Fields(item, $"ships[{i}]", "id", "typeId", "length", "position", "direction");
                         if (!(item["position"] is JObject position)) throw new LevelFormatException($"ships[{i}].position must be an object.");
                         Fields(position, $"ships[{i}].position", "x", "y");
                         var directionText = String(item, "direction");
                         if (!Enum.TryParse<ShipDirection>(directionText, false, out var direction) ||
                             !Enum.IsDefined(typeof(ShipDirection), direction) || direction.ToString() != directionText)
                             throw new LevelFormatException($"ships[{i}].direction must be Up, Down, Left or Right.");
-                        ships[i] = new ShipPlacementData { Id = String(item, "id"), TypeId = String(item, "typeId"),
+                        ships[i] = new ShipPlacementData { Id = String(item, "id"), TypeId = String(item, "typeId"), Length = Integer(item, "length"),
                             Position = new GridPosition(Integer(position, "x"), Integer(position, "y")), Direction = direction };
                     }
                     return new LevelData { SchemaVersion = Integer(root, "schemaVersion"), LevelId = String(root, "levelId"),

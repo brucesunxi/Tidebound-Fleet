@@ -32,7 +32,7 @@ namespace Tidebound.Tests
                 Assert.That(board.Ships.Count, Is.EqualTo(2));
 
                 var ship = board.GetShip("A");
-                Assert.That(ship.TypeId, Is.EqualTo("TF_SPEEDBOAT"));
+                Assert.That(ship.TypeId, Is.EqualTo("TF_BASE_SHIP"));
                 Assert.That(ship.Position, Is.EqualTo(new GridPosition(1, 1)));
                 Assert.That(ship.Direction, Is.EqualTo(ShipDirection.Right));
                 Assert.That(ship.Length, Is.EqualTo(2));
@@ -239,7 +239,8 @@ namespace Tidebound.Tests
             new ShipPlacementData
             {
                 Id = id,
-                TypeId = "TF_SPEEDBOAT",
+                TypeId = "TF_BASE_SHIP",
+                Length = 2,
                 Position = new GridPosition(x, y),
                 Direction = direction
             };
@@ -248,7 +249,7 @@ namespace Tidebound.Tests
         {
             var level = new LevelData
             {
-                SchemaVersion = 1,
+                SchemaVersion = 2,
                 LevelId = "BoardQueryTest",
                 Width = width,
                 Height = height,
@@ -257,7 +258,7 @@ namespace Tidebound.Tests
             };
             return LevelSessionFactory.Create(
                 level,
-                new[] { new ShipDefinition("TF_SPEEDBOAT", 2, 10) },
+                new[] { new ShipDefinition("TF_BASE_SHIP", 10) },
                 new[] { new BossDefinition("TF_KRAKEN_01") });
         }
     }

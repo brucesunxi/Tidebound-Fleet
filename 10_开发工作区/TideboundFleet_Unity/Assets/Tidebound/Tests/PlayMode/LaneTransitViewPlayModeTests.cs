@@ -98,7 +98,7 @@ namespace Tidebound.Tests
         {
             var level = new LevelData
             {
-                SchemaVersion = 1,
+                SchemaVersion = 2,
                 LevelId = "LaneViewPlayMode",
                 Width = 5,
                 Height = 4,
@@ -108,7 +108,8 @@ namespace Tidebound.Tests
                     new ShipPlacementData
                     {
                         Id = "A",
-                        TypeId = "TF_SPEEDBOAT",
+                        TypeId = "TF_BASE_SHIP",
+                        Length = 2,
                         Position = new GridPosition(0, 2),
                         Direction = ShipDirection.Right
                     }
@@ -116,7 +117,7 @@ namespace Tidebound.Tests
             };
             return LevelSessionFactory.Create(
                 level,
-                new[] { new ShipDefinition("TF_SPEEDBOAT", 2, 10) },
+                new[] { new ShipDefinition("TF_BASE_SHIP", 10) },
                 new[] { new BossDefinition("TF_KRAKEN_01") });
         }
     }

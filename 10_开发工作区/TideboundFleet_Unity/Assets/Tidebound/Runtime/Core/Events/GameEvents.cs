@@ -8,8 +8,9 @@ namespace Tidebound.Events
         public string SessionId { get; }
         public string ShipId { get; }
         public string TypeId { get; }
-        public ShipEventContext(string sessionId, string shipId, string typeId)
-        { SessionId = sessionId; ShipId = shipId; TypeId = typeId; }
+        public string SkinId { get; }
+        public ShipEventContext(string sessionId, string shipId, string typeId, string skinId)
+        { SessionId = sessionId; ShipId = shipId; TypeId = typeId; SkinId = skinId; }
     }
 
     // These are contracts only. Loading a level does not publish gameplay events.

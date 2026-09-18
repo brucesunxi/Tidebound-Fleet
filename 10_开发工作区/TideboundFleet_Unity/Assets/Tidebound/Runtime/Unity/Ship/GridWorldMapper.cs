@@ -35,6 +35,33 @@ namespace Tidebound.Unity.Ship
             }
         }
 
+        public GridPosition WorldToCell(Vector3 worldPosition)
+        {
+            ValidateCellSize();
+            var frame = origin != null ? origin : transform;
+            var delta = worldPosition - frame.position;
+            var x = Mathf.FloorToInt(Vector3.Dot(delta, Right(frame)) / cellSize + 0.5f);
+            var y = Mathf.FloorToInt(Vector3.Dot(delta, Up(frame)) / cellSize + 0.5f);
+            return new GridPosition(x, y);
+        }
+
+        public bool TryRayToCell(Ray ray, out GridPosition cell)
+        {
+            ValidateCellSize();
+            var frame = origin != null ? origin : transform;
+            var normal = Vector3.Cross(Right(frame), Up(frame));
+            if (normal.sqrMagnitude < 0.000001f)
+                throw new InvalidOperationException("Grid axes must not be parallel.");
+            var plane = new Plane(normal.normalized, frame.position);
+            if (!plane.Raycast(ray, out var distance))
+            {
+                cell = default;
+                return false;
+            }
+            cell = WorldToCell(ray.GetPoint(distance));
+            return true;
+        }
+
         private Vector3 Right(Transform frame)
         {
             if (localRightAxis.sqrMagnitude < 0.000001f)

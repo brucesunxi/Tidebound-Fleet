@@ -6,13 +6,13 @@
 
 Tidebound Fleet（潮汐舰队）是一款面向 Android / iOS、Google Play 与 TapTap 的原创移动解谜游戏。核心是四方向单向挪船、外围航道、同型舰队聚合及每船一次的 Boss 攻击反馈。
 
-正式 Unity 工程唯一位置：`10_开发工作区/TideboundFleet_Unity/`。购买源码与 Cocos 参考项目只用于审计和研究，不能成为正式代码写入位置。
+正式 Unity 工程唯一位置：`10_开发工作区/TideboundFleet_Unity/`。购买源码与 Cocos 参考项目只用于审计和研究，不能成为正式代码写入位置。当前产品采用约80艘的高密度方向疏通、1×2可换皮标准船和固定外观1×3长船。
 
 ## 当前阶段与禁止事项
 
-阶段顺序：Phase 0 源码审计；Phase 0.5 游戏设计冻结；Phase 0.8 项目治理；Phase 1 Unity 架构；Phase 2 棋盘；Phase 3 船移动；Phase 4 航道；Phase 5 海怪战斗；Phase 6 成长与商业化。
+阶段顺序：Phase 0 源码审计；Phase 0.5 游戏设计冻结；Phase 0.8 项目治理；Phase 1 Unity架构；Phase 2棋盘；Phase 3船移动；Phase 4航道；Phase 5单船迁移与80船灰盒；Phase 6关卡验证与生产工具；Phase 7舰队与海怪战斗；Phase 8道具、死局与重开；Phase 9皮肤经济；Phase 10产品整合；Phase 11 IAA与分析；Phase 12发布。
 
-在任何任务中都要遵守用户声明的阶段边界。当前任务仅允许治理基础设施，不得借机实现或改动玩法。
+在任何任务中都要遵守用户声明的阶段边界。Phase 5 的单基础船、12×18高密度棋盘、容量校验、密集输入、Level Studio V0和自动化灰盒测试已经完成。进入 Phase 6 前先确认真机触控、方向可读性和最低设备性能门槛；不得提前实现Boss战斗、皮肤经济、广告或正式UI。
 
 永久禁止：
 

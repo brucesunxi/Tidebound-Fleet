@@ -143,6 +143,6 @@ namespace Tidebound.Ship
         }
 
         private ShipEventContext Context(ShipRuntimeData ship) =>
-            new ShipEventContext(session.SessionId, ship.Id, ship.TypeId);
+            new ShipEventContext(session.SessionId, ship.Id, ship.TypeId, ship.SkinId);
     }
 }

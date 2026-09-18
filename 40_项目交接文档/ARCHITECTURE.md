@@ -1,6 +1,6 @@
-# Tidebound Fleet — Unity 架构、棋盘、船移动与航道
+# Tidebound Fleet — Unity 架构与高密度棋盘基础
 
-状态：Phase 4 航道基础链路已完成；不包含舰队聚合、攻击或 Boss 扣血。日期：2026-09-18。
+状态：Phase 5 高密度棋盘基础已完成自动化验收；不包含舰队聚合、攻击、Boss 扣血、皮肤经济或正式 UI。日期：2026-09-18。
 
 ## 1. 工作工程与边界
 
@@ -12,7 +12,7 @@
 - 旧工程仍在同一 Unity 工程内参与其自身编译；程序集隔离不意味着旧插件已经被移除或完成 Android/iOS 构建整改。
 - 本阶段不更换启动场景、不运行旧 Loader、不调用旧广告初始化。直接进入 Play 不代表已有潮汐舰队可玩原型。
 
-`验证记录/Phase1_Unity架构基础建设/SourceBaseline.json` 记录复制前原工程目录摘要；同目录的 `Validation` 保存当次验证结果。基础建设见 [Phase 1 验收记录](验证记录/Phase1_Unity架构基础建设/PHASE1_VALIDATION.md)，棋盘规则见 [Phase 2 验收记录](验证记录/Phase2_棋盘系统/PHASE2_VALIDATION.md)，船移动见 [Phase 3 验收记录](验证记录/Phase3_船移动/PHASE3_VALIDATION.md)，航道见 [Phase 4 验收记录](验证记录/Phase4_航道系统/PHASE4_VALIDATION.md)。
+`验证记录/Phase1_Unity架构基础建设/SourceBaseline.json` 记录复制前原工程目录摘要；同目录的 `Validation` 保存当次验证结果。基础建设见 [Phase 1 验收记录](验证记录/Phase1_Unity架构基础建设/PHASE1_VALIDATION.md)，棋盘规则见 [Phase 2 验收记录](验证记录/Phase2_棋盘系统/PHASE2_VALIDATION.md)，船移动见 [Phase 3 验收记录](验证记录/Phase3_船移动/PHASE3_VALIDATION.md)，航道见 [Phase 4 验收记录](验证记录/Phase4_航道系统/PHASE4_VALIDATION.md)，高密度基础见 [Phase 5 验收记录](验证记录/Phase5_高密度棋盘基础/PHASE5_VALIDATION.md)。
 
 ## 2. 实际目录
 
@@ -37,19 +37,22 @@ TideboundFleet_Unity/
 │   │   │   │   ├── Fleet/               预留
 │   │   │   │   ├── Combat/              预留
 │   │   │   └── Unity/                   Tidebound.Unity.asmdef
-│   │   │       ├── Config/              四种 ScriptableObject 类
-│   │   │       ├── Loading/             LevelJsonReader、LevelConfigLoader
-│   │   │       ├── Ship/                点击视图、Grid 映射、动画协调与时间参数
+│   │   │       ├── Config/              Level、BaseShip、Boss、视觉 ScriptableObject
+│   │   │       ├── Loading/             JSON 严格读写、LevelConfigLoader
+│   │   │       ├── Ship/                兼容点击视图、Grid 映射、动画协调与时间参数
+│   │   │       ├── Input/               高密度 Grid 集中点击路由
+│   │   │       ├── Layout/              SafeArea 三段布局与 12×18 单格计算
 │   │   │       ├── Lane/                场景路径、缩略船影视图和进度协调器
 │   │   │       ├── Boss/                预留表现适配
 │   │   │       └── UI/                  Screens、Components、HUD（预留）
 │   │   ├── Config/
-│   │   │   ├── Levels/                 TestLevel_001.json、TestLevel_001.asset
-│   │   │   ├── Ships/                  Speedboat、Gunboat、Battleship、Flagship.asset
+│   │   │   ├── Levels/                 教学关与 80 船灰盒 JSON、引用资产、解法序列
+│   │   │   ├── Ships/                  BaseShip.asset；旧四船型资产仅保留历史兼容
 │   │   │   ├── Bosses/                 Kraken.asset
 │   │   │   └── Visuals/                SpeedboatVisual.asset（无模型）
 │   │   ├── Editor/                     Tidebound.Editor.asmdef
 │   │   │   ├── LevelValidator/         LevelConfigInspector
+│   │   │   ├── LevelStudio/            schema v2 网格编辑、统计、校验与 JSON 保存
 │   │   │   └── DebugTools/             预留
 │   │   └── Tests/
 │   │       ├── EditMode/               Tidebound.Tests.EditMode.asmdef、十组测试
@@ -85,7 +88,7 @@ flowchart LR
 | Data | 数据类型、不可变船型定义、可变运行时数据、枚举 | `noEngineReferences=true`；无 Unity 类型、无 JSON 库 |
 | Core | Grid 占格、路径查询、不可变事务、船移动、航道时钟与 FIFO、创建单局、类型化事件总线 | 只引用 Data；无 Unity、物理系统、旧停车程序集 |
 | Unity | SO/JSON 适配、Grid 世界映射、指针视图、移动与航道表现协调器 | 引用 Data、Core 与 `Newtonsoft.Json.dll`；无 UnityEditor；不决定占格或入舰顺序 |
-| Editor | 配置 Inspector 中的仅数据验证按钮 | 仅 Editor；不进入 Player |
+| Editor | 配置 Inspector 数据验证与 Tidebound Level Studio V0 | 仅 Editor；不进入 Player；保存前复用 Core 校验 |
 | Tests.EditMode | 真实序列化资产、负例、隔离及事件测试 | 仅 Editor、`UNITY_INCLUDE_TESTS`；显式 NUnit/TestRunner 引用 |
 
 全部 `autoReferenced=false`、`overrideReferences=true`。预定义的旧 `Assembly-CSharp` 不会自动获得 Tidebound 引用，新代码也不引用旧 `Assembly-CSharp`、DOTween、广告或归因程序集。后续 UI 与 MonoBehaviour 必须放在自己的业务程序集下。
@@ -97,19 +100,19 @@ Unity 2022 会为启用引擎引用的 Tidebound.Unity 编译单元自动补入�
 | 数据 | 唯一来源 | 字段／说明 |
 |---|---|---|
 | 关卡布局 | JSON | `schemaVersion, levelId, width, height, bossId, ships` |
-| 船实例摆放 | JSON 的 ships 数组 | `id, typeId, position:{x,y}, direction` |
-| 船型逻辑 | ShipConfigSO | `typeId, length, damageLv1`；额外引用独立视觉 SO |
+| 船实例摆放 | JSON 的 ships 数组 | `id, typeId, length, position:{x,y}, direction`；length 仅允许 2／3 |
+| 船型逻辑 | ShipConfigSO | 唯一 `TF_BASE_SHIP`，保存 `typeId, damageLv1=10`；额外引用独立视觉 SO |
 | 船型表现 | ShipVisualConfigSO | `prefab, localScale`；允许本阶段为空模型；不参与逻辑 |
 | Boss 身份／表现 | BossConfigSO | `bossId, displayName, prefab`；**不保存 HP** |
 | Unity 关卡入口 | LevelConfigSO | 引用 JSON TextAsset、船型 SO 数组、Boss SO 数组；不存 levelId、宽高、船布局或 HP 副本 |
 | 解析快照 | LevelData + ShipPlacementData | 从 JSON 新建的纯 C# 数据；不作为当前局可变状态直接使用 |
-| 运行时船 | ShipRuntimeData | `Id, TypeId, Position, Direction, Length, Damage, State`；身份、长度、伤害本局只读 |
+| 运行时船 | ShipRuntimeData | `Id, TypeId, SkinId, Position, Direction, Length, Damage, State`；身份、皮肤、长度、伤害本局只读 |
 | 运行时 Boss | BossRuntimeData | `BossId, InitialHp, Hp`；InitialHp 只读，Hp 为独立运行时值 |
 | 单局 | GameSession | 独立 SessionId、LevelId、尺寸、Ships、Boss、当前 Board、只读 InitialBoard、State、Events |
 
-JSON 不允许写入 `length`、`damage`、`hp` 或 `state` 来覆盖静态定义。字段名称严格区分大小写；缺失、未知、重复字段、整数溢出、隐式字符串转整数和非法方向均拒绝。
+JSON schema v2 要求每艘船显式写入实例 `length`；不允许写入 `skinId`、`damage`、`hp` 或 `state`。字段名称严格区分大小写；缺失、未知、重复字段、整数溢出、隐式字符串转整数和非法方向均拒绝。
 
-四型 Lv1 配置为：快艇 2 格／10；炮艇 2 格／20；战舰 3 格／30；旗舰 4 格／50。尚不实现攻击频率、升级路线和成长系统。
+MVP 只有一个逻辑船型 `TF_BASE_SHIP`，每船固定 10 伤害。长度 2 的船先使用 `TF_SKIN_DEFAULT`，长度 3 的船固定使用 `TF_LONG_DEFAULT`；当前只建立稳定 skinId 数据契约，尚不实现皮肤分配和经济。
 
 ## 5. 加载数据流与生命周期
 
@@ -151,7 +154,7 @@ flowchart TD
 
 Phase 3 的 `ShipMovementSystem` 是提交入口。它在表现报告到达逻辑完成点时，同时替换 `GameSession.Board`、更新 `ShipRuntimeData.Position/State` 并发布事件；这些属性只允许 Data/Core 和测试程序集写入，Unity 表现层不能直接修改。禁止表现脚本绕过状态机写格子或运行时位置。
 
-本阶段校验：schema、唯一且非空 ID、船型与 Boss 引用、尺寸上限 8×9、逻辑长度 2..4、正伤害、Int32 总伤害溢出、四方向、全船头尾越界、全船占格重叠、缺失配置和重复配置 ID。
+当前校验：schema v2、唯一且非空 ID、唯一基础船型与 Boss 引用、棋盘上限 12×18、逻辑长度 2／3、固定伤害、Int32 总伤害溢出、四方向、完整占格越界与重叠。正式 12×18 关卡还限制总船数≤82、长船≤8且≤10%、总占格≤172、空格≥44。
 
 **合法布局不等于可解布局。** Phase 2 已提供单船路径扫描和显式事务，可用指定序列验证关卡；没有通用自动求解器、卡局搜索或洗牌可解性证明。
 
@@ -169,9 +172,9 @@ GameState：Prepare、Playing、Paused、Victory、Failed。加载完成为 Prep
 | ShipMoveCompleteEvent | 船上下文、From、To、WasBlocked | 到达受阻落点、零位移确认或船尾完整离界后 |
 | ShipExitBoardEvent | 船上下文、船尾位置、出边方向、ExitSequence | 完整离界并释放占格后一次；序号单局递增 |
 | ShipEnterFleetEvent | 船上下文、ExitSequence | 中央入口融入完成后一次 |
-| AttackCreatedEvent | 船上下文、AttackId、Damage | Phase 5 舰队创建攻击凭证时 |
-| BossDamagedEvent | SessionId、BossId、AttackId、Damage、RemainingHp | Phase 5 攻击命中时 |
-| GameWinEvent | SessionId、LevelId | Phase 5 满足完整胜利条件后 |
+| AttackCreatedEvent | 船上下文、AttackId、Damage | Phase 7 舰队创建攻击凭证时 |
+| BossDamagedEvent | SessionId、BossId、AttackId、Damage、RemainingHp | Phase 7 攻击命中时 |
+| GameWinEvent | SessionId、LevelId | Phase 7 满足完整胜利条件后 |
 
 总线主线程同步、按订阅顺序投递。发布时固定订阅快照；回调内新增／移除订阅从下一次发布生效。重复订阅分别拥有 token；Dispose token 幂等；Dispose 总线后再次订阅／发布抛出 ObjectDisposedException。订阅者异常向调用者传播并终止本次后续投递，不静默吞错。
 
@@ -198,11 +201,11 @@ Phase 3 在船尾完整离界时分配单局 `ExitSequence`。Phase 4 只消费�
 - 默认入口间隔和融入时长均为 0.15 秒。融入完成后先提交 InFleet、清除活动转场，再发布一次 `ShipEnterFleetEvent`。
 - 暂停时 `TransitSystem.Advance` 不推进单局航道时钟；恢复后从原进度继续，序号和等待队列不变。
 - `LaneTransitController` 只把逻辑进度映射到 `ILaneTransitView`。`LanePathLayout` 提供场景航点，`LaneWorldPath` 提供平滑曲线采样；Transform、路径长度和模型缩放不参与 FIFO。
-- 默认 `ShipLaneView` 从全尺寸缩至 0.45 倍航道船影，入舰完成后隐藏该棋盘实例。Phase 5 另行创建或更新同型舰队常驻实体。
+- 默认 `ShipLaneView` 从全尺寸缩至 0.45 倍航道船影，入舰完成后隐藏该棋盘实例。舰队常驻实体留在 Phase 7。
 
 ## 8. TestLevel_001 教学测试数据
 
-固定 4 列×6 行、7 艘快艇、每艘 2 格／10 伤害，加载结果 **InitialHp = Hp = 70**。
+固定 4 列×6 行、7 艘基础船、每艘 2 格／10 伤害，加载结果 **InitialHp = Hp = 70**。
 
 | 实例 | 船尾坐标 | 朝向 | 占格 |
 |---|---|---|---|
@@ -243,18 +246,17 @@ y=0   1  1  .  2
   -logFile '/private/tmp/TideboundFleet_EditMode.log'
 ```
 
-默认 Transform 动画另使用同一命令的 `-testPlatform PlayMode -assemblyNames Tidebound.Tests.PlayMode`，测试结果写入独立 XML。当前完整结果见 [Phase 4 验收记录](验证记录/Phase4_航道系统/PHASE4_VALIDATION.md)。
+默认 Transform 动画另使用同一命令的 `-testPlatform PlayMode -assemblyNames Tidebound.Tests.PlayMode`，测试结果写入独立 XML。当前完整结果见 [Phase 5 验收记录](验证记录/Phase5_高密度棋盘基础/PHASE5_VALIDATION.md)。
 
 不要在另一个 Editor 已打开同一工程时运行命令。测试由 Test Runner 管理退出，不添加可能提前终止测试的 `-quit`。命令行测试参数参考 [Unity Test Framework 1.1 文档](https://docs.unity3d.com/Packages/com.unity.test-framework@1.1/manual/reference-command-line.html)。程序集边界参考 [Unity 2022.3 手册](https://docs.unity3d.com/2022.3/Documentation/Manual/ScriptCompilationAssemblyDefinitionFiles.html)。
 
 ## 10. 后续开发顺序
 
-1. **Phase 5 单船迁移与 80 船灰盒：**保留现有 Grid、移动和航道不变量，迁移为长度 2／3 的单基础船目标，并验证 12×18、80 船可读性与性能。
-2. **Phase 6 关卡编辑与验证：**建立 JSON 可视化编辑器、解法录制回放和 30 关灰盒数据。
-3. **Phase 7 舰队与战斗：**消费 ShipEnterFleetEvent，建立最多五个标准船皮肤席位、长船支援计数、AttackToken、Boss 扣血与一次胜利。
-4. **Phase 8–11 产品闭环：**依次接入道具与死局、皮肤经济与存档、UI 与 30 关、IAA 与分析。
-5. **Phase 12 发布工程：**处理旧 Helper／商业 SDK 的 Editor 引用边界，确定安全修复后的引擎版本，验证 Android／iOS 构建和真机。
+1. **Phase 6 关卡验证与生产工具：**在 Level Studio V0 上增加解法录制回放、难度指标、候选关卡流程和 30 关灰盒数据。
+2. **Phase 7 舰队与战斗：**消费 ShipEnterFleetEvent，建立最多五个标准船皮肤席位、长船支援计数、AttackToken、Boss 扣血与一次胜利。
+3. **Phase 8–11 产品闭环：**依次接入道具与死局、皮肤经济与存档、UI 与 30 关、IAA 与分析。
+4. **Phase 12 发布工程：**处理旧 Helper／商业 SDK 的 Editor 引用边界，确定安全修复后的引擎版本，验证 Android／iOS 构建和真机。
 
-详细入口、退出和回退条件见 [Phase 5 及后续开发计划](PHASE5_PLUS_PLAN.md)，关卡工具范围见 [关卡编辑器调研与规划](LEVEL_EDITOR_PLAN.md)。当前 8×9、长度 2..4 和旧 typeId 仍是代码事实，目标变更须在 Phase 5 通过迁移实现，不能只修改文档假定已经完成。
+详细入口、退出和回退条件见 [Phase 5 及后续开发计划](PHASE5_PLUS_PLAN.md)，关卡工具范围见 [关卡编辑器调研与规划](LEVEL_EDITOR_PLAN.md)。Phase 5 已把代码事实迁移到 12×18、长度 2／3、单基础船和 schema v2；真机触控、方向可读性和最低设备性能仍需用后续灰盒场景验收。
 
 2022.3.25f1 当前用于复现购买工程与本阶段验证，不等于已锁定最终上架版本。已有安全公告及商店工具链要求仍需在发布阶段单独验收。

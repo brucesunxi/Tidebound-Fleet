@@ -13,7 +13,7 @@ namespace Tidebound.Tests
         [Test]
         public void AllSevenContractsDeliverTheirImmutablePayload()
         {
-            var ship = new ShipEventContext("session", "S001", "TF_SPEEDBOAT");
+            var ship = new ShipEventContext("session", "S001", "TF_BASE_SHIP", "TF_SKIN_DEFAULT");
             var position = new GridPosition(1, 2);
             RoundTrip(new ShipMoveStartEvent(ship, position, ShipDirection.Right));
             RoundTrip(new ShipMoveCompleteEvent(ship, position, new GridPosition(2, 2), true));
