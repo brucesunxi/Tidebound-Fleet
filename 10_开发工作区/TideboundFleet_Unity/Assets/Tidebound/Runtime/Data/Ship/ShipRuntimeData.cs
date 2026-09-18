@@ -7,11 +7,11 @@ namespace Tidebound.Ship
     {
         public string Id { get; }
         public string TypeId { get; }
-        public GridPosition Position { get; set; }
-        public ShipDirection Direction { get; set; }
+        public GridPosition Position { get; internal set; }
+        public ShipDirection Direction { get; internal set; }
         public int Length { get; }
         public int Damage { get; }
-        public ShipState State { get; set; }
+        public ShipState State { get; internal set; }
 
         public ShipRuntimeData(string id, string typeId, GridPosition position,
             ShipDirection direction, int length, int damage)

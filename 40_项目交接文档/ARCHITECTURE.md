@@ -1,6 +1,6 @@
-# Tidebound Fleet — Unity 基础架构与 Phase 2 棋盘系统
+# Tidebound Fleet — Unity 架构、棋盘与 Phase 3 船移动
 
-状态：Phase 2 纯 Grid 棋盘已完成；不包含可玩输入或表现。日期：2026-09-18。
+状态：Phase 3 船移动基础链路已完成；不包含航道或战斗。日期：2026-09-18。
 
 ## 1. 工作工程与边界
 
@@ -12,7 +12,7 @@
 - 旧工程仍在同一 Unity 工程内参与其自身编译；程序集隔离不意味着旧插件已经被移除或完成 Android/iOS 构建整改。
 - 本阶段不更换启动场景、不运行旧 Loader、不调用旧广告初始化。直接进入 Play 不代表已有潮汐舰队可玩原型。
 
-`验证记录/Phase1_Unity架构基础建设/SourceBaseline.json` 记录复制前原工程目录摘要；同目录的 `Validation` 保存当次验证结果。基础建设结论见 [Phase 1 验收记录](验证记录/Phase1_Unity架构基础建设/PHASE1_VALIDATION.md)，棋盘规则结论见 [Phase 2 验收记录](验证记录/Phase2_棋盘系统/PHASE2_VALIDATION.md)。
+`验证记录/Phase1_Unity架构基础建设/SourceBaseline.json` 记录复制前原工程目录摘要；同目录的 `Validation` 保存当次验证结果。基础建设见 [Phase 1 验收记录](验证记录/Phase1_Unity架构基础建设/PHASE1_VALIDATION.md)，棋盘规则见 [Phase 2 验收记录](验证记录/Phase2_棋盘系统/PHASE2_VALIDATION.md)，船移动见 [Phase 3 验收记录](验证记录/Phase3_船移动/PHASE3_VALIDATION.md)。
 
 ## 2. 实际目录
 
@@ -30,6 +30,7 @@ TideboundFleet_Unity/
 │   │   │   ├── Core/                    Tidebound.Core.asmdef
 │   │   │   │   ├── Constants/           FoundationLimits
 │   │   │   │   ├── Board/               占格、校验、只读快照、路径结果与原子事务
+│   │   │   │   ├── Ship/                ShipMovementSystem、操作与状态结果
 │   │   │   │   ├── GameSession/         GameSession、LevelSessionFactory
 │   │   │   │   ├── Events/              IEventBus、SessionEventBus、七类事件
 │   │   │   │   ├── Fleet/               预留
@@ -38,7 +39,7 @@ TideboundFleet_Unity/
 │   │   │   └── Unity/                   Tidebound.Unity.asmdef
 │   │   │       ├── Config/              四种 ScriptableObject 类
 │   │   │       ├── Loading/             LevelJsonReader、LevelConfigLoader
-│   │   │       ├── Ship/                预留表现适配
+│   │   │       ├── Ship/                点击视图、Grid 映射、动画协调与时间参数
 │   │   │       ├── Boss/                预留表现适配
 │   │   │       └── UI/                  Screens、Components、HUD（预留）
 │   │   ├── Config/
@@ -50,8 +51,8 @@ TideboundFleet_Unity/
 │   │   │   ├── LevelValidator/         LevelConfigInspector
 │   │   │   └── DebugTools/             预留
 │   │   └── Tests/
-│   │       ├── EditMode/               Tidebound.Tests.EditMode.asmdef、六组测试
-│   │       └── PlayMode/               预留，本阶段无 PlayMode 测试
+│   │       ├── EditMode/               Tidebound.Tests.EditMode.asmdef、八组测试
+│   │       └── PlayMode/               默认 Transform 移动、暂停和受阻反馈测试
 │   └── …                              原工程所有 Assets 原样保留
 ├── Packages/
 └── ProjectSettings/
@@ -81,8 +82,8 @@ flowchart LR
 | 程序集 | 依赖与职责 | 限制 |
 |---|---|---|
 | Data | 数据类型、不可变船型定义、可变运行时数据、枚举 | `noEngineReferences=true`；无 Unity 类型、无 JSON 库 |
-| Core | Grid 占格、合法性验证、路径查询、不可变棋盘事务、创建单局、类型化事件总线 | 只引用 Data；无 Unity、物理系统、旧停车程序集 |
-| Unity | ScriptableObject、TextAsset 引用、JSON 解析适配 | 引用 Data、Core 与 `Newtonsoft.Json.dll`；无 UnityEditor |
+| Core | Grid 占格、路径查询、不可变事务、船移动状态机、创建单局、类型化事件总线 | 只引用 Data；无 Unity、物理系统、旧停车程序集 |
+| Unity | SO/JSON 适配、Grid 世界映射、指针视图和动画协调器 | 引用 Data、Core 与 `Newtonsoft.Json.dll`；无 UnityEditor；不决定占格 |
 | Editor | 配置 Inspector 中的仅数据验证按钮 | 仅 Editor；不进入 Player |
 | Tests.EditMode | 真实序列化资产、负例、隔离及事件测试 | 仅 Editor、`UNITY_INCLUDE_TESTS`；显式 NUnit/TestRunner 引用 |
 
@@ -103,7 +104,7 @@ Unity 2022 会为启用引擎引用的 Tidebound.Unity 编译单元自动补入�
 | 解析快照 | LevelData + ShipPlacementData | 从 JSON 新建的纯 C# 数据；不作为当前局可变状态直接使用 |
 | 运行时船 | ShipRuntimeData | `Id, TypeId, Position, Direction, Length, Damage, State`；身份、长度、伤害本局只读 |
 | 运行时 Boss | BossRuntimeData | `BossId, InitialHp, Hp`；InitialHp 只读，Hp 为独立运行时值 |
-| 单局 | GameSession | 独立 SessionId、LevelId、尺寸、Ships、Boss、Board（InitialBoard 兼容别名）、State、Events |
+| 单局 | GameSession | 独立 SessionId、LevelId、尺寸、Ships、Boss、当前 Board、只读 InitialBoard、State、Events |
 
 JSON 不允许写入 `length`、`damage`、`hp` 或 `state` 来覆盖静态定义。字段名称严格区分大小写；缺失、未知、重复字段、整数溢出、隐式字符串转整数和非法方向均拒绝。
 
@@ -137,7 +138,7 @@ flowchart TD
 
 `GridFootprint` 的输入只有整数船尾、方向、逻辑长度。船体模型、Transform.scale、Collider.bounds、Renderer.bounds、贴图像素和美术留白都不能参与占格计算。未来世界坐标映射由表现适配层从 Grid 单向生成。
 
-`BoardModel` 是不可变逻辑快照，通过 `GameSession.Board` 暴露，`InitialBoard` 保留为同一实例的兼容别名。它复制船的 ID、类型、船尾、方向、长度和完整占格，不持有 Transform、Collider、SO 或可变 `ShipRuntimeData` 引用。直接编辑 RuntimeData 不会污染已建立的棋盘快照。
+`BoardModel` 是不可变逻辑快照。`GameSession.Board` 指向当前已提交棋盘；`InitialBoard` 永久保留开局快照，供重试／诊断使用。它复制船的 ID、类型、船尾、方向、长度和完整占格，不持有 Transform、Collider、SO 或可变 `ShipRuntimeData` 引用。
 
 `QueryForwardPath(shipId)` 从船头前一格开始扫描，返回 `ForwardPathResult`：
 
@@ -145,7 +146,9 @@ flowchart TD
 - 无阻挡时给出到边缘的空格以及船尾完全越界所需距离；`TargetTail` 位于棋盘外一格。
 - 查询是纯计算，不改变占位、RuntimeData、ShipState，不发布事件。
 
-`ApplyPathResult` 只接受当前快照产生且仍匹配的结果，并一次性返回新的 `BoardModel`。受阻结果在新快照中替换完整占格，离场结果删除完整占格，原快照保持不变；过期结果被拒绝，0 距离结果保留原实例和全部占格。Phase 3 再负责把这项纯逻辑事务与 RuntimeData、输入锁、状态、事件和动画一致地提交，禁止表现脚本直接写位置绕过棋盘。
+`ApplyPathResult` 只接受当前快照产生且仍匹配的结果，并一次性返回新的 `BoardModel`。受阻结果在新快照中替换完整占格，离场结果删除完整占格，原快照保持不变；过期结果被拒绝，0 距离结果保留原实例和全部占格。
+
+Phase 3 的 `ShipMovementSystem` 是提交入口。它在表现报告到达逻辑完成点时，同时替换 `GameSession.Board`、更新 `ShipRuntimeData.Position/State` 并发布事件；这些属性只允许 Data/Core 和测试程序集写入，Unity 表现层不能直接修改。禁止表现脚本绕过状态机写格子或运行时位置。
 
 本阶段校验：schema、唯一且非空 ID、船型与 Boss 引用、尺寸上限 8×9、逻辑长度 2..4、正伤害、Int32 总伤害溢出、四方向、全船头尾越界、全船占格重叠、缺失配置和重复配置 ID。
 
@@ -153,25 +156,37 @@ flowchart TD
 
 ## 7. 状态与事件契约
 
-ShipState：Idle、Moving、BlockedFeedback、Exiting、InLane、InFleet。BlockedFeedback 表示短暂受阻反馈，后续应回到 Idle 并保留新位置；本阶段只定义枚举，不实现状态转换。
+ShipState：Idle、Moving、BlockedFeedback、Exiting、InLane、InFleet。Phase 3 已实现 Idle → Moving／Exiting／BlockedFeedback；受阻到达后进入 BlockedFeedback，反馈结束回 Idle；船尾完全离界后进入 InLane。InFleet 留给后续航道。
 
-GameState：Prepare、Playing、Paused、Victory、Failed。加载完成为 Prepare；Failed 仅预留，不代表碰撞或卡局会失败。
+GameState：Prepare、Playing、Paused、Victory、Failed。加载完成为 Prepare；`StartPlaying/Pause/Resume` 由移动系统管理。暂停保留活动操作和阶段，完成回调在恢复后只提交一次。Victory/Failed 仍由后续系统处理。
 
 每个 GameSession 有自己的非静态 `IEventBus`。事件是只读值类型，不携带 GameObject、SO 或可变 RuntimeData 引用。
 
-| 契约 | 负载 | 未来触发点，本阶段均不触发 |
+| 契约 | 负载 | 当前触发点 |
 |---|---|---|
-| ShipMoveStartEvent | SessionId、ShipId、TypeId、From、Direction | 棋盘接受一次操作 |
-| ShipMoveCompleteEvent | 船上下文、From、To、WasBlocked | 本次棋盘位移／零位移结果提交 |
-| ShipExitBoardEvent | 船上下文、船尾位置、出边方向、ExitSequence | 船尾完全离界且占位释放后一次 |
-| ShipEnterFleetEvent | 船上下文、ExitSequence | 到达舰队后一次 |
-| AttackCreatedEvent | 船上下文、AttackId、Damage | 舰队为该入场船创建一次攻击凭证 |
-| BossDamagedEvent | SessionId、BossId、AttackId、Damage、RemainingHp | 一次攻击凭证命中结算后 |
-| GameWinEvent | SessionId、LevelId | 满足完整胜利条件后一次 |
+| ShipMoveStartEvent | SessionId、ShipId、TypeId、From、Direction | 接受一次 Idle 船点击后 |
+| ShipMoveCompleteEvent | 船上下文、From、To、WasBlocked | 到达受阻落点、零位移确认或船尾完整离界后 |
+| ShipExitBoardEvent | 船上下文、船尾位置、出边方向、ExitSequence | 完整离界并释放占格后一次；序号单局递增 |
+| ShipEnterFleetEvent | 船上下文、ExitSequence | Phase 4 中央入口完成后 |
+| AttackCreatedEvent | 船上下文、AttackId、Damage | Phase 5 舰队创建攻击凭证时 |
+| BossDamagedEvent | SessionId、BossId、AttackId、Damage、RemainingHp | Phase 5 攻击命中时 |
+| GameWinEvent | SessionId、LevelId | Phase 5 满足完整胜利条件后 |
 
 总线主线程同步、按订阅顺序投递。发布时固定订阅快照；回调内新增／移除订阅从下一次发布生效。重复订阅分别拥有 token；Dispose token 幂等；Dispose 总线后再次订阅／发布抛出 ObjectDisposedException。订阅者异常向调用者传播并终止本次后续投递，不静默吞错。
 
-去重、ExitSequence 分配、攻击凭证消费、连击和胜利判断属于后续生产事件的系统。本阶段总线不模拟这些逻辑，也不自动把测试事件串成玩法。
+Phase 3 在船尾完整离界时分配单局 `ExitSequence`，供 Phase 4 FIFO 航道直接使用。入舰、攻击凭证、连击和胜利判断仍属于后续系统。
+
+## 7.1 移动协调和 Unity 表现
+
+- `ShipMovementSystem` 同一时刻只保留一个 `ActiveOperation`；忙碌期间的点击返回 Busy，不排队。
+- 受阻且距离大于 0：先保持旧占格并播放直线动画，到达后原子提交新位置，再播放 0.12 秒横向反馈。
+- 紧邻阻挡：立即确认零位移并进入横向反馈，完整占格不丢失。
+- 无阻挡：ShipState 先进入 Exiting；船尾动画到棋盘外一格后释放占格、进入 InLane、发布完成和出场事件。
+- `ShipMovementController` 把逻辑操作映射给 `IShipMovementView`；默认 `ShipMovementView` 使用协程，参考 12 格／秒并限制 0.18–0.60 秒。
+- 默认受阻反馈只沿前进轴的垂直方向摆动，最终回到锚点，不用前进后退 Tween。
+- `GridWorldMapper` 的轴、原点与 cellSize 只把 Grid 转成世界坐标，不能反向参与规则。
+- `ShipMovementView` 使用 `IPointerClickHandler`。Collider／Graphic／Raycaster 只提供命中区域，不决定船长、占格或路径。
+- 场景启动代码必须为每个当前棋盘实例提供唯一同 ID 视图，再调用 Controller.StartPlaying；缺少或重复视图会在绑定阶段失败。
 
 ## 8. TestLevel_001 教学测试数据
 
@@ -197,7 +212,7 @@ y=0   1  1  .  2
       x0 x1 x2 x3
 ```
 
-参考清盘顺序为 S005 → S002 → S001 → S004 → S006 → S003 → S007。Phase 2 已用不可变棋盘查询和事务自动验证该序列：每一步都可完全驶出，最终船数和占格均为 0；原 GameSession 仍保持 7 艘 Idle 船。该结果验证已知序列，不代表存在通用求解器。
+参考清盘顺序为 S005 → S002 → S001 → S004 → S006 → S003 → S007。Phase 3 已通过完整移动状态机执行该序列：得到连续 1–7 的出场序号，当前棋盘清空，7 艘运行时船进入 InLane；InitialBoard 仍保留 7 艘开局船。该结果验证已知序列，不代表存在通用求解器。
 
 `TestLevel_001` 是独立工程教学测试夹具。此次将它从原架构任务的 3 船／30 HP 调整为 7 船／70 HP；不据此擅自改写 GDD 12 个正式关卡的其他配方或难度顺序。
 
@@ -216,14 +231,15 @@ y=0   1  1  .  2
   -logFile '/private/tmp/TideboundFleet_EditMode.log'
 ```
 
+默认 Transform 动画另使用同一命令的 `-testPlatform PlayMode -assemblyNames Tidebound.Tests.PlayMode`，测试结果写入独立 XML。Phase 3 的最终结果见 [验收记录](验证记录/Phase3_船移动/PHASE3_VALIDATION.md)。
+
 不要在另一个 Editor 已打开同一工程时运行命令。测试由 Test Runner 管理退出，不添加可能提前终止测试的 `-quit`。命令行测试参数参考 [Unity Test Framework 1.1 文档](https://docs.unity3d.com/Packages/com.unity.test-framework@1.1/manual/reference-command-line.html)。程序集边界参考 [Unity 2022.3 手册](https://docs.unity3d.com/2022.3/Documentation/Manual/ScriptCompilationAssemblyDefinitionFiles.html)。
 
 ## 10. 后续开发顺序
 
-1. **Phase 3 船移动：**把查询与不可变事务接入四向点击、RuntimeData、状态机、串行动作、BlockedFeedback、动画完成点和暂停恢复；逻辑不得读取模型尺寸。
-2. **Phase 4 航道：**船尾完整出界、出场序号、航道并行与中央 FIFO 入场。
-3. **Phase 5 舰队与战斗：**FleetAggregationSystem、每入场一次攻击凭证、去重命中、Boss 扣血与一次胜利。
-4. **Phase 6 成长与商业化：**依照 GDD 接入连击、三道具、成长、广告容错、存档和渠道服务。
-5. **发布工程：**处理旧 Helper/商业 SDK 的 Editor 引用边界，确定安全修复后的引擎版本，验证 Android/iOS 构建和真机。
+1. **Phase 4 航道：**消费 ShipExitBoardEvent，建立四边路径、并行航道、暂停冻结与中央 FIFO 入场。
+2. **Phase 5 舰队与战斗：**FleetAggregationSystem、每入场一次攻击凭证、去重命中、Boss 扣血与一次胜利。
+3. **Phase 6 成长与商业化：**依照 GDD 接入连击、三道具、成长、广告容错、存档和渠道服务。
+4. **发布工程：**处理旧 Helper/商业 SDK 的 Editor 引用边界，确定安全修复后的引擎版本，验证 Android/iOS 构建和真机。
 
 2022.3.25f1 当前用于复现购买工程与本阶段验证，不等于已锁定最终上架版本。已有安全公告及商店工具链要求仍需在发布阶段单独验收。

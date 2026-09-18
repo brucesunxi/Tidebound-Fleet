@@ -27,13 +27,17 @@
 - 增加前向路径查询，返回阻挡船、空白格、落点、移动距离及船尾完整离界结果。
 - 增加不可变占格事务和 TestLevel_001 七船参考序列验证。
 - 增加 Phase 2 棋盘查询与事务 EditMode 测试。
+- 增加单局船移动状态机、串行操作锁和类型化完成结果。
+- 增加点击视图、Grid 世界坐标映射、默认 Transform 动画与可配置时间参数。
+- 增加移动系统 EditMode 测试和默认视图 PlayMode 测试。
 
 ### Changed
 
 - 将 Unity 正式工作副本归位到 `10_开发工作区/TideboundFleet_Unity/`。
 - 将购买源码归档到不提交 Git 的 `00_远端接收区/`。
 - 将审计、设计、架构和验证资料集中到 `40_项目交接文档/`。
-- `GameSession` 通过 `Board` 暴露棋盘快照，并保留 `InitialBoard` 兼容别名。
+- `GameSession.Board` 暴露当前已提交棋盘，`InitialBoard` 固定保留开局快照。
+- ShipRuntimeData 的位置、方向和状态只允许受信程序集写入，避免表现层绕过规则。
 
 ### Fixed
 
