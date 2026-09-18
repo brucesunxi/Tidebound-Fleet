@@ -1,6 +1,6 @@
 # Tidebound Fleet 项目结构
 
-版本：1.0；日期：2026-09-18；适用仓库：`brucesunxi/Tidebound-Fleet`。
+版本：1.1；日期：2026-09-18；适用仓库：`brucesunxi/Tidebound-Fleet`。
 
 ## 根目录
 
@@ -66,8 +66,12 @@ Unity 工程内：
 |---|---|
 | `PROJECT_STRUCTURE.md` | 目录与治理规则 |
 | `GAME_DESIGN.md` | 已冻结的玩法与 MVP 规则 |
+| `SHIP_SKIN_COLLECTION_ECONOMY.md` | 船只皮肤、装备、抽取、金币与防刷规则 |
 | `ARCHITECTURE.md` | Unity 模块、配置和数据流 |
 | `DEVELOPMENT_PLAN.md` | 阶段、入口条件和交付物 |
+| `PHASE5_PLUS_PLAN.md` | 高密度正式玩法从 Phase 5 起的实施顺序与阶段门槛 |
+| `LEVEL_EDITOR_PLAN.md` | 已购项目关卡工具审计与 Tidebound Level Studio 规格 |
+| `BOARD_LAYOUT_CAPACITY_PLAN.md` | 棋盘尺寸、屏幕分区、触控命中、空白率与正式船数上限 |
 | `CHANGELOG.md` | 面向版本和团队的变化记录 |
 | `GIT_STATUS_REPORT.md` | 当前分支、远端、忽略与敏感扫描结果 |
 | `API说明/` | 无凭据的接口与环境变量说明 |
