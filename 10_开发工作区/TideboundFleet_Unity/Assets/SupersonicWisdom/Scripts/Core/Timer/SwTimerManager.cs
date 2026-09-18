@@ -1,0 +1,191 @@
+﻿using System.Collections.Generic;
+using System.Globalization;
+using UnityEngine;
+
+namespace SupersonicWisdomSDK
+{
+    internal class SwTimerManager : ISwReadyEventListener, ISwTrackerDataProvider, ISwScriptLifecycleListener, ISwSessionListener
+    {
+        #region --- Constants ---
+
+        private const int PLAYTIME_TICK_INTERVAL = 1;
+        private const int SAVE_PLAYTIME_INTERVAL = 5;
+        private const string ACCUMULATED_SESSIONS_PLAYTIME = "AccumulatedSessionsPlaytime";
+        
+        private const string MEGA_NETO_PLAYTIME_KEY = "megaNetoPlaytime";
+        private const string TOTAL_NETO_PLAYTIME_KEY = "totalNetoPlaytime";
+        private const string MEGA_PLAYTIME_KEY = "megaPlaytime";
+        private const string PLAYTIME_TICK_TRIGGER_KEY = "playtime_tick";
+
+        #endregion
+
+
+        #region --- Members ---
+
+        protected readonly ISwTimer _currentSessionPlaytimeNetoStopWatch;
+        private readonly ISwTimer _currentSessionPlaytimeStopWatch;
+        private readonly float _previousSessionsPlaytimeInSeconds;
+        private readonly ISwMonoBehaviour _mono;
+
+        #endregion
+
+
+        #region --- Properties ---
+
+        public ISwTimerListener CurrentSessionPlaytimeNetoStopWatch
+        {
+            get { return _currentSessionPlaytimeNetoStopWatch; }
+        }
+
+        public float CurrentSessionPlaytimeElapsed
+        {
+            get { return CurrentSessionPlaytimeStopWatch?.Elapsed ?? -1f; }
+        }
+
+        public float AllSessionsPlaytimeNeto
+        {
+            get { return _previousSessionsPlaytimeInSeconds + CurrentSessionPlaytimeNetoStopWatch?.Elapsed ?? 0; }
+        }
+        
+        internal float CurrentSessionPlaytime => CurrentSessionPlaytimeStopWatch?.Elapsed ?? -1f;
+
+        internal ISwTimerListener CurrentSessionPlaytimeStopWatch
+        {
+            get { return _currentSessionPlaytimeStopWatch; }
+        }
+        
+        protected internal float CurrentSessionPlaytimeNeto => CurrentSessionPlaytimeNetoStopWatch?.Elapsed ?? -1f;
+        
+        #endregion
+
+
+        #region --- Construction ---
+
+        public SwTimerManager(ISwMonoBehaviour mono)
+        {
+            _mono = mono;
+            _currentSessionPlaytimeNetoStopWatch = SwStopWatch.Create(mono.GameObject, $"{ETimers.CurrentSessionNetoPlaytimeMinutes}", true, PLAYTIME_TICK_INTERVAL);
+            _currentSessionPlaytimeStopWatch = SwStopWatch.Create(mono.GameObject, $"{ETimers.CurrentSessionPlaytimeMinutes}", false, PLAYTIME_TICK_INTERVAL);
+            float.TryParse(SwInfra.KeyValueStore.GetString(ACCUMULATED_SESSIONS_PLAYTIME, "0"), NumberStyles.Float, CultureInfo.InvariantCulture, out _previousSessionsPlaytimeInSeconds);
+            _mono.ApplicationFocusEvent += OnApplicationFocus;
+            _mono.ApplicationPausedEvent += OnApplicationPaused;
+        }
+
+        ~SwTimerManager()
+        {
+            _mono.ApplicationFocusEvent -= OnApplicationFocus;
+            _mono.ApplicationPausedEvent -= OnApplicationPaused;
+        }
+
+        (SwJsonDictionary dataDictionary, IEnumerable<string> keysToEncrypt) ISwTrackerDataProvider.ConditionallyAddExtraDataToTrackEvent(SwCoreUserData coreUserData, string eventName)
+        {
+            var shouldTrackPastMinimumSdkVersion = SwTrackerConstants.ShouldTrackPastMinimumSdkVersion(coreUserData);
+            var extraDataToSendTracker = new SwJsonDictionary
+            {
+                { MEGA_NETO_PLAYTIME_KEY, (int)Mathf.Round(CurrentSessionPlaytimeNeto) },
+                { MEGA_PLAYTIME_KEY, (int)Mathf.Round(CurrentSessionPlaytime) },
+            };
+
+            if (shouldTrackPastMinimumSdkVersion)
+            {
+                extraDataToSendTracker.Add(TOTAL_NETO_PLAYTIME_KEY, (int)Mathf.Round(AllSessionsPlaytimeNeto));
+            }
+
+            return (extraDataToSendTracker, KeysToEncrypt(shouldTrackPastMinimumSdkVersion));
+
+            IEnumerable<string> KeysToEncrypt(bool shouldEncryptAll)
+            {
+                yield break; 
+            }
+        }
+
+        #endregion
+
+
+        #region --- Public Methods ---
+
+        public void OnSwReady()
+        {
+            _currentSessionPlaytimeStopWatch.StartTimer();
+            _currentSessionPlaytimeNetoStopWatch.StartTimer();
+            
+            SaveAndTriggerPlaytimeRepeating();
+        }
+        
+        public virtual void OnApplicationPause(bool pauseStatus)
+        {
+            if (pauseStatus)
+            {
+                _currentSessionPlaytimeStopWatch.PauseTimer(true);
+            }
+            else
+            {
+                _currentSessionPlaytimeStopWatch.ResumeTimer();
+            }
+        }
+
+        public void OnApplicationQuit() { }
+
+        public void OnAwake() { }
+
+        public void OnStart() { }
+
+        public void OnUpdate() { }
+
+        #endregion
+
+
+        #region --- Private Methods ---
+        
+        private void SaveAndTriggerPlaytimeRepeating()
+        {
+            SwInfra.CoroutineService.RunActionEndlessly(SaveAndTriggerPlaytime, SAVE_PLAYTIME_INTERVAL, () => false);
+        }
+
+        private void SaveAndTriggerPlaytime()
+        {
+            // F symbolizes float format - #.## 
+            SwInfra.KeyValueStore.SetString(ACCUMULATED_SESSIONS_PLAYTIME, AllSessionsPlaytimeNeto.ToString("F", CultureInfo.InvariantCulture), save: true);
+            // Make sure logs a double of 5
+            SwInfra.TacSystem.InternalFireTriggers(PLAYTIME_TICK_TRIGGER_KEY);
+        }
+
+        #endregion
+
+
+        #region --- Event Handler ---
+        
+        private void OnApplicationFocus(bool hasFocus)
+        {
+            if (hasFocus) return;
+
+            SaveAndTriggerPlaytime();
+        }
+
+        private void OnApplicationPaused(bool isPaused)
+        {
+            // On iOS, the OnApplicationFocus event is not triggered, so we need to save the playtime here as well
+#if UNITY_IOS
+            if(!isPaused) return;
+            
+            SaveAndTriggerPlaytime();
+#endif
+        }
+        
+        public void OnSessionEnded(string sessionId)
+        {
+            // Ending a session in Android sometimes doesn't trigger the OnApplicationPaused event, so we need to save the playtime here as well
+            SaveAndTriggerPlaytime();
+        }
+
+        public void OnSessionStarted(string sessionId) { }
+
+        #endregion
+    }
+
+    internal enum ETimers
+    {
+        CurrentSessionPlaytimeMinutes,
+        CurrentSessionNetoPlaytimeMinutes,
+    }
+}

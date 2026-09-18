@@ -1,0 +1,55 @@
+# Repository-local intake, build, secrets, and disposable work areas
+/00_远端接收区/
+/20_交付构建/
+/90_本地私密配置_不提交/
+/99_垃圾存储区/
+
+# Environment and credentials: examples are safe to commit
+.env
+.env.*
+!.env.example
+*.keystore
+*.jks
+*.p12
+*.mobileprovision
+
+# Unity generated directories (at any project depth)
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Ll]ogs/
+[Bb]uild/
+[Bb]uilds/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+[Rr]ecordings/
+
+# Generated mobile deliverables
+*.apk
+*.aab
+*.ipa
+
+# IDE and generated project files
+.vs/
+.idea/
+.vscode/
+*.csproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.opendb
+*.VC.db
+
+# Unity / Rider crash and debug artifacts
+sysinfo.txt
+crashlytics-build.properties
+mono_crash.*
+
+# Operating-system files
+.DS_Store
+Thumbs.db
+Desktop.ini
