@@ -18,9 +18,9 @@ namespace Tidebound.Tests
         private static string[] Layouts() => Phase5RLevelRecipes.All.Select(r=>Read(r.LevelId+".json")).ToArray();
         private static string[] Proofs() => Phase5RLevelRecipes.All.Select(r=>Read(r.LevelId+".solution.json")).ToArray();
 
-        [TestCase(360,640,20.533333f)]
-        [TestCase(390,844,25f)]
-        [TestCase(430,932,27.857143f)]
+        [TestCase(360,640,17.219048f)]
+        [TestCase(390,844,21.0588235f)]
+        [TestCase(430,932,23.411765f)]
         public void ThreePortraitProfilesHaveDisjointRegionsAndEqualAxisCells(float width,float height,float cell)
         {
             var safe = new Rect(13,27,width,height);
@@ -30,10 +30,10 @@ namespace Tidebound.Tests
             Assert.That(layout.Top.yMax,Is.EqualTo(safe.yMax));
             Assert.That(layout.Tools.yMax,Is.LessThan(layout.Middle.yMin));
             Assert.That(layout.Middle.yMax,Is.LessThan(layout.Top.yMin));
-            Assert.That(layout.Lane.xMin,Is.GreaterThanOrEqualTo(safe.xMin+8-.0001));
-            Assert.That(layout.Lane.xMax,Is.LessThanOrEqualTo(safe.xMax-8+.0001));
-            Assert.That(layout.Lane.yMin,Is.GreaterThanOrEqualTo(layout.Middle.yMin-.0001));
-            Assert.That(layout.Lane.yMax,Is.LessThanOrEqualTo(layout.Middle.yMax+.0001));
+            Assert.That(layout.Lane.xMin,Is.GreaterThanOrEqualTo(safe.xMin+16-.0001));
+            Assert.That(layout.Lane.xMax,Is.LessThanOrEqualTo(safe.xMax-16+.0001));
+            Assert.That(layout.Lane.yMin,Is.GreaterThanOrEqualTo(layout.Middle.yMin+16-.0001));
+            Assert.That(layout.Lane.yMax,Is.LessThanOrEqualTo(layout.Middle.yMax-16+.0001));
             for(var x=0;x<14;x++) for(var y=0;y<18;y++) Assert.That(layout.Grid.Contains(layout.CellCenter(x,y)),Is.True);
         }
 

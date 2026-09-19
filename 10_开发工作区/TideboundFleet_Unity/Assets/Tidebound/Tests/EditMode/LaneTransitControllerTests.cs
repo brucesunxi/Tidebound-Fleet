@@ -27,13 +27,13 @@ namespace Tidebound.Tests
                     Exit(movement, "A");
                     Assert.That(view.ApplyCount, Is.EqualTo(1), "Pose must be applied during exit, before Advance.");
                     Assert.That(view.Position, Is.EqualTo(Vector3.zero));
-                    Assert.That(view.Scale, Is.EqualTo(0.45f));
+                    Assert.That(view.Scale, Is.EqualTo(0.8f));
                     Assert.That(view.Forward, Is.EqualTo(Vector3.right));
                     controller.Advance(0.60d);
 
                     Assert.That(view.ApplyCount, Is.EqualTo(2));
                     Assert.That(view.Position.x, Is.EqualTo(5f).Within(0.001f));
-                    Assert.That(view.Scale, Is.EqualTo(0.45f).Within(0.001f));
+                    Assert.That(view.Scale, Is.EqualTo(0.8f).Within(0.001f));
                     Assert.That(view.Completed, Is.False);
 
                     controller.Advance(0.60d);
@@ -126,7 +126,7 @@ namespace Tidebound.Tests
         [TestCase(1f)]
         public void LaneSizeIsAlreadyFinalAtEntryAndRemainsConstant(float progress)
         {
-            Assert.That(new LanePresentationTiming().LaneScale(progress), Is.EqualTo(.45f));
+            Assert.That(new LanePresentationTiming().LaneScale(progress), Is.EqualTo(.8f));
         }
 
         [Test]

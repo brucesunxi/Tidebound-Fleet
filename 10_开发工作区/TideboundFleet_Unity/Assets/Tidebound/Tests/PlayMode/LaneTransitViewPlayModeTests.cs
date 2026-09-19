@@ -35,7 +35,7 @@ namespace Tidebound.Tests
 
                         controller.Advance(0.60d);
                         Assert.That(gameObject.transform.position.x, Is.EqualTo(5f).Within(0.001f));
-                        Assert.That(gameObject.transform.localScale.x, Is.EqualTo(0.45f).Within(0.001f));
+                        Assert.That(gameObject.transform.localScale.x, Is.EqualTo(0.8f).Within(0.001f));
 
                         controller.Advance(0.75d);
                         Assert.That(session.GetShip("A").State, Is.EqualTo(ShipState.InFleet));

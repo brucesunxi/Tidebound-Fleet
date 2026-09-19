@@ -6,6 +6,9 @@ namespace Tidebound.Unity.Layout
     /// <summary>5R candidate layout in logical UI units; no device millimetre/dp claim.</summary>
     public sealed class PortraitBoardLayout
     {
+        public const float OuterPadding = 16f;
+        public const float LaneWidthInCells = 1.5f;
+        public float LaneWidth => LaneWidthInCells * CellSize;
         public Rect Safe { get; }
         public Rect Top { get; }
         public Rect Tools { get; }
@@ -21,11 +24,12 @@ namespace Tidebound.Unity.Layout
             Top = new Rect(safe.x, safe.yMax - top, safe.width, top);
             Tools = new Rect(safe.x, safe.y, safe.width, tools);
             Middle = new Rect(safe.x, Tools.yMax + 8, safe.width, Top.yMin - Tools.yMax - 16);
-            CellSize = Mathf.Min((safe.width - 40) / columns, (Middle.height - 24) / rows);
+            CellSize = Mathf.Min((safe.width - 2 * OuterPadding) / (columns + 2 * LaneWidthInCells),
+                (Middle.height - 2 * OuterPadding) / (rows + 2 * LaneWidthInCells));
             if (CellSize <= 0) throw new ArgumentException("Safe area is too small for the portrait layout.");
             Grid = new Rect(Middle.center - new Vector2(columns, rows) * CellSize / 2,
                 new Vector2(columns, rows) * CellSize);
-            Lane = new Rect(Grid.x - 12, Grid.y - 12, Grid.width + 24, Grid.height + 24);
+            Lane = new Rect(Grid.x - LaneWidth, Grid.y - LaneWidth, Grid.width + 2 * LaneWidth, Grid.height + 2 * LaneWidth);
         }
         public static PortraitBoardLayout Calculate(Rect safe, int columns, int rows)
         {

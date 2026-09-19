@@ -1,5 +1,8 @@
 using System;
 using System.IO;
+using System.Linq;
+using Tidebound.Ship;
+using Tidebound.Events;
 using System.Reflection;
 using Tidebound.Unity.LevelDesign;
 using UnityEditor;
@@ -27,6 +30,7 @@ namespace Tidebound.EditorTools
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
             PortraitGrayboxScene.EnsureScene();
             EditorSceneManager.OpenScene(PortraitGrayboxScene.ScenePath);
+            index=0; deadline=0; stage=0;
             SessionState.SetInt(Key+".Stage",0); SessionState.SetBool(Key+".Background",Application.runInBackground);
             SetGameViewSize(Sizes[0]);
             SessionState.SetBool(Key,true); EditorApplication.EnterPlaymode();
@@ -82,17 +86,42 @@ namespace Tidebound.EditorTools
                 if(Screen.width!=size.x || Screen.height!=size.y) throw new InvalidOperationException("Game view size did not settle.");
                 game.SelectLevel(index==3 ? 0 : 1);
                 yield return new WaitForSecondsRealtime(.5f);
-                yield return new WaitForEndOfFrame();
-                Directory.CreateDirectory(OutputDirectory);
-                pendingFile=Path.Combine(OutputDirectory,$"Level{game.LevelIndex+1}_{size.x}x{size.y}.png");
-                if(File.Exists(pendingFile)) File.Delete(pendingFile);
-                ScreenCapture.CaptureScreenshot(pendingFile);
-                expires=Time.realtimeSinceStartup+10;
-                while(!File.Exists(pendingFile) && Time.realtimeSinceStartup<expires) yield return null;
-                if(!File.Exists(pendingFile)) throw new IOException("Screenshot was not written.");
-                Debug.Log("Captured "+pendingFile); index++;
+                yield return SaveFrame($"Level{game.LevelIndex+1}_{size.x}x{size.y}.png");
+                if(index<3)
+                {
+                    foreach(var direction in new[]{ShipDirection.Right,ShipDirection.Up})
+                    {
+                        game.SelectLevel(1); yield return null;
+                        var ship=game.Session.Board.Ships.First(x=>x.Direction==direction && game.Session.Board.QueryForwardPath(x.Id).CanExit);
+                        // Pause synchronously at handoff: screenshot/import stalls cannot skip the lane.
+                        using(game.Session.Events.Subscribe<ShipExitBoardEvent>(e=>
+                        {
+                            if(e.Ship.ShipId==ship.Id) game.TogglePause();
+                        }))
+                        {
+                            game.ClickShip(ship.Id); expires=Time.realtimeSinceStartup+5;
+                            while(!game.IsPaused && Time.realtimeSinceStartup<expires) yield return null;
+                            if(!game.IsPaused) throw new TimeoutException("Lane review ship did not exit.");
+                        }
+                        yield return SaveFrame($"Lane_{direction}_{size.x}x{size.y}.png");
+                    }
+                }
+                index++;
             }
             stage=3; SessionState.SetInt(Key+".Stage",3); EditorApplication.ExitPlaymode();
+        }
+
+        private static System.Collections.IEnumerator SaveFrame(string filename)
+        {
+            yield return new WaitForEndOfFrame();
+            Directory.CreateDirectory(OutputDirectory);
+            pendingFile=Path.Combine(OutputDirectory,filename);
+            if(File.Exists(pendingFile)) File.Delete(pendingFile);
+            ScreenCapture.CaptureScreenshot(pendingFile);
+            var expires=Time.realtimeSinceStartup+10;
+            while(!File.Exists(pendingFile) && Time.realtimeSinceStartup<expires) yield return null;
+            if(!File.Exists(pendingFile)) throw new IOException("Screenshot was not written.");
+            Debug.Log("Captured "+pendingFile);
         }
 
         private static string OutputDirectory => Environment.GetEnvironmentVariable("TIDEBOUND_CAPTURE_DIR") ?? Path.Combine(Path.GetTempPath(),"TideboundPortraitReview");

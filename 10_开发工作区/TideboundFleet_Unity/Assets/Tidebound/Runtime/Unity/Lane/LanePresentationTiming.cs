@@ -5,7 +5,7 @@ namespace Tidebound.Unity.Lane
     [Serializable]
     public sealed class LanePresentationTiming
     {
-        public const float DefaultMiniatureScale = 0.45f;
+        public const float DefaultMiniatureScale = 0.80f;
         public const float DefaultFleetArrivalScale = 0.20f;
 
         public float MiniatureScale { get; }

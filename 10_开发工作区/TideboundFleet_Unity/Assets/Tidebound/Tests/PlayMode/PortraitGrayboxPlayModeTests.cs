@@ -10,6 +10,7 @@ using Tidebound.Ship;
 using Tidebound.LevelDesign;
 using Tidebound.Lane;
 using Tidebound.Unity.LevelDesign;
+using Tidebound.Unity.Layout;
 using Tidebound.Unity.Ship;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -52,6 +53,52 @@ namespace Tidebound.Tests
         }
 
         [UnityTest]
+        public IEnumerator LongAndStandardShipsStayCenteredAndVisibleOnEveryLaneAcrossPortraitSizes()
+        {
+            var game=Create();
+            try
+            {
+                game.SelectLevel(9); yield return null; game.TogglePause();
+                var provider=new PortraitLanePathProvider(game.Session.Width,game.Session.Height);
+                foreach(var size in new[]{new Vector2(360,640),new Vector2(390,844),new Vector2(430,932)})
+                {
+                    var pixelScale=Mathf.Min(Screen.width/(size.x+10),Screen.height/(size.y+22))*.95f;
+                    game.ApplyViewport(new Rect(new Vector2(5,11)*pixelScale,size*pixelScale),pixelScale);
+                    foreach(var length in new[]{2,3})
+                    {
+                        var ship=game.Session.Ships.First(x=>x.Length==length);
+                        var view=game.GetComponentsInChildren<PlanarShipLaneView>().Single(v=>v.ShipId==ship.Id);
+                        var body=(RectTransform)view.transform.Find("Body");
+                        foreach(LaneRoute route in Enum.GetValues(typeof(LaneRoute)))
+                        {
+                            var path=provider.CreatePath(route,new Vector3(6.5f,8.5f));
+                            for(var sample=0;sample<=60;sample++)
+                            {
+                                var t=sample/60f; var center=path.Sample(t);
+                                view.ApplyLanePose(center,path.Tangent(t),.8f);
+                                var visualCenter=body.TransformPoint(body.rect.center);
+                                Assert.That(Vector3.Distance(visualCenter,center),Is.LessThan(.0001f),"Body pivot must not offset the lane center.");
+                                var screen=game.BoardCamera.WorldToScreenPoint(visualCenter)/pixelScale;
+                                var layout=game.Layout; var half=layout.LaneWidth/2;
+                                var distance=Mathf.Min(Mathf.Abs(screen.x-(layout.Grid.xMin-half)),Mathf.Abs(screen.x-(layout.Grid.xMax+half)),
+                                    Mathf.Abs(screen.y-(layout.Grid.yMin-half)),Mathf.Abs(screen.y-(layout.Grid.yMax+half)));
+                                Assert.That(distance,Is.LessThan(1.1f),"Rendered center must align with the visible lane centerline.");
+                                var corners=new Vector3[4];body.GetWorldCorners(corners);
+                                foreach(var corner in corners)
+                                {
+                                    var pixel=game.BoardCamera.WorldToScreenPoint(corner);
+                                    Assert.That(game.BoardCamera.pixelRect.Contains(pixel),Is.True,"Ship clipped at "+size+" / "+length+" / "+route+" / "+t);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            finally { UnityEngine.Object.Destroy(game.gameObject); }
+            yield return null;
+        }
+
+        [UnityTest]
         public IEnumerator LaneEntrySetsSizeAndHeadingInTheExitCallbackForEveryEdge()
         {
             var game=Create();
@@ -64,6 +111,11 @@ namespace Tidebound.Tests
                     var path=game.Session.Board.QueryForwardPath(ship.Id);
                     var view=game.GetComponentsInChildren<PlanarShipLaneView>().Single(v=>v.ShipId==ship.Id);
                     var expectedPosition=new Vector3(path.TargetTail.X+.5f,path.TargetTail.Y+.5f,0);
+                    var inset=PortraitBoardLayout.LaneWidthInCells/2;
+                    if(direction==ShipDirection.Up) expectedPosition.y=game.Session.Height+inset;
+                    if(direction==ShipDirection.Down) expectedPosition.y=-inset;
+                    if(direction==ShipDirection.Left) expectedPosition.x=-inset;
+                    if(direction==ShipDirection.Right) expectedPosition.x=game.Session.Width+inset;
                     var expectedHeading=Vector3.up;
                     if(direction==ShipDirection.Up)
                         expectedHeading=expectedPosition.x<game.Session.Width/2f ? Vector3.right : Vector3.left;
@@ -73,13 +125,13 @@ namespace Tidebound.Tests
                     using(game.Session.Events.Subscribe<ShipExitBoardEvent>(e=>
                     {
                         if(e.Ship.ShipId!=ship.Id) return;
-                        received=true; position=view.transform.position; scale=view.transform.localScale; heading=view.transform.up;
+                        received=true; position=view.VisualCenter; scale=view.transform.localScale; heading=view.transform.up;
                     }))
                     {
                         game.ClickShip(ship.Id);
                         yield return Until(()=>received);
-                        Assert.That(position,Is.EqualTo(expectedPosition),"No position snap at handoff: "+direction);
-                        Assert.That(scale,Is.EqualTo(Vector3.one*.45f),"Final size on the exit frame: "+direction);
+                        Assert.That(position,Is.EqualTo(expectedPosition),"Visual center must join the lane centerline: "+direction);
+                        Assert.That(scale,Is.EqualTo(Vector3.one*.8f),"Final size on the exit frame: "+direction);
                         Assert.That(Vector3.Dot(heading,expectedHeading),Is.GreaterThan(.9999f),"Immediate sailing heading: "+direction);
                         var previous=view.transform.position;
                         yield return null;

@@ -98,7 +98,7 @@ namespace Tidebound.Unity.LevelDesign
             var system = new ShipMovementSystem(session);
             movement = new ShipMovementController(system, mapper, shipViews.Values, movementTiming);
             transit = new TransitSystem(session, transitTiming);
-            lane = new LaneTransitController(transit, new PerimeterPath(session.Width, session.Height),
+            lane = new LaneTransitController(transit, new PortraitLanePathProvider(session.Width, session.Height),
                 shipViews.Values.Select(v => (ILaneTransitView)v.GetComponent<PlanarShipLaneView>()));
             subscriptions.Add(session.Events.Subscribe<ShipExitBoardEvent>(e => exited.Add(e.Ship.ShipId)));
             subscriptions.Add(session.Events.Subscribe<ShipEnterFleetEvent>(e => entered.Add(e.Ship.ShipId)));
@@ -190,7 +190,7 @@ namespace Tidebound.Unity.LevelDesign
             boardCamera.aspect = Layout.Middle.width / Layout.Middle.height;
             boardCamera.orthographicSize = Layout.Middle.height / Layout.CellSize / 2;
             boardCamera.transform.position = new Vector3(session.Width / 2f, session.Height / 2f, -10);
-            var thickness = 12 / Layout.CellSize;
+            var thickness = PortraitBoardLayout.LaneWidthInCells;
             Place(lanePanel, new Rect(-thickness, -thickness, session.Width + 2*thickness, session.Height + 2*thickness));
         }
 
@@ -231,7 +231,7 @@ namespace Tidebound.Unity.LevelDesign
                 var arrow = Rect("Direction", body); Place(arrow,new Rect(.09f,ship.Length-1.00f,.58f,.7f));
                 var graphic = arrow.gameObject.AddComponent<GrayboxArrowGraphic>(); graphic.color = Color.white; graphic.raycastTarget = false;
                 var view = root.gameObject.AddComponent<ShipMovementView>(); view.ConfigureShipId(ship.Id);
-                root.gameObject.AddComponent<PlanarShipLaneView>().Configure(ship.Id); shipViews.Add(ship.Id,view);
+                root.gameObject.AddComponent<PlanarShipLaneView>().Configure(ship.Id, Vector3.up * ((ship.Length - 1) * .5f)); shipViews.Add(ship.Id,view);
             }
             foreach (var child in canvasRect.GetComponentsInChildren<Transform>(true)) child.gameObject.layer = 30;
         }
@@ -333,26 +333,5 @@ namespace Tidebound.Unity.LevelDesign
         }
         private void OnDestroy() => ClearSession();
 
-        private sealed class PerimeterPath : ILanePathProvider
-        {
-            private readonly float width,height;
-            public PerimeterPath(int w,int h) { width=w; height=h; }
-            public Vector3 FleetIngressPosition => new Vector3(width/2,height+.7f,0);
-            public LaneWorldPath CreatePath(LaneRoute route,Vector3 start)
-            {
-                // Match the fully exited tail centers, avoiding an inward connector and reversal.
-                var tl=new Vector3(-.5f,height+.5f,0); var tr=new Vector3(width+.5f,height+.5f,0);
-                var tc=new Vector3(width/2,height+.5f,0); var bl=new Vector3(-.5f,-.5f,0); var br=new Vector3(width+.5f,-.5f,0);
-                switch(route)
-                {
-                    case LaneRoute.Top: return new LaneWorldPath(true,start,tc);
-                    case LaneRoute.Left: return new LaneWorldPath(true,start,tl,tc);
-                    case LaneRoute.Right: return new LaneWorldPath(true,start,tr,tc);
-                    case LaneRoute.BottomViaLeft: return new LaneWorldPath(true,start,bl,tl,tc);
-                    case LaneRoute.BottomViaRight: return new LaneWorldPath(true,start,br,tr,tc);
-                    default: throw new ArgumentOutOfRangeException(nameof(route));
-                }
-            }
-        }
     }
 }
