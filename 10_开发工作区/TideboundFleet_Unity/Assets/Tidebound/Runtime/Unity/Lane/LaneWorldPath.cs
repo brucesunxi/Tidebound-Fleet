@@ -8,13 +8,17 @@ namespace Tidebound.Unity.Lane
     public sealed class LaneWorldPath
     {
         private readonly Vector3[] points;
+        private readonly bool linear;
 
         public Vector3 Start => points[0];
         public Vector3 End => points[points.Length - 1];
         public IReadOnlyList<Vector3> ControlPoints => Array.AsReadOnly(points);
 
-        public LaneWorldPath(params Vector3[] controlPoints)
+        public LaneWorldPath(params Vector3[] controlPoints) : this(false, controlPoints) { }
+
+        public LaneWorldPath(bool linear, params Vector3[] controlPoints)
         {
+            this.linear = linear;
             if (controlPoints == null) throw new ArgumentNullException(nameof(controlPoints));
             if (controlPoints.Length < 2)
                 throw new ArgumentException("A lane path requires at least two points.", nameof(controlPoints));
@@ -31,6 +35,7 @@ namespace Tidebound.Unity.Lane
             var scaled = t * (points.Length - 1);
             var segment = Mathf.Min(Mathf.FloorToInt(scaled), points.Length - 2);
             var local = scaled - segment;
+            if (linear) return Vector3.LerpUnclamped(points[segment], points[segment + 1], local);
             var p0 = points[Mathf.Max(0, segment - 1)];
             var p1 = points[segment];
             var p2 = points[segment + 1];

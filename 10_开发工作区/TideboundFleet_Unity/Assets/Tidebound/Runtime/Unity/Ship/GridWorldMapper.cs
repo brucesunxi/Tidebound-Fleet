@@ -14,6 +14,13 @@ namespace Tidebound.Unity.Ship
 
         public float CellSize => cellSize;
 
+        public void Configure(Transform frame, float size, Vector3 rightAxis, Vector3 upAxis)
+        {
+            if (size <= 0 || float.IsNaN(size) || float.IsInfinity(size)) throw new ArgumentOutOfRangeException(nameof(size));
+            if (Vector3.Cross(rightAxis, upAxis).sqrMagnitude < .000001f) throw new ArgumentException("Grid axes must be independent.");
+            origin = frame; cellSize = size; localRightAxis = rightAxis; localUpAxis = upAxis;
+        }
+
         public Vector3 TailToWorld(GridPosition tail)
         {
             ValidateCellSize();
