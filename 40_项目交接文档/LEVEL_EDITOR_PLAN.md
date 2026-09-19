@@ -1,6 +1,6 @@
 # Tidebound Fleet 关卡编辑器与验证工具规划
 
-版本：3.0
+版本：3.1
 日期：2026-09-19
 状态：旧原型工具保留；I1算法与两个样关导出入口已实现，I2／6A完整工具接线待实施，6B量产工具后移。当前顺序以[后续计划](PHASE5_PLUS_PLAN.md)为准。
 
@@ -17,6 +17,8 @@ Tidebound Level Studio 是原创关卡的生产和验证工具。它不负责把
 - Unity Bus Mania 使用101个独立Scene手工摆放，没有数据型编辑器。
 
 因此采用“Cocos方向笔刷＋Unity EditorWindow＋Tidebound真实规则＋求解与依赖分析”的专用方案。详细证据见 [LEVEL_SOURCE_AUDIT.md](LEVEL_SOURCE_AUDIT.md)。
+
+2026-09-19增加[在线工具与关卡资源调研](EXTERNAL_LEVEL_TOOLS_RESEARCH.md)：已找到图片生成编辑器、公开500关项目及LDtk导入方案，但没有验收为可直接替换的船阵生产系统。继续扩展现有工具，按[百关生产体系](LEVEL_CONTENT_PIPELINE.md)分批建设；不把商品标称关数计入本项目成果。
 
 ## 3. 编辑模型
 
@@ -96,17 +98,17 @@ Tidebound Level Studio 是原创关卡的生产和验证工具。它不负责把
 | DirectionClustering | 同方向空间聚集度 |
 | InitialExitCount | 开局可直接出场数量 |
 | InitialMoveCount | 开局能前进但未出场数量 |
-| MeanBranching | 解法路径平均可选数 |
-| ForcedMoveRatio | 只有一个合理选择的步骤比例 |
-| DependencyDepth | 最长阻挡链 |
+| MeanBranching | 指定证明路径上直出数／部分前进数分别统计，不代表所有路线 |
+| SingleExitRatio | 指定路径中只有一个直出目标的步骤比例，不声称只有一个合理操作 |
+| CompleteDependencyDepth | 完整依赖DAG最长链的节点数；有环时不可直接给DAG深度 |
 | CycleCount | 依赖图中的环数量 |
 | CriticalShips | 移除后大量解锁的关键船数 |
-| SampledDeadEndRate | 多策略采样进入死局的比例 |
+| SampledDeadEndRate | 报告采样策略、样本数及证实死局／未知分别计数，不代表全局概率 |
 | SolutionLength | 证明序列的总点击数 |
 | PartialMoveCount | 解法中受阻移动次数 |
 | Similarity | 与已批准关卡的结构相似度 |
 
-方向数量平均并不代表布局合格；`DirectionClustering` 必须阻止四个方向被分成四块区域。
+方向数量平均并不代表布局合格；除`DirectionClustering`外还需长同向条带、局部方向窗口和空洞检查。指标及阈值在I2校准，完整定义见[生产体系第5节](LEVEL_CONTENT_PIPELINE.md#5-难度与质量指标的定义)。A类80船最优解均可为80步，不能以这个数区分难度。
 
 ## 7. 候选生成
 
@@ -126,22 +128,22 @@ Tidebound Level Studio 是原创关卡的生产和验证工具。它不负责把
 - 保留依赖骨架，改变局部空间嵌入。
 - 锁定关键船，对非关键子图重新排布。
 - 镜像或旋转后，再进行局部重构并重新评分。
-- 在不改变逻辑长度的情况下随机分配皮肤预览。
+- 在不改变逻辑长度的情况下随机分配皮肤仅用于可读性预览，不计作新关卡。
 - 调整少量方向和空白位置，重新求解。
 
 ## 8. 工作流状态
 
 ```text
 Draft
-  ↓ 数据合法
+  ↓ 数据合法＋独立求解＋证明回放＋硬约束和去重通过
 Candidate
-  ↓ 解法证明＋指标范围＋人工试玩
+  ↓ 关卡负责人体验审核；G1规格门槛先通过
 Approved
-  ↓ 进入版本关卡清单
-Published
+  ↓ 版本关卡清单全量回归
+PackIncluded
 ```
 
-任意布局、规则或 schema 变化都会使 Candidate／Approved 的解法证明和难度报告失效，必须重新验证。
+任意布局、规则或schema变化都会使Candidate／Approved的解法证明和难度报告失效，必须重新验证。包入选不代表已发布到商店；版本化身份、来源与审核绑定见[生产体系第7节](LEVEL_CONTENT_PIPELINE.md#7-内容身份状态与证据)。以上为目标状态流程，当前工具尚未完整实现。
 
 ## 9. 开发分级
 
@@ -183,15 +185,17 @@ I1已提供 `Tools/Tidebound/Export I1 Algorithm Samples`，保存两个带证�
 
 ### 内容扩展 V2
 
-- 玩家失败与点击热力图回灌。
-- 难度评分校准。
-- 数百关批量变体、回归和报表。
+- 30关之后按100→300关逐批扩展，每批10～20关。
+- 稳定ID、内容修订、配方与种子、几何／对称去重、近重复并排审阅。
+- 候选检查点、失败分类、取消恢复、整包验证；不在手机开局时随机生成。
+- 玩家数据可用后再校准难度；必要时研究必须部分移动的局部结构。
+- 详细目标与工单见[百关生产体系](LEVEL_CONTENT_PIPELINE.md)，当前仅规划，未实施。
 
 ## 10. 验收标准
 
 | ID | 场景 | 通过条件 |
 |---|---|---|
-| E01 | 教学关 | 4×6、7艘保存、重开、试玩和回放一致 |
+| E01 | 教学关 | 同完整候选场地及单格尺度、中央6×8区域7艘保存／试玩／回放一致；旧4×6只作技术夹具 |
 | E02 | 候选尺寸 | 新三种候选可编辑、加载和预览；旧样本可回归 |
 | E03 | 依赖图 | 完整路径阻挡与最近阻挡区分；提交移动后动态重建且与真实查询一致 |
 | E04 | 解法证明 | 从原始 JSON 回放后完整清盘 |
