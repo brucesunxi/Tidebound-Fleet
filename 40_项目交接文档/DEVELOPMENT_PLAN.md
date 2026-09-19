@@ -1,6 +1,6 @@
 # Tidebound Fleet 开发计划
 
-版本：3.0；日期：2026-09-19。每个阶段只有在入口条件满足后启动，不在前一阶段夹带下一阶段功能。Phase 5R 以后以真实高密度方向疏通体验为主线，详细计划见 [PHASE5_PLUS_PLAN.md](PHASE5_PLUS_PLAN.md)。
+版本：3.1；日期：2026-09-19。每个阶段只有在入口条件满足后启动，不在前一阶段夹带下一阶段功能。Phase 5R 以后以真实高密度方向疏通体验为主线，详细计划见 [PHASE5_PLUS_PLAN.md](PHASE5_PLUS_PLAN.md)。
 
 | 阶段 | 状态 | 目标 | 主要交付与退出条件 |
 |---|---|---|---|
@@ -12,7 +12,7 @@
 | Phase 3 船移动 | 已完成 | 把棋盘结果映射为点击、状态与表现 | 串行点击、状态提交、事件、默认动画和暂停恢复；91 EditMode＋3 PlayMode 通过 |
 | Phase 4 航道 | 已完成 | 完成四边出场到中央入口的转场 | 四边选路、并行航道、FIFO 入战；104 EditMode＋5 PlayMode 通过 |
 | Phase 5 技术基础 | 工程验收完成／产品验收撤回 | 建立高密度数据、输入与编辑基础 | 单基础船、schema v2、Grid点击、SafeArea计算、Level Studio V0；12×18夹具仅作回归 |
-| Phase 5R 规则与关卡重构 | 重设计完成／Unity实施待执行 | 保留受阻前进，重构动态依赖生成与竖屏边界 | 完整阻挡Solver、反向生成、7／80艘的10关回放、统一分区与真人真机验收；见PHASE5R_REDESIGN.md |
+| Phase 5R 规则与关卡重构 | I1算法通过／I2待实施 | 保留受阻前进，重构动态依赖生成与竖屏边界 | 完整阻挡Solver、反向生成、7／80艘的10关回放、统一分区与真人真机验收；见PHASE5R_REDESIGN.md |
 | Phase 6A 最小验证工具 | 待随5R实施 | 支撑10关验收 | 复用Level Studio，接生成／求解／回放／批量验证与证明失效 |
 | Phase 6B 量产工具与内容 | 后移至核心闭环之后 | 扩展到30关 | 按瓶颈补编辑能力、相似度与批量报告；每批5关 |
 | Phase 7 舰队与海怪战斗 | 未开始 | 完成完整体量船群的聚合和高吞吐攻击 | 最多5个皮肤席位、AttackToken、Boss扣血、队列追赶与完整胜利 |
@@ -22,7 +22,7 @@
 | Phase 11 IAA、分析与调优 | 未开始 | 接入可选商业化和数据验证 | 激励广告、事件分析、配置版本、经济模拟与广告容错 |
 | Phase 12 软启动与发布 | 未开始 | 完成多平台发布准备 | Android／iOS 构建、商店合规、设备覆盖、软启动和扩关决策 |
 
-**2026-09-19更新：** 规则详见[Phase 5R重设计](PHASE5R_REDESIGN.md)，剩余顺序以[后续计划v3](PHASE5_PLUS_PLAN.md)为准：5R＋6A十关及竖屏验收→7战斗→8道具→9存档与经济→6B＋10量产整合→11→12。源码函数定位、适配与反例见[SOURCE_REUSE_MATRIX.md](SOURCE_REUSE_MATRIX.md)。本次复跑基础119/119＋6/6通过，不等于新生成器和十关完成。
+**2026-09-19更新：** 规则详见[Phase 5R重设计](PHASE5R_REDESIGN.md)，剩余顺序以[后续计划v3](PHASE5_PLUS_PLAN.md)为准：5R＋6A十关及竖屏验收→7战斗→8道具→9存档与经济→6B＋10量产整合→11→12。源码函数定位、适配与反例见[SOURCE_REUSE_MATRIX.md](SOURCE_REUSE_MATRIX.md)。I1新增算法及两个样关已通过153/153 EditMode＋6/6 PlayMode，见[I1验收](验证记录/Phase5R_I1_反向生成与求解/I1_VALIDATION.md)；完整十关及竖屏人机验收未完成。
 
 正式棋盘和船数尚未冻结。候选规格、屏幕分区和冻结门槛见 [BOARD_LAYOUT_CAPACITY_PLAN.md](BOARD_LAYOUT_CAPACITY_PLAN.md)，源码证据见 [LEVEL_SOURCE_AUDIT.md](LEVEL_SOURCE_AUDIT.md)。
 

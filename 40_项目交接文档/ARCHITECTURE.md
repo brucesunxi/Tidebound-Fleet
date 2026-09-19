@@ -1,8 +1,10 @@
 # Tidebound Fleet — Unity 架构与关卡体系基础
 
-状态：Phase 5R 规则与生成算法重构设计已完成，Unity迁移待实施。日期：2026-09-19。
+状态：Phase 5R I1算法已实现并通过自动化；I2完整十关及真实竖屏灰盒待实施。日期：2026-09-19。
 
-**目标架构以[重设计方案](PHASE5R_REDESIGN.md)为准。用户进一步澄清受阻时前进到最近阻挡前停住，现有移动事务和状态机符合该规则，继续保留。** 计划新增动态完整依赖LevelSolver和反向生成器，先验证10关与统一竖屏边界。以下首阻挡图、有界BFS与旧样本是现有实现事实，不等于新生成与求解方案已完成；旧样本不代表新方案验收。本次复跑现有测试为119/119 EditMode、6/6 PlayMode，见[基础复核](验证记录/Phase5R_基础复核_20260919/BASELINE_REVIEW.md)。实施顺序和v2伴随证明策略以[后续计划v3](PHASE5_PLUS_PLAN.md)为准：6A先补最小验证，6B量产后移；保持Data／Core／Unity边界。
+当前移动规则为受阻前进到最近阻挡前停住，不退回。I1复用现有移动和航道，新增完整阻挡图、LevelSolver、反向插入生成及版本化证明；7／80船两个样关已通过独立求解与移动／航道模型回放。最终153/153 EditMode、6/6 PlayMode通过，见[I1验收](验证记录/Phase5R_I1_反向生成与求解/I1_VALIDATION.md)。
+
+旧首阻挡图、FNV证明和12个历史原型继续保留回归；新证明使用规则／出口版本与SHA-256，布局仍为v2。完整十关、真实场景、触控与Android验收未完成。目标边界见[重设计方案](PHASE5R_REDESIGN.md)，剩余顺序见[后续计划](PHASE5_PLUS_PLAN.md)。
 
 ## 1. 工作工程与边界
 
@@ -32,7 +34,7 @@ TideboundFleet_Unity/
 │   │   │   ├── Core/                    Tidebound.Core.asmdef
 │   │   │   │   ├── Constants/           FoundationLimits
 │   │   │   │   ├── Board/               占格、校验、只读快照、路径结果与原子事务
-│   │   │   │   ├── LevelDesign/         生产配置、结构分析、依赖图、搜索和解法证明
+│   │   │   │   ├── LevelDesign/         完整依赖、LevelSolver、反向生成、生产配置与版本化证明
 │   │   │   │   ├── Ship/                ShipMovementSystem、操作与状态结果
 │   │   │   │   ├── GameSession/         GameSession、LevelSessionFactory
 │   │   │   │   ├── Events/              IEventBus、SessionEventBus、类型化玩法事件
@@ -51,7 +53,8 @@ TideboundFleet_Unity/
 │   │   │       └── UI/                  Screens、Components、HUD（预留）
 │   │   ├── Config/
 │   │   │   ├── Levels/                 教学关与高数量技术回归 JSON、引用资产、回放序列
-│   │   │   ├── LevelPrototypes/Phase5R/ 12个候选JSON、证明和指标清单
+│   │   │   ├── LevelPrototypes/Phase5R/ 12个历史候选及证明
+│   │   │   ├── LevelPrototypes/Phase5R_Rebuild/ I1两个7／80船算法样关及新证明
 │   │   │   ├── Ships/                  BaseShip.asset；旧四船型资产仅保留历史兼容
 │   │   │   ├── Bosses/                 Kraken.asset
 │   │   │   └── Visuals/                SpeedboatVisual.asset（无模型）
@@ -251,7 +254,7 @@ y=0   1  1  .  2
   -logFile '/private/tmp/TideboundFleet_EditMode.log'
 ```
 
-默认 Transform 动画和候选灰盒另使用同一命令的 `-testPlatform PlayMode -assemblyNames Tidebound.Tests.PlayMode`，测试结果写入独立 XML。当前结果为119/119 EditMode、6/6 PlayMode，详见 [Phase 5R 验证记录](验证记录/Phase5R_关卡体系校准/PHASE5R_VALIDATION.md)。
+默认 Transform 动画和候选灰盒另使用同一命令的 `-testPlatform PlayMode -assemblyNames Tidebound.Tests.PlayMode`，测试结果写入独立 XML。I1最终结果为153/153 EditMode、6/6 PlayMode，详见[I1验收](验证记录/Phase5R_I1_反向生成与求解/I1_VALIDATION.md)。
 
 不要在另一个 Editor 已打开同一工程时运行命令。测试由 Test Runner 管理退出，不添加可能提前终止测试的 `-quit`。命令行测试参数参考 [Unity Test Framework 1.1 文档](https://docs.unity3d.com/Packages/com.unity.test-framework@1.1/manual/reference-command-line.html)。程序集边界参考 [Unity 2022.3 手册](https://docs.unity3d.com/2022.3/Documentation/Manual/ScriptCompilationAssemblyDefinitionFiles.html)。
 
