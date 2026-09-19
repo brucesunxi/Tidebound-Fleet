@@ -5,6 +5,8 @@ using Tidebound.Board;
 using Tidebound.Boss;
 using Tidebound.Config;
 using Tidebound.Core;
+using Tidebound.Combat;
+using Tidebound.Unity.Boss;
 using Tidebound.Events;
 using Tidebound.Lane;
 using Tidebound.LevelDesign;
@@ -29,6 +31,9 @@ namespace Tidebound.Unity.LevelDesign
         private GameSession session;
         private ShipMovementController movement;
         private TransitSystem transit;
+        private FleetCombatSystem combat;
+        private FleetCombatGrayboxView combatView;
+        private RectTransform battlePanel;
         private LaneTransitController lane;
         private readonly List<IDisposable> subscriptions = new List<IDisposable>();
         private readonly Dictionary<string, ShipMovementView> shipViews = new Dictionary<string, ShipMovementView>();
@@ -40,7 +45,7 @@ namespace Tidebound.Unity.LevelDesign
         private BoardGridInputRouter input;
         private Canvas overlay;
         private RectTransform topPanel, toolsPanel, lanePanel;
-        private Text title, status, reserved;
+        private Text title, status;
         private Button pause, auto, hint;
         private Queue<string> demo;
         private Font font;
@@ -49,6 +54,7 @@ namespace Tidebound.Unity.LevelDesign
         private string notice = "Tap a ship to move forward.";
         private ShipMovementTiming movementTiming;
         private LaneTransitTiming transitTiming;
+        private CombatTiming combatTiming;
         private float elapsedSinceDemo;
         private bool initialized;
 
@@ -63,7 +69,9 @@ namespace Tidebound.Unity.LevelDesign
         public int ActiveViewCount => shipViews.Values.Count(v => v != null && v.gameObject.activeSelf);
         public IReadOnlyList<string> ExitedIds => exited;
         public IReadOnlyList<string> EnteredIds => entered;
-        public bool IsCleared => session != null && session.Board.ShipCount == 0 && transit.IsEmpty;
+        public bool IsCleared => combat != null && combat.IsVictorious;
+        public FleetCombatSystem Combat => combat;
+        public FleetCombatGrayboxView CombatView => combatView;
         public Vector3 ViewPosition(string id) => shipViews[id].transform.position;
 
         private void Start()
@@ -76,11 +84,12 @@ namespace Tidebound.Unity.LevelDesign
         public void ConfigureAssets(TextAsset manifestAsset, TextAsset[] levelAssets, TextAsset[] proofAssets)
         { manifest = manifestAsset; layouts = levelAssets; proofs = proofAssets; }
 
-        public void Initialize(CandidateLevelCatalog source, ShipMovementTiming timing = null, LaneTransitTiming laneTiming = null)
+        public void Initialize(CandidateLevelCatalog source, ShipMovementTiming timing = null, LaneTransitTiming laneTiming = null, CombatTiming combatTiming = null)
         {
             catalog = source ?? throw new ArgumentNullException(nameof(source));
             movementTiming = timing ?? new ShipMovementTiming();
             transitTiming = laneTiming ?? new LaneTransitTiming();
+            this.combatTiming = combatTiming ?? new CombatTiming();
             font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             initialized = true; SelectLevel(0);
         }
@@ -94,10 +103,12 @@ namespace Tidebound.Unity.LevelDesign
                 new[] { new ShipDefinition(FoundationLimits.BaseShipTypeId, FoundationLimits.BaseShipDamage) },
                 new[] { new BossDefinition("TF_KRAKEN_01") });
             presentation = new GameObject("PortraitPresentation"); presentation.transform.SetParent(transform, false);
-            BuildBoard(); BuildControls();
+            BuildBoard();
             var system = new ShipMovementSystem(session);
             movement = new ShipMovementController(system, mapper, shipViews.Values, movementTiming);
             transit = new TransitSystem(session, transitTiming);
+            combat = new FleetCombatSystem(session, transit, combatTiming);
+            BuildControls();
             lane = new LaneTransitController(transit, new PortraitLanePathProvider(session.Width, session.Height),
                 shipViews.Values.Select(v => (ILaneTransitView)v.GetComponent<PlanarShipLaneView>()));
             subscriptions.Add(session.Events.Subscribe<ShipExitBoardEvent>(e => exited.Add(e.Ship.ShipId)));
@@ -163,6 +174,7 @@ namespace Tidebound.Unity.LevelDesign
             if (session == null) return;
             if (lastScreen != new Vector2Int(Screen.width, Screen.height) || lastSafe != Screen.safeArea) RefreshViewport();
             lane.Advance(Time.unscaledDeltaTime);
+            combat.Advance();
             if (!IsPaused && demo != null && !IsBusy)
             {
                 elapsedSinceDemo += Time.unscaledDeltaTime;
@@ -247,13 +259,13 @@ namespace Tidebound.Unity.LevelDesign
             Button("Next",topPanel,">",() => SelectLevel((LevelIndex+1)%catalog.Count));
             pause = Button("Pause",topPanel,"Pause",TogglePause);
             title = Label("Title",topPanel,"",19);
-            reserved = Label("BossReserved",topPanel,"BOSS AREA - RESERVED",14);
-            Button("Restart",topPanel,"Restart",Restart);
-            hint = Button("Hint",topPanel,"Hint",ShowHint);
-            auto = Button("Auto",topPanel,"Auto",ToggleAuto);
+            battlePanel = Panel("Battle",topPanel,new Rect(),new Color(.055f,.12f,.18f));
+            combatView = battlePanel.gameObject.AddComponent<FleetCombatGrayboxView>();
+            combatView.Initialize(session,combat,font);
+            Button("Restart",toolsPanel,"Restart",Restart);
+            hint = Button("Hint",toolsPanel,"Hint",ShowHint);
+            auto = Button("Auto",toolsPanel,"Auto",ToggleAuto);
             status = Label("Status",toolsPanel,"",12);
-            foreach (var item in new[] { "Remove", "Shuffle", "Flip" })
-                Button(item,toolsPanel,item+"\nReserved",null).interactable = false;
             if (FindObjectOfType<EventSystem>() == null)
             {
                 var events = new GameObject("GrayboxEventSystem",typeof(EventSystem),typeof(StandaloneInputModule));
@@ -268,12 +280,10 @@ namespace Tidebound.Unity.LevelDesign
             Place((RectTransform)topPanel.Find("Next"),new Rect(w-116,h-48,48,48));
             Place((RectTransform)pause.transform,new Rect(w-64,h-48,64,48));
             Place(title.rectTransform,new Rect(52,h-48,w-172,48));
-            Place(reserved.rectTransform,new Rect(8,52,w-16,h-104));
+            Place(battlePanel,new Rect(8,4,w-16,h-56));
             var buttonWidth = (w-32)/3;
             var names = new[] { "Restart", "Hint", "Auto" };
-            for (var i=0;i<3;i++) Place((RectTransform)topPanel.Find(names[i]),new Rect(8+i*(buttonWidth+8),0,buttonWidth,48));
             Place(status.rectTransform,new Rect(8,Layout.Tools.height-32,w-16,32));
-            names = new[] { "Remove", "Shuffle", "Flip" };
             for (var i=0;i<3;i++) Place((RectTransform)toolsPanel.Find(names[i]),new Rect(8+i*(buttonWidth+8),4,buttonWidth,Mathf.Max(48,Layout.Tools.height-40)));
         }
 
@@ -281,8 +291,9 @@ namespace Tidebound.Unity.LevelDesign
         {
             if (title == null || session == null) return;
             title.text = "LEVEL " + (LevelIndex+1) + " / 10";
-            reserved.text = "BOSS AREA - RESERVED\nFleet arrivals: " + entered.Count + " / " + session.Ships.Count;
-            status.text = IsCleared ? "Board cleared. All ships reached the fleet." : IsPaused ? "Paused" : notice;
+            combatView.Present();
+            status.text = IsCleared ? "VICTORY - all ships fired." : combat.FaultReason!=null ? "Combat error: "+combat.FaultReason : IsPaused ? "Paused" : notice;
+            pause.interactable = session.State==GameState.Playing || IsPaused;
             pause.GetComponentInChildren<Text>().text = IsPaused ? "Resume" : "Pause";
             auto.GetComponentInChildren<Text>().text = demo != null ? "Stop" : "Auto";
             auto.interactable = demo != null || (!IsPaused && !IsBusy && !IsCleared);
@@ -326,6 +337,7 @@ namespace Tidebound.Unity.LevelDesign
         private void ClearSession()
         {
             demo=null; input?.CancelSelection(); movement?.Dispose(); movement=null;
+            combat?.Dispose(); combat=null; combatView=null;
             lane?.Dispose(); lane=null; transit?.Dispose(); transit=null;
             foreach (var subscription in subscriptions) subscription.Dispose(); subscriptions.Clear();
             session?.Dispose(); session=null; shipViews.Clear(); exited.Clear(); entered.Clear();

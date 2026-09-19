@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using Tidebound.Ship;
 using Tidebound.Events;
+using Tidebound.Combat;
 using System.Reflection;
 using Tidebound.Unity.LevelDesign;
 using UnityEditor;
@@ -41,7 +42,7 @@ namespace Tidebound.EditorTools
             if (!SessionState.GetBool(Key,false)) return;
             Application.runInBackground = true;
             EditorApplication.QueuePlayerLoopUpdate();
-            if (deadline==0) deadline=EditorApplication.timeSinceStartup+90;
+            if (deadline==0) deadline=EditorApplication.timeSinceStartup+180;
             try
             {
                 if (EditorApplication.timeSinceStartup>deadline) throw new TimeoutException("Portrait capture did not complete.");
@@ -108,6 +109,19 @@ namespace Tidebound.EditorTools
                 }
                 index++;
             }
+            // Capture the playable combat loop with the same real movement and transit callbacks.
+            game.SelectLevel(0);game.ToggleAuto();
+            var combatDeadline=Time.realtimeSinceStartup+20;
+            while(!game.Combat.Attacks.Any(t=>t.Stage==AttackStage.InFlight && t.FlightProgress(game.Combat.Time)>=.3f && t.FlightProgress(game.Combat.Time)<=.8f) && Time.realtimeSinceStartup<combatDeadline) yield return null;
+            if(game.Combat.InFlightCount==0) throw new TimeoutException("No combat projectile became visible.");
+            game.TogglePause();yield return SaveFrame("Combat_Firing_390x844.png");game.TogglePause();
+            while(!game.IsCleared && Time.realtimeSinceStartup<combatDeadline) yield return null;
+            if(!game.IsCleared) throw new TimeoutException("Combat did not reach victory.");
+            yield return SaveFrame("Combat_Victory_390x844.png");
+            game.SelectLevel(9);game.ToggleAuto();combatDeadline=Time.realtimeSinceStartup+70;
+            while(game.Combat.Fleet.Support.ArrivedCount==0 && Time.realtimeSinceStartup<combatDeadline) yield return null;
+            if(game.Combat.Fleet.Support.ArrivedCount==0) throw new TimeoutException("Long support did not arrive.");
+            game.TogglePause();yield return SaveFrame("Combat_LongSupport_390x844.png");
             stage=3; SessionState.SetInt(Key+".Stage",3); EditorApplication.ExitPlaymode();
         }
 

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using Tidebound.Config;
+using Tidebound.Combat;
 using Tidebound.Events;
 using Tidebound.Ship;
 using Tidebound.LevelDesign;
@@ -31,7 +32,7 @@ namespace Tidebound.Tests
         {
             var game=new GameObject("PortraitGraybox_Test").AddComponent<PortraitPuzzleGraybox>();
             game.Initialize(Catalog(),fast ? new ShipMovementTiming(1000,.005f,.01f,.01f,.06f) : null,
-                fast ? new LaneTransitTiming(.03,.005,.005) : null);
+                fast ? new LaneTransitTiming(.03,.005,.005) : null, fast ? new CombatTiming(.005,.01) : null);
             return game;
         }
         private static IEnumerator Until(Func<bool> predicate,float seconds=5)
@@ -50,6 +51,39 @@ namespace Tidebound.Tests
             Assert.That(hits[0].gameObject,Is.EqualTo(game.InputSurface.gameObject));
             ExecuteEvents.Execute(hits[0].gameObject,data,ExecuteEvents.pointerDownHandler);
             ExecuteEvents.Execute(hits[0].gameObject,data,ExecuteEvents.pointerUpHandler);
+        }
+
+        [UnityTest]
+        public IEnumerator RealProjectilePauseAndRestartRespectCombatState()
+        {
+            var game=Create();
+            try
+            {
+                yield return null;
+                for(var attempt=0;attempt<2;attempt++)
+                {
+                    var ship=game.Session.Board.Ships.First(s=>game.Session.Board.QueryForwardPath(s.Id).CanExit);
+                    game.ClickShip(ship.Id);yield return Until(()=>game.Combat.InFlightCount>0);
+                    Assert.That(game.CombatView.ProjectileCount,Is.GreaterThan(0));
+                    if(attempt==0)
+                    {
+                        game.TogglePause();var time=game.Combat.Time;var hp=game.Session.Boss.Hp;
+                        yield return new WaitForSecondsRealtime(.35f);
+                        Assert.That(game.Combat.Time,Is.EqualTo(time));Assert.That(game.Session.Boss.Hp,Is.EqualTo(hp));
+                        game.TogglePause();yield return Until(()=>game.Combat.HitCount==1);
+                        Assert.That(game.Session.Boss.Hp,Is.EqualTo(game.Session.Boss.InitialHp-10));
+                    }
+                    else
+                    {
+                        var old=game.Combat;var oldHits=old.HitCount;game.Restart();
+                        yield return new WaitForSecondsRealtime(.4f);
+                        Assert.That(old.HitCount,Is.EqualTo(oldHits));Assert.That(game.Combat.HitCount,Is.Zero);
+                        Assert.That(game.Session.Boss.Hp,Is.EqualTo(70));Assert.That(game.CombatView.ProjectileCount,Is.Zero);
+                    }
+                }
+            }
+            finally { UnityEngine.Object.Destroy(game.gameObject); }
+            yield return null;
         }
 
         [UnityTest]
@@ -174,8 +208,16 @@ namespace Tidebound.Tests
                 {
                     if(i>0) game.SelectLevel(i); yield return null;
                     var count=game.Session.Board.ShipCount;
+                    var created=new List<string>();var hits=new List<string>();var wins=0;
+                    game.Session.Events.Subscribe<AttackCreatedEvent>(e=>created.Add(e.AttackId));
+                    game.Session.Events.Subscribe<BossDamagedEvent>(e=>hits.Add(e.AttackId));
+                    game.Session.Events.Subscribe<GameWinEvent>(_=>wins++);
                     game.ToggleAuto();
                     yield return Until(()=>game.IsCleared,25);
+                    Assert.That(game.Session.Boss.Hp,Is.Zero);Assert.That(game.Session.Boss.InitialHp,Is.EqualTo(count*10));
+                    Assert.That(created.Count,Is.EqualTo(count));Assert.That(hits.Count,Is.EqualTo(count));
+                    Assert.That(hits.Distinct().Count(),Is.EqualTo(count));Assert.That(wins,Is.EqualTo(1));
+                    Assert.That(game.Combat.PendingCount,Is.Zero);Assert.That(game.Combat.Fleet.Support.ArrivedCount,Is.EqualTo(game.Session.Ships.Count(x=>x.Length==3)));
                     Assert.That(game.ActiveViewCount,Is.Zero,"Level "+(i+1));
                     Assert.That(game.ExitedIds.Count,Is.EqualTo(count));
                     Assert.That(game.ExitedIds.Distinct().Count(),Is.EqualTo(count));

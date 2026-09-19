@@ -1,6 +1,6 @@
 # Tidebound Fleet — Unity 架构与关卡体系基础
 
-状态：Phase 5R I2c十关竖屏灰盒与动画集成自动化已完成；真人／Android验收待执行。日期：2026-09-19。
+状态：Phase 7 I3舰队、攻击与Boss灰盒闭环。日期：2026-09-20。用户授权跳过真机前置，完整G1／Android验收保留待办。
 
 I2a增量：Core新增独立`LocalLayoutAnalyzer`，提供同向船列、局部方向窗口、最大空矩形和分区占用报告；Editor接只读诊断与审计导出。没有更改生成器、移动事务或v2布局。168/168 EditMode通过，见[I2a验收](验证记录/Phase5R_I2a_局部结构诊断/I2A_VALIDATION.md)；I2b进一步加入RecipeLevelGenerator、LevelRecipe、几何归一及候选JSON／manifest，十关217/217 EditMode通过，见[I2b验收](验证记录/Phase5R_I2b_十关候选/I2B_VALIDATION.md)；本轮筛选版本为暂定，未改Movement／Transit和v2布局结构。
 
@@ -142,7 +142,7 @@ flowchart TD
 - 每次加载重新解析 JSON、复制船型数值，并为每艘船新建运行时对象；不保留对摆放 DTO 或 SO 的可变引用。
 - 修改 A 局船位置、朝向、状态、Boss 当前血量，不影响 B 局或源配置。
 - Boss HP 在创建单局时只求和一次。船离场、救援、洗牌、入舰队、后续配置变化都不会触发重新求和。
-- 本阶段没有扣血接口；`Hp` 的变化仅供以后战斗系统持有并更新。单局加载不发出任何游戏事件。
+- I3的`FleetCombatSystem`持有命中扣血入口；Boss.Hp仅允许Data/Core与EditMode测试写入，Unity表现只读。单局加载不发出游戏事件。
 - 调用者拥有 GameSession，结束使用后 Dispose；同时清理该局全部事件订阅。
 - 不持久化运行时状态，不连接存档、升级、广告或旧 GameManager。
 
@@ -172,7 +172,7 @@ Phase 3 的 `ShipMovementSystem` 是提交入口。它在表现报告到达逻�
 
 ShipState：Idle、Moving、BlockedFeedback、Exiting、InLane、InFleet。移动系统负责到 InLane；Phase 4 的 `TransitSystem` 在中央入口融入完成后一次性改为 InFleet。
 
-GameState：Prepare、Playing、Paused、Victory、Failed。加载完成为 Prepare；`StartPlaying/Pause/Resume` 由移动系统管理。暂停保留活动操作和阶段，完成回调在恢复后只提交一次。Victory/Failed 仍由后续系统处理。
+GameState：Prepare、Playing、Paused、Victory、Failed。加载完成为 Prepare；`StartPlaying/Pause/Resume` 由移动系统管理。暂停保留活动操作和阶段，完成回调在恢复后只提交一次。I3由FleetCombatSystem在全部攻击命中后提交Victory；账本／HP异常提交Failed并提示重开。
 
 每个 GameSession 有自己的非静态 `IEventBus`。事件是只读值类型，不携带 GameObject、SO 或可变 RuntimeData 引用。
 
@@ -212,6 +212,18 @@ Phase 3 在船尾完整离界时分配单局 `ExitSequence`。Phase 4 只消费�
 - 暂停时 `TransitSystem.Advance` 不推进单局航道时钟；恢复后从原进度继续，序号和等待队列不变。
 - `LaneTransitController` 只把逻辑进度映射到 `ILaneTransitView`。`LanePathLayout` 提供场景航点，`LaneWorldPath` 提供平滑曲线采样；Transform、路径长度和模型缩放不参与 FIFO。
 - `LaneTransitController`在本局出场事件回调内同步应用航道起点、切线朝向和0.80倍船影尺寸，航行阶段保持尺寸；灰盒外围路径与1.5格航道中心线统一，PlanarShipLaneView将船尾锚点转换为船体中心；布局为航道外侧预留至少16逻辑单位。线性路径转角立即使用下一段朝向。顶部入舰融入表现继续独立计时，完成后隐藏实例，常驻舰队留在Phase 7。
+
+## 7.3 舰队、攻击和胜利
+
+`FleetRoster`依据标准船skinId聚合至最多5个席位，支持显式装备槽顺序；长度3船只进入独立Support计数。当前默认关卡仍只有默认标准皮肤，未添加皮肤经济或布局字段。
+
+`FleetCombatSystem`在本局InFleet事件提交后，为每船创建唯一`AttackToken`，拒绝旧会话、错误身份、过早和重复事件。AttackId绑定Session与ShipId。创建和入舰不扣血；同组启动间隔0.20秒、飞行0.25秒，各组可以并行。攻击阶段Queued→InFlight→Hit由Core推进，先标记已命中再发BossDamagedEvent，防止重复或重入扣血。
+
+战斗复用TransitSystem.ElapsedTime，并以事件发生时的航道时间安排发射；Unity先推进航道再调用combat.Advance()。长帧中的多次入舰仍保留各自时间，暂停两者同时冻结。炮弹视图只读取进度，不用OnComplete决定伤害；重开先Dispose战斗订阅，再清理航道、视图和Session。
+
+胜利要求棋盘空、航道空、攻击全部命中、HP=0，并核对AttackToken总数等于开局船数；GameState先置Victory再发一次GameWinEvent。HP被异常修改或清盘后缺失攻击账本会明确Failed，不能假胜利。
+
+顶部FleetCombatGrayboxView显示Boss方块、血条、最多5个舰队计数、独立长船支援、飞行炮弹和Victory。所有图形限制在顶部区域；测试Restart／Hint／Auto移至底部预留按钮位，尚未实现三道具。只用UGUI灰盒几何，不导入美术或旧源码战斗脚本。
 
 ## 8. TestLevel_001 教学测试数据
 
