@@ -45,6 +45,17 @@ namespace Tidebound.Unity.Lane
 
         public Vector3 Tangent(float progress)
         {
+            if (linear)
+            {
+                var segment = Mathf.Min(Mathf.FloorToInt(Mathf.Clamp01(progress) * (points.Length - 1)), points.Length - 2);
+                // Face the outgoing segment at a corner, never a blended diagonal across the board.
+                for (var i = segment; i < points.Length - 1; i++)
+                    if ((points[i + 1] - points[i]).sqrMagnitude > 0.000001f)
+                        return (points[i + 1] - points[i]).normalized;
+                for (var i = segment; i >= 0; i--)
+                    if ((points[i + 1] - points[i]).sqrMagnitude > 0.000001f)
+                        return (points[i + 1] - points[i]).normalized;
+            }
             const float sampleOffset = 0.001f;
             var from = Sample(Mathf.Max(0f, progress - sampleOffset));
             var to = Sample(Mathf.Min(1f, progress + sampleOffset));

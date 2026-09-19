@@ -25,9 +25,13 @@ namespace Tidebound.Tests
                 {
                     movement.StartPlaying();
                     Exit(movement, "A");
+                    Assert.That(view.ApplyCount, Is.EqualTo(1), "Pose must be applied during exit, before Advance.");
+                    Assert.That(view.Position, Is.EqualTo(Vector3.zero));
+                    Assert.That(view.Scale, Is.EqualTo(0.45f));
+                    Assert.That(view.Forward, Is.EqualTo(Vector3.right));
                     controller.Advance(0.60d);
 
-                    Assert.That(view.ApplyCount, Is.EqualTo(1));
+                    Assert.That(view.ApplyCount, Is.EqualTo(2));
                     Assert.That(view.Position.x, Is.EqualTo(5f).Within(0.001f));
                     Assert.That(view.Scale, Is.EqualTo(0.45f).Within(0.001f));
                     Assert.That(view.Completed, Is.False);
@@ -113,6 +117,24 @@ namespace Tidebound.Tests
                 controller.Dispose();
                 Assert.Throws<ObjectDisposedException>(() => controller.Advance(0.1d));
             }
+        }
+
+        [TestCase(0f)]
+        [TestCase(.01f)]
+        [TestCase(.1f)]
+        [TestCase(.2f)]
+        [TestCase(1f)]
+        public void LaneSizeIsAlreadyFinalAtEntryAndRemainsConstant(float progress)
+        {
+            Assert.That(new LanePresentationTiming().LaneScale(progress), Is.EqualTo(.45f));
+        }
+
+        [Test]
+        public void LinearCornerFacesTheOutgoingSegmentImmediately()
+        {
+            var path = new LaneWorldPath(true, Vector3.zero, Vector3.up, Vector3.one);
+            Assert.That(path.Tangent(.4999f), Is.EqualTo(Vector3.up));
+            Assert.That(Vector3.Dot(path.Tangent(.5f), new Vector3(1,0,1).normalized), Is.GreaterThan(.99999f));
         }
 
         private static void Exit(ShipMovementSystem movement, string shipId)

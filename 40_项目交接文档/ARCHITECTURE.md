@@ -211,7 +211,7 @@ Phase 3 在船尾完整离界时分配单局 `ExitSequence`。Phase 4 只消费�
 - 默认入口间隔和融入时长均为 0.15 秒。融入完成后先提交 InFleet、清除活动转场，再发布一次 `ShipEnterFleetEvent`。
 - 暂停时 `TransitSystem.Advance` 不推进单局航道时钟；恢复后从原进度继续，序号和等待队列不变。
 - `LaneTransitController` 只把逻辑进度映射到 `ILaneTransitView`。`LanePathLayout` 提供场景航点，`LaneWorldPath` 提供平滑曲线采样；Transform、路径长度和模型缩放不参与 FIFO。
-- 默认 `ShipLaneView` 从全尺寸缩至 0.45 倍航道船影，入舰完成后隐藏该棋盘实例。舰队常驻实体留在 Phase 7。
+- `LaneTransitController`在本局出场事件回调内同步应用航道起点、切线朝向和0.45倍船影尺寸，航行阶段保持尺寸；灰盒外围路径与完整离场船尾坐标对齐，去掉向内回折接入段。线性路径转角立即使用下一段朝向。顶部入舰融入表现继续独立计时，完成后隐藏实例，常驻舰队留在Phase 7。
 
 ## 8. TestLevel_001 教学测试数据
 

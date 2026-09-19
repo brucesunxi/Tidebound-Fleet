@@ -5,6 +5,8 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using Tidebound.Config;
+using Tidebound.Events;
+using Tidebound.Ship;
 using Tidebound.LevelDesign;
 using Tidebound.Lane;
 using Tidebound.Unity.LevelDesign;
@@ -47,6 +49,47 @@ namespace Tidebound.Tests
             Assert.That(hits[0].gameObject,Is.EqualTo(game.InputSurface.gameObject));
             ExecuteEvents.Execute(hits[0].gameObject,data,ExecuteEvents.pointerDownHandler);
             ExecuteEvents.Execute(hits[0].gameObject,data,ExecuteEvents.pointerUpHandler);
+        }
+
+        [UnityTest]
+        public IEnumerator LaneEntrySetsSizeAndHeadingInTheExitCallbackForEveryEdge()
+        {
+            var game=Create();
+            try
+            {
+                foreach (ShipDirection direction in Enum.GetValues(typeof(ShipDirection)))
+                {
+                    game.SelectLevel(1); yield return null;
+                    var ship=game.Session.Board.Ships.First(s=>s.Direction==direction && game.Session.Board.QueryForwardPath(s.Id).CanExit);
+                    var path=game.Session.Board.QueryForwardPath(ship.Id);
+                    var view=game.GetComponentsInChildren<PlanarShipLaneView>().Single(v=>v.ShipId==ship.Id);
+                    var expectedPosition=new Vector3(path.TargetTail.X+.5f,path.TargetTail.Y+.5f,0);
+                    var expectedHeading=Vector3.up;
+                    if(direction==ShipDirection.Up)
+                        expectedHeading=expectedPosition.x<game.Session.Width/2f ? Vector3.right : Vector3.left;
+                    else if(direction==ShipDirection.Down)
+                        expectedHeading=LaneRouteResolver.Resolve(direction,path.TargetTail,game.Session.Width)==LaneRoute.BottomViaLeft ? Vector3.left : Vector3.right;
+                    var received=false; var position=Vector3.zero; var scale=Vector3.zero; var heading=Vector3.zero;
+                    using(game.Session.Events.Subscribe<ShipExitBoardEvent>(e=>
+                    {
+                        if(e.Ship.ShipId!=ship.Id) return;
+                        received=true; position=view.transform.position; scale=view.transform.localScale; heading=view.transform.up;
+                    }))
+                    {
+                        game.ClickShip(ship.Id);
+                        yield return Until(()=>received);
+                        Assert.That(position,Is.EqualTo(expectedPosition),"No position snap at handoff: "+direction);
+                        Assert.That(scale,Is.EqualTo(Vector3.one*.45f),"Final size on the exit frame: "+direction);
+                        Assert.That(Vector3.Dot(heading,expectedHeading),Is.GreaterThan(.9999f),"Immediate sailing heading: "+direction);
+                        var previous=view.transform.position;
+                        yield return null;
+                        Assert.That(view.transform.localScale,Is.EqualTo(scale));
+                        Assert.That(Vector3.Dot(view.transform.position-previous,expectedHeading),Is.GreaterThan(0),"Must sail forwards, without an inward connector.");
+                    }
+                }
+            }
+            finally { UnityEngine.Object.Destroy(game.gameObject); }
+            yield return null;
         }
 
         [UnityTest]

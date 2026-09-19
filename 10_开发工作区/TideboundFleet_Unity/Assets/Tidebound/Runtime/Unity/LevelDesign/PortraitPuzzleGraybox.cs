@@ -337,18 +337,19 @@ namespace Tidebound.Unity.LevelDesign
         {
             private readonly float width,height;
             public PerimeterPath(int w,int h) { width=w; height=h; }
-            public Vector3 FleetIngressPosition => new Vector3(width/2,height+.4f,0);
+            public Vector3 FleetIngressPosition => new Vector3(width/2,height+.7f,0);
             public LaneWorldPath CreatePath(LaneRoute route,Vector3 start)
             {
-                var tl=new Vector3(-.2f,height+.2f,0); var tr=new Vector3(width+.2f,height+.2f,0);
-                var tc=new Vector3(width/2,height+.2f,0); var bl=new Vector3(-.2f,-.2f,0); var br=new Vector3(width+.2f,-.2f,0);
+                // Match the fully exited tail centers, avoiding an inward connector and reversal.
+                var tl=new Vector3(-.5f,height+.5f,0); var tr=new Vector3(width+.5f,height+.5f,0);
+                var tc=new Vector3(width/2,height+.5f,0); var bl=new Vector3(-.5f,-.5f,0); var br=new Vector3(width+.5f,-.5f,0);
                 switch(route)
                 {
-                    case LaneRoute.Top: return new LaneWorldPath(true,start,new Vector3(start.x,tc.y,0),tc);
-                    case LaneRoute.Left: return new LaneWorldPath(true,start,new Vector3(tl.x,start.y,0),tl,tc);
-                    case LaneRoute.Right: return new LaneWorldPath(true,start,new Vector3(tr.x,start.y,0),tr,tc);
-                    case LaneRoute.BottomViaLeft: return new LaneWorldPath(true,start,new Vector3(start.x,bl.y,0),bl,tl,tc);
-                    case LaneRoute.BottomViaRight: return new LaneWorldPath(true,start,new Vector3(start.x,br.y,0),br,tr,tc);
+                    case LaneRoute.Top: return new LaneWorldPath(true,start,tc);
+                    case LaneRoute.Left: return new LaneWorldPath(true,start,tl,tc);
+                    case LaneRoute.Right: return new LaneWorldPath(true,start,tr,tc);
+                    case LaneRoute.BottomViaLeft: return new LaneWorldPath(true,start,bl,tl,tc);
+                    case LaneRoute.BottomViaRight: return new LaneWorldPath(true,start,br,tr,tc);
                     default: throw new ArgumentOutOfRangeException(nameof(route));
                 }
             }

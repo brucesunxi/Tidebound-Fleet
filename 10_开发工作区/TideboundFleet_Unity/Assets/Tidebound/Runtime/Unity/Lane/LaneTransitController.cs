@@ -18,6 +18,7 @@ namespace Tidebound.Unity.Lane
         private readonly Dictionary<string, LaneWorldPath> paths =
             new Dictionary<string, LaneWorldPath>(StringComparer.Ordinal);
         private readonly IDisposable fleetSubscription;
+        private readonly IDisposable exitSubscription;
         private bool disposed;
 
         public int ActiveCount => transit.ActiveCount;
@@ -48,6 +49,8 @@ namespace Tidebound.Unity.Lane
                     throw new ArgumentException($"Missing lane view for ship '{ship.Id}'.", nameof(views));
 
             fleetSubscription = transit.Events.Subscribe<ShipEnterFleetEvent>(OnShipEnterFleet);
+            // TransitSystem subscribed first: its operation exists before this synchronous handoff.
+            exitSubscription = transit.Events.Subscribe<ShipExitBoardEvent>(OnShipExitBoard);
         }
 
         public LaneAdvanceStatus Advance(double deltaTime)
@@ -69,6 +72,7 @@ namespace Tidebound.Unity.Lane
             if (disposed) return;
             disposed = true;
             fleetSubscription.Dispose();
+            exitSubscription.Dispose();
             paths.Clear();
             views.Clear();
         }
@@ -96,6 +100,15 @@ namespace Tidebound.Unity.Lane
                 path.Sample(operation.LaneProgress),
                 path.Tangent(operation.LaneProgress),
                 presentation.LaneScale(operation.LaneProgress));
+        }
+
+        private void OnShipExitBoard(ShipExitBoardEvent message)
+        {
+            if (!string.Equals(message.Ship.SessionId, transit.SessionId, StringComparison.Ordinal)) return;
+            if (paths.ContainsKey(message.Ship.ShipId)) return;
+            if (transit.TryGetTransit(message.Ship.ShipId, out var operation) &&
+                operation.ExitSequence == message.ExitSequence)
+                Present(operation);
         }
 
         private void OnShipEnterFleet(ShipEnterFleetEvent message)
