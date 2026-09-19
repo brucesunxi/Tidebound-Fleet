@@ -18,6 +18,7 @@ namespace Tidebound.Unity.Ship
         private PendingAdvance pendingAdvance;
         private long pendingOperationId;
         private bool disposed;
+        private long lastPresentedOperationId;
 
         public ShipMoveOperation ActiveOperation => movement.ActiveOperation;
         public GameState GameState => movement.GameState;
@@ -58,8 +59,16 @@ namespace Tidebound.Unity.Ship
             ThrowIfDisposed();
             var request = movement.TryBeginMove(shipId);
             if (!request.IsAccepted) return request;
-            Present(request.Operation);
+            PresentActiveOperation();
             return request;
+        }
+
+        public bool PresentActiveOperation()
+        {
+            ThrowIfDisposed();
+            var operation=movement.ActiveOperation;
+            if(operation==null || operation.OperationId==lastPresentedOperationId)return false;
+            lastPresentedOperationId=operation.OperationId;Present(operation);return true;
         }
 
         public bool Pause()
@@ -100,7 +109,9 @@ namespace Tidebound.Unity.Ship
 
             var target = mapper.TailToWorld(operation.TargetTail);
             var duration = timing.CalculateTravelDuration(operation.TravelDistance);
-            view.PlayTravel(target, duration, () => OnTravelCompleted(operation.OperationId));
+            if(operation.IsRescue && view is IShipRescueView rescue)
+                rescue.PlayRescue(target,duration,()=>OnTravelCompleted(operation.OperationId));
+            else view.PlayTravel(target, duration, () => OnTravelCompleted(operation.OperationId));
         }
 
         private void PresentBlockedFeedback(ShipMoveOperation operation, IShipMovementView view)

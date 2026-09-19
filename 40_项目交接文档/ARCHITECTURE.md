@@ -1,6 +1,6 @@
 # Tidebound Fleet — Unity 架构与关卡体系基础
 
-状态：Phase 7 I3舰队、攻击与Boss灰盒闭环。日期：2026-09-20。用户授权跳过真机前置，完整G1／Android验收保留待办。
+状态：Phase 8 I4道具、运行中死局与重开灰盒。日期：2026-09-20。用户授权跳过真机前置，完整G1／Android验收保留待办。
 
 I2a增量：Core新增独立`LocalLayoutAnalyzer`，提供同向船列、局部方向窗口、最大空矩形和分区占用报告；Editor接只读诊断与审计导出。没有更改生成器、移动事务或v2布局。168/168 EditMode通过，见[I2a验收](验证记录/Phase5R_I2a_局部结构诊断/I2A_VALIDATION.md)；I2b进一步加入RecipeLevelGenerator、LevelRecipe、几何归一及候选JSON／manifest，十关217/217 EditMode通过，见[I2b验收](验证记录/Phase5R_I2b_十关候选/I2B_VALIDATION.md)；本轮筛选版本为暂定，未改Movement／Transit和v2布局结构。
 
@@ -283,3 +283,15 @@ y=0   1  1  .  2
 详细入口、退出和回退条件见 [Phase 5R及后续开发计划](PHASE5_PLUS_PLAN.md)，关卡工具范围见 [关卡编辑器与验证工具规划](LEVEL_EDITOR_PLAN.md)。Phase 5已把代码迁移到长度2／3、单基础船和schema v2；12×18／80艘只保留为技术回归事实。正式网格、完整体量、方向交错、真机触控和最低设备性能由Phase 5R重新验收。
 
 2022.3.25f1 当前用于复现购买工程与本阶段验证，不等于已锁定最终上架版本。已有安全公告及商店工具链要求仍需在发布阶段单独验收。
+
+
+## Phase 8 I4道具事务与结束事件
+
+- `Tidebound.Tools.ShipToolSystem`属于Core，维护单局三个免费计数和目标选择；仅接受Playing／静止棋盘，取消或失败不扣数。
+- `BoardModel.WithPlacements`验证身份、类型、长度、范围和完整占格后返回不可变快照；翻转与洗牌先Solver验证，再同步Board及剩余Runtime位置／方向。皮肤与伤害无写入。
+- `RemainingFleetShuffler`使用InitialBoard中剩余身份对应的合法槽位，按长度置换并镜像提出候选；最多8次且有运行预算，Solver不返回Solved则不提交。这是救援道具策略，生产关卡仍用RecipeLevelGenerator。
+- `ShipMovementSystem.TryBeginRescue`复用同一操作ID、完成提交和ExitSequence；动画完成前保留占格，完成后移除快照、进入InLane并发原离场事件。ShipToolSystem在该事件扣一次；正常航道与战斗照常运行。
+- Unity `IShipRescueView`提供置顶、淡化和轻微放大拖离反馈，在完成回调前恢复透明度／原比例。`PlanarShipLaneView.CurrentPosition`返回船体中心，横向拖离同样居中接轨；航道仍立即0.8倍和切航向。
+- `BoardProgressMonitor`按不可变Board引用缓存，Busy不对中途画面求解；无合法前进=NoMoves，Solver穷尽=Unsolvable，超预算=Unknown。无直接出口并不等于死局。诊断不结束会话，道具仍可救援，航道／战斗可继续。
+- `GameSession.TryEnd`先提交唯一Victory或Failed，再发布AttemptEndedEvent；正常胜利兼容GameWinEvent。重开／切关记录Restarted，确认死局放弃记录DeadlockAbandoned，重复终态无副作用。事件订阅者若同步销毁Session，不再发布后续兼容事件。
+- 结束事件只记录单局结果；无持久化、金币或重开奖励扣账。I5由独立账本消费，不能依赖动画完成次数结算。

@@ -10,7 +10,7 @@ namespace Tidebound.Unity.LevelDesign
         private Vector3 visualCenterOffset;
         public Vector3 VisualCenter => transform.TransformPoint(visualCenterOffset);
         public string ShipId { get; private set; }
-        public Vector3 CurrentPosition => transform.position;
+        public Vector3 CurrentPosition => VisualCenter;
         public void Configure(string id, Vector3 centerOffset)
         {
             ShipId = id ?? throw new ArgumentNullException(nameof(id));

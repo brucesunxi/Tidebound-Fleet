@@ -5,6 +5,11 @@ using UnityEngine;
 namespace Tidebound.Unity.Ship
 {
     /// <summary>Presentation contract. Implementations may animate Transforms but never calculate occupancy.</summary>
+    public interface IShipRescueView
+    {
+        void PlayRescue(Vector3 targetTailWorld,float duration,Action completed);
+    }
+
     public interface IShipMovementView
     {
         string ShipId { get; }

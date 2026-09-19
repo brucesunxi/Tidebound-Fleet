@@ -5,6 +5,8 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using Tidebound.Config;
+using Tidebound.Tools;
+using Tidebound.Core;
 using Tidebound.Combat;
 using Tidebound.Events;
 using Tidebound.Ship;
@@ -51,6 +53,38 @@ namespace Tidebound.Tests
             Assert.That(hits[0].gameObject,Is.EqualTo(game.InputSurface.gameObject));
             ExecuteEvents.Execute(hits[0].gameObject,data,ExecuteEvents.pointerDownHandler);
             ExecuteEvents.Execute(hits[0].gameObject,data,ExecuteEvents.pointerUpHandler);
+        }
+
+        [UnityTest]
+        public IEnumerator ToolsMenuRescueAndRestartUseRealViewsAndFreshInventory()
+        {
+            var game=Create(true);
+            try
+            {
+                yield return null;Assert.That(game.Tools.Enabled,Is.False);game.SelectLevel(2);yield return null;
+                Assert.That(game.Tools.Enabled,Is.True);game.SelectTool(ShipTool.Reverse);game.SelectTool(ShipTool.Reverse);
+                Assert.That(game.Tools.Selection,Is.EqualTo(ShipTool.None));Assert.That(game.Tools.Remaining(ShipTool.Reverse),Is.EqualTo(1));
+                game.ToggleMenu();Assert.That(game.IsPaused,Is.True);Assert.That(game.IsMenuOpen,Is.True);game.CloseMenu();Assert.That(game.IsPaused,Is.False);
+                game.TogglePause();game.ToggleMenu();game.CloseMenu();Assert.That(game.IsPaused,Is.True);game.TogglePause();
+                game.SelectTool(ShipTool.Shuffle);Assert.That(game.Tools.Remaining(ShipTool.Shuffle),Is.Zero);
+                foreach(var ship in game.Session.Board.Ships)Assert.That(game.ViewPosition(ship.Id),Is.EqualTo(new Vector3(ship.Position.X+.5f,ship.Position.Y+.5f)));
+                var reversed=false;
+                foreach(var id in game.Session.Board.Ships.Select(x=>x.Id).ToArray())
+                {
+                    if(game.Tools.Selection==ShipTool.None)game.SelectTool(ShipTool.Reverse);game.ClickShip(id);
+                    if(game.Tools.Remaining(ShipTool.Reverse)==0){reversed=true;break;}
+                }
+                Assert.That(reversed,Is.True);game.SelectTool(ShipTool.Rescue);var rescued=game.Session.Board.Ships.First().Id;game.ClickShip(rescued);
+                yield return Until(()=>!game.IsBusy);Assert.That(game.Tools.Remaining(ShipTool.Rescue),Is.Zero);
+                var view=game.GetComponentsInChildren<PlanarShipLaneView>().Single(x=>x.ShipId==rescued);
+                Assert.That(view.transform.localScale,Is.EqualTo(Vector3.one*.8f));Assert.That(view.GetComponent<CanvasGroup>().alpha,Is.EqualTo(1));
+                game.ToggleAuto();yield return Until(()=>game.IsCleared,25);Assert.That(game.Combat.HitCount,Is.EqualTo(80));
+                game.Restart();game.SelectTool(ShipTool.Rescue);game.ClickShip(game.Session.Board.Ships.First().Id);
+                var old=game.Session;game.Restart();yield return new WaitForSecondsRealtime(.3f);
+                Assert.That(old.State,Is.EqualTo(GameState.Failed));Assert.That(game.Tools.Remaining(ShipTool.Rescue),Is.EqualTo(1));Assert.That(game.Session.Board.ShipCount,Is.EqualTo(80));Assert.That(game.ExitedIds,Is.Empty);
+            }
+            finally { UnityEngine.Object.Destroy(game.gameObject); }
+            yield return null;
         }
 
         [UnityTest]
@@ -164,7 +198,7 @@ namespace Tidebound.Tests
                     {
                         game.ClickShip(ship.Id);
                         yield return Until(()=>received);
-                        Assert.That(position,Is.EqualTo(expectedPosition),"Visual center must join the lane centerline: "+direction);
+                        Assert.That(Vector3.Distance(position,expectedPosition),Is.LessThan(.0001f),"Visual center must join the lane centerline: "+direction);
                         Assert.That(scale,Is.EqualTo(Vector3.one*.8f),"Final size on the exit frame: "+direction);
                         Assert.That(Vector3.Dot(heading,expectedHeading),Is.GreaterThan(.9999f),"Immediate sailing heading: "+direction);
                         var previous=view.transform.position;

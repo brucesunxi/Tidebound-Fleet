@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Tidebound.Board;
 using Tidebound.Core;
 using Tidebound.Events;
@@ -75,6 +76,27 @@ namespace Tidebound.Ship
             return new ShipMoveRequestResult(ShipMoveRequestStatus.Accepted, operation);
         }
 
+        internal ShipMoveRequestResult TryBeginRescue(string shipId)
+        {
+            if(session.State==GameState.Paused) return new ShipMoveRequestResult(ShipMoveRequestStatus.SessionPaused);
+            if(session.State!=GameState.Playing) return new ShipMoveRequestResult(ShipMoveRequestStatus.SessionNotPlaying);
+            if(IsBusy) return new ShipMoveRequestResult(ShipMoveRequestStatus.Busy);
+            if(!session.TryGetShip(shipId,out var ship)) return new ShipMoveRequestResult(ShipMoveRequestStatus.ShipNotFound);
+            if(ship.State!=ShipState.Idle) return new ShipMoveRequestResult(ShipMoveRequestStatus.ShipNotIdle);
+            if(!session.Board.TryGetShip(shipId,out var snapshot)) return new ShipMoveRequestResult(ShipMoveRequestStatus.ShipNotOnBoard);
+            // Shortest translation that takes the entire footprint outside. Ties: up, right, down, left.
+            var distances=new[]{session.Height-snapshot.OccupiedCells.Min(c=>c.Y),session.Width-snapshot.OccupiedCells.Min(c=>c.X),
+                snapshot.OccupiedCells.Max(c=>c.Y)+1,snapshot.OccupiedCells.Max(c=>c.X)+1};
+            var directions=new[]{ShipDirection.Up,ShipDirection.Right,ShipDirection.Down,ShipDirection.Left};
+            var index=Array.IndexOf(distances,distances.Min());var direction=directions[index];var step=GridFootprint.DirectionStep(direction);
+            var target=new GridPosition(ship.Position.X+step.X*distances[index],ship.Position.Y+step.Y*distances[index]);
+            var path=ForwardPathResult.Exit(ship.Id,ship.Position,direction,target,Array.Empty<GridPosition>(),distances[index]);
+            var operation=new ShipMoveOperation(checked(++nextOperationId),path,true);
+            ActiveOperation=operation;ship.State=ShipState.Exiting;
+            session.Events.Publish(new ShipMoveStartEvent(Context(ship),ship.Position,direction));
+            return new ShipMoveRequestResult(ShipMoveRequestStatus.Accepted,operation);
+        }
+
         public ShipMoveAdvanceStatus CompleteTravel(long operationId)
         {
             var readiness = CheckAdvance(operationId, ShipMoveStage.Traveling);
@@ -88,7 +110,7 @@ namespace Tidebound.Ship
                 return ShipMoveAdvanceStatus.Applied;
             }
 
-            session.Board = session.Board.ApplyPathResult(operation.PathResult);
+            session.Board = operation.IsRescue ? session.Board.WithoutShip(ship.Id) : session.Board.ApplyPathResult(operation.PathResult);
             ship.Position = operation.TargetTail;
             ship.State = ShipState.InLane;
             operation.Stage = ShipMoveStage.Completed;

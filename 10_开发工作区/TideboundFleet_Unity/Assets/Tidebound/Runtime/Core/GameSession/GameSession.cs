@@ -10,6 +10,7 @@ namespace Tidebound.Core
     public sealed class GameSession : IDisposable
     {
         private readonly Dictionary<string, ShipRuntimeData> shipsById;
+        private bool disposed;
 
         public string SessionId { get; }
         public string LevelId { get; }
@@ -20,6 +21,7 @@ namespace Tidebound.Core
         public BoardModel Board { get; internal set; }
         public BoardModel InitialBoard { get; }
         public GameState State { get; internal set; } = GameState.Prepare;
+        public string EndReason { get; private set; }
         public IEventBus Events { get; } = new SessionEventBus();
 
         internal GameSession(string levelId, int width, int height, ShipRuntimeData[] ships, BossRuntimeData boss)
@@ -50,6 +52,16 @@ namespace Tidebound.Core
             return ship;
         }
 
-        public void Dispose() => Events.Dispose();
+        internal bool TryEnd(GameState outcome,string reason)
+        {
+            if(outcome!=GameState.Victory && outcome!=GameState.Failed) throw new ArgumentException("Expected a terminal outcome.");
+            if(disposed || State==GameState.Victory || State==GameState.Failed) return false;
+            State=outcome;EndReason=reason;
+            Events.Publish(new AttemptEndedEvent(SessionId,LevelId,outcome,reason));
+            if(outcome==GameState.Victory && !disposed) Events.Publish(new GameWinEvent(SessionId,LevelId));
+            return true;
+        }
+
+        public void Dispose() { if(disposed)return;disposed=true;Events.Dispose(); }
     }
 }

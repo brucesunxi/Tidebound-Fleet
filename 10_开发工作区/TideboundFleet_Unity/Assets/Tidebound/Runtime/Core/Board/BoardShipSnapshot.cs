@@ -34,6 +34,9 @@ namespace Tidebound.Board
             OccupiedCells = Array.AsReadOnly(cells);
         }
 
+        internal BoardShipSnapshot WithPlacement(GridPosition position,ShipDirection direction) =>
+            new BoardShipSnapshot(Id,TypeId,position,direction,Length,new List<GridPosition>(GridFootprint.Cells(position,direction,Length)));
+
         internal BoardShipSnapshot WithPosition(GridPosition position)
         {
             var cells = new List<GridPosition>(GridFootprint.Cells(position, Direction, Length));

@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using Tidebound.Ship;
+using Tidebound.Tools;
 using Tidebound.Events;
 using Tidebound.Combat;
 using System.Reflection;
@@ -122,6 +123,18 @@ namespace Tidebound.EditorTools
             while(game.Combat.Fleet.Support.ArrivedCount==0 && Time.realtimeSinceStartup<combatDeadline) yield return null;
             if(game.Combat.Fleet.Support.ArrivedCount==0) throw new TimeoutException("Long support did not arrive.");
             game.TogglePause();yield return SaveFrame("Combat_LongSupport_390x844.png");
+            foreach(var size in Sizes.Take(3))
+            {
+                SetGameViewSize(size);var expires=Time.realtimeSinceStartup+10;
+                while((Screen.width!=size.x || Screen.height!=size.y) && Time.realtimeSinceStartup<expires)yield return null;
+                if(Screen.width!=size.x || Screen.height!=size.y)throw new TimeoutException("Tools viewport did not settle.");
+                game.SelectLevel(2);yield return null;yield return SaveFrame($"Tools_Level3_{size.x}x{size.y}.png");
+            }
+            SetGameViewSize(new Vector2Int(390,844));yield return null;yield return null;
+            game.SelectLevel(2);yield return null;
+            game.SelectTool(ShipTool.Rescue);yield return SaveFrame("Tools_SelectRescue_390x844.png");
+            game.ToggleMenu();yield return SaveFrame("Tools_Menu_390x844.png");game.CloseMenu();
+            game.SelectTool(ShipTool.Shuffle);yield return SaveFrame("Tools_Shuffled_390x844.png");
             stage=3; SessionState.SetInt(Key+".Stage",3); EditorApplication.ExitPlaymode();
         }
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Tidebound.Ship;
 
 namespace Tidebound.Board
@@ -135,6 +136,20 @@ namespace Tidebound.Board
                 else if (result.IsBlocked) next.Add(item.WithPosition(result.TargetTail));
             }
             return new BoardModel(Width, Height, next);
+        }
+
+        internal BoardModel WithoutShip(string id)
+        {
+            GetShip(id);
+            return new BoardModel(Width,Height,ships.Where(s=>s.Id!=id));
+        }
+
+        internal BoardModel WithPlacements(IEnumerable<BoardShipSnapshot> replacements)
+        {
+            var next=replacements.ToArray();
+            if(next.Length!=ShipCount || next.Any(s=>!shipsById.TryGetValue(s.Id,out var old) || old.TypeId!=s.TypeId || old.Length!=s.Length))
+                throw new ArgumentException("Rearranging must preserve every remaining ship identity and length.");
+            return new BoardModel(Width,Height,next);
         }
 
         private static IEnumerable<BoardShipSnapshot> CopyRuntimeShips(IEnumerable<ShipRuntimeData> runtimeShips)

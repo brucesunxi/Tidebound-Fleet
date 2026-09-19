@@ -92,10 +92,9 @@ namespace Tidebound.Combat
             }
             if(session.Board.ShipCount!=0 || !transit.IsEmpty || PendingCount!=0) return;
             if(tokens.Count!=session.Ships.Count || session.Boss.Hp!=0) { Fail("IncompleteAttackLedger");return; }
-            session.State=GameState.Victory;
-            session.Events.Publish(new GameWinEvent(session.SessionId,session.LevelId));
+            session.TryEnd(GameState.Victory,"BossDefeated");
         }
-        private void Fail(string reason) { FaultReason=reason;session.State=GameState.Failed; }
+        private void Fail(string reason) { FaultReason=reason;session.TryEnd(GameState.Failed,reason); }
         public void Dispose() { if(disposed)return;disposed=true;subscription.Dispose(); }
     }
 }

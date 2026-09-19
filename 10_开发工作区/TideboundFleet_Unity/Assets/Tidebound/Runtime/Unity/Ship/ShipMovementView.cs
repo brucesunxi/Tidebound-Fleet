@@ -9,7 +9,7 @@ namespace Tidebound.Unity.Ship
     /// Default Transform presentation and pointer adapter. Collider/Graphic hit areas are input only and
     /// never determine logical footprint or movement permission.
     /// </summary>
-    public sealed class ShipMovementView : MonoBehaviour, IShipMovementView, IPointerClickHandler
+    public sealed class ShipMovementView : MonoBehaviour, IShipMovementView, IShipRescueView, IPointerClickHandler
     {
         [SerializeField] private string shipId;
         [SerializeField] private Transform visualRoot;
@@ -41,6 +41,13 @@ namespace Tidebound.Unity.Ship
             StartExclusive(TravelRoutine(targetTailWorld, duration, completed));
         }
 
+        public void PlayRescue(Vector3 targetTailWorld,float duration,Action completed)
+        {
+            if(duration<=0)throw new ArgumentOutOfRangeException(nameof(duration));
+            VisualRoot.SetAsLastSibling();
+            StartExclusive(TravelRoutine(targetTailWorld,duration,completed,true));
+        }
+
         public void PlayBlockedFeedback(Vector3 lateralOffset, float duration, Action completed)
         {
             if (duration <= 0f) throw new ArgumentOutOfRangeException(nameof(duration));
@@ -56,21 +63,35 @@ namespace Tidebound.Unity.Ship
             animationRoutine = StartCoroutine(routine);
         }
 
-        private IEnumerator TravelRoutine(Vector3 target, float duration, Action completed)
+        private IEnumerator TravelRoutine(Vector3 target, float duration, Action completed, bool lifted=false)
         {
             var root = VisualRoot;
             var start = root.position;
+            var initialScale=root.localScale;
+            CanvasGroup group=null;
+            if(lifted && root.GetComponent<RectTransform>()!=null)
+            {
+                // Unity missing components can be fake-null wrappers; do not use ?? here.
+                group=root.GetComponent<CanvasGroup>();
+                if(group==null)group=root.gameObject.AddComponent<CanvasGroup>();
+            }
+            var alpha=group!=null ? group.alpha : 1f;
+            if(group!=null) group.alpha=.6f;
             var elapsed = 0f;
             while (elapsed < duration)
             {
                 if (!paused)
                 {
                     elapsed = Mathf.Min(duration, elapsed + Time.unscaledDeltaTime);
-                    root.position = Vector3.LerpUnclamped(start, target, elapsed / duration);
+                    var t=elapsed/duration;
+                    root.position = Vector3.LerpUnclamped(start, target, t);
+                    if(lifted) root.localScale=initialScale*(1+.08f*Mathf.Sin(t*Mathf.PI));
                 }
                 yield return null;
             }
             root.position = target;
+            if(lifted) root.localScale=initialScale;
+            if(group!=null) group.alpha=alpha;
             animationRoutine = null;
             completed?.Invoke();
         }

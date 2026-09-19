@@ -1,4 +1,5 @@
 using Tidebound.Board;
+using Tidebound.Core;
 using Tidebound.Ship;
 
 namespace Tidebound.Events
@@ -68,6 +69,16 @@ namespace Tidebound.Events
         public int RemainingHp { get; }
         public BossDamagedEvent(string sessionId, string bossId, string attackId, int damage, int remainingHp)
         { SessionId = sessionId; BossId = bossId; AttackId = attackId; Damage = damage; RemainingHp = remainingHp; }
+    }
+
+    public readonly struct AttemptEndedEvent : ITideboundEvent
+    {
+        public string SessionId { get; }
+        public string LevelId { get; }
+        public GameState Outcome { get; }
+        public string Reason { get; }
+        public AttemptEndedEvent(string sessionId,string levelId,GameState outcome,string reason)
+        { SessionId=sessionId;LevelId=levelId;Outcome=outcome;Reason=reason; }
     }
 
     public readonly struct GameWinEvent : ITideboundEvent
