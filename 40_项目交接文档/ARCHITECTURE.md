@@ -1,6 +1,8 @@
-# Tidebound Fleet — Unity 架构与高密度棋盘基础
+# Tidebound Fleet — Unity 架构与关卡体系基础
 
-状态：Phase 5 高密度棋盘基础已完成自动化验收；不包含舰队聚合、攻击、Boss 扣血、皮肤经济或正式 UI。日期：2026-09-18。
+状态：Phase 5R 规则与生成算法重构设计已完成，Unity迁移待实施。日期：2026-09-19。
+
+**目标架构以[重设计方案](PHASE5R_REDESIGN.md)为准。用户进一步澄清受阻时前进到最近阻挡前停住，现有移动事务和状态机符合该规则，继续保留。** 计划新增动态完整依赖LevelSolver和反向生成器，先验证10关与统一竖屏边界。以下首阻挡图、有界BFS与旧样本是现有实现事实，不等于新生成与求解方案已完成；旧样本不代表新方案验收。本次复跑现有测试为119/119 EditMode、6/6 PlayMode，见[基础复核](验证记录/Phase5R_基础复核_20260919/BASELINE_REVIEW.md)。实施顺序和v2伴随证明策略以[后续计划v3](PHASE5_PLUS_PLAN.md)为准：6A先补最小验证，6B量产后移；保持Data／Core／Unity边界。
 
 ## 1. 工作工程与边界
 
@@ -10,9 +12,9 @@
 - 所有新增业务代码放在 `Assets/Tidebound`。原车辆脚本、停车逻辑、旧场景和旧资源不改动、不删除。
 - 开发副本补充 `com.unity.render-pipelines.universal: 14.0.11`，版本取自本机 2022.3.25f1 的包目录清单；显式声明 `com.unity.nuget.newtonsoft-json: 3.2.1`，避免配置加载依赖商业 SDK 间接安装 JSON 包。
 - 旧工程仍在同一 Unity 工程内参与其自身编译；程序集隔离不意味着旧插件已经被移除或完成 Android/iOS 构建整改。
-- 本阶段不更换启动场景、不运行旧 Loader、不调用旧广告初始化。直接进入 Play 不代表已有潮汐舰队可玩原型。
+- 当前尚未更换启动场景、不运行旧 Loader、不调用旧广告初始化。直接进入 Play 不代表已有潮汐舰队可玩原型。下一步5R灰盒须单独接Input→Movement→Transit，不能把直接修改Board快照的诊断预览当成运行时集成。
 
-`验证记录/Phase1_Unity架构基础建设/SourceBaseline.json` 记录复制前原工程目录摘要；同目录的 `Validation` 保存当次验证结果。基础建设见 [Phase 1 验收记录](验证记录/Phase1_Unity架构基础建设/PHASE1_VALIDATION.md)，棋盘规则见 [Phase 2 验收记录](验证记录/Phase2_棋盘系统/PHASE2_VALIDATION.md)，船移动见 [Phase 3 验收记录](验证记录/Phase3_船移动/PHASE3_VALIDATION.md)，航道见 [Phase 4 验收记录](验证记录/Phase4_航道系统/PHASE4_VALIDATION.md)，高密度基础见 [Phase 5 验收记录](验证记录/Phase5_高密度棋盘基础/PHASE5_VALIDATION.md)。
+`验证记录/Phase1_Unity架构基础建设/SourceBaseline.json` 记录复制前原工程目录摘要；同目录的 `Validation` 保存当次验证结果。基础建设见 [Phase 1 验收记录](验证记录/Phase1_Unity架构基础建设/PHASE1_VALIDATION.md)，棋盘规则见 [Phase 2 验收记录](验证记录/Phase2_棋盘系统/PHASE2_VALIDATION.md)，船移动见 [Phase 3 验收记录](验证记录/Phase3_船移动/PHASE3_VALIDATION.md)，航道见 [Phase 4 验收记录](验证记录/Phase4_航道系统/PHASE4_VALIDATION.md)，高密度基础见 [Phase 5 验收记录](验证记录/Phase5_高密度棋盘基础/PHASE5_VALIDATION.md)，关卡体系校准见 [Phase 5R 验证记录](验证记录/Phase5R_关卡体系校准/PHASE5R_VALIDATION.md)。
 
 ## 2. 实际目录
 
@@ -30,6 +32,7 @@ TideboundFleet_Unity/
 │   │   │   ├── Core/                    Tidebound.Core.asmdef
 │   │   │   │   ├── Constants/           FoundationLimits
 │   │   │   │   ├── Board/               占格、校验、只读快照、路径结果与原子事务
+│   │   │   │   ├── LevelDesign/         生产配置、结构分析、依赖图、搜索和解法证明
 │   │   │   │   ├── Ship/                ShipMovementSystem、操作与状态结果
 │   │   │   │   ├── GameSession/         GameSession、LevelSessionFactory
 │   │   │   │   ├── Events/              IEventBus、SessionEventBus、类型化玩法事件
@@ -41,22 +44,24 @@ TideboundFleet_Unity/
 │   │   │       ├── Loading/             JSON 严格读写、LevelConfigLoader
 │   │   │       ├── Ship/                兼容点击视图、Grid 映射、动画协调与时间参数
 │   │   │       ├── Input/               高密度 Grid 集中点击路由
-│   │   │       ├── Layout/              SafeArea 三段布局与 12×18 单格计算
+│   │   │       ├── Layout/              SafeArea 三段布局与当前回归网格计算
+│   │   │       ├── LevelDesign/         JSON驱动的统一灰盒预览
 │   │   │       ├── Lane/                场景路径、缩略船影视图和进度协调器
 │   │   │       ├── Boss/                预留表现适配
 │   │   │       └── UI/                  Screens、Components、HUD（预留）
 │   │   ├── Config/
-│   │   │   ├── Levels/                 教学关与 80 船灰盒 JSON、引用资产、解法序列
+│   │   │   ├── Levels/                 教学关与高数量技术回归 JSON、引用资产、回放序列
+│   │   │   ├── LevelPrototypes/Phase5R/ 12个候选JSON、证明和指标清单
 │   │   │   ├── Ships/                  BaseShip.asset；旧四船型资产仅保留历史兼容
 │   │   │   ├── Bosses/                 Kraken.asset
 │   │   │   └── Visuals/                SpeedboatVisual.asset（无模型）
 │   │   ├── Editor/                     Tidebound.Editor.asmdef
 │   │   │   ├── LevelValidator/         LevelConfigInspector
-│   │   │   ├── LevelStudio/            schema v2 网格编辑、统计、校验与 JSON 保存
+│   │   │   ├── LevelStudio/            网格编辑、分析、试玩、证明录制与JSON保存
 │   │   │   └── DebugTools/             预留
 │   │   └── Tests/
-│   │       ├── EditMode/               Tidebound.Tests.EditMode.asmdef、十组测试
-│   │       └── PlayMode/               默认移动与航道 Transform 表现测试
+│   │       ├── EditMode/               规则、分析、候选证明与回归测试
+│   │       └── PlayMode/               移动、航道和候选灰盒表现测试
 │   └── …                              原工程所有 Assets 原样保留
 ├── Packages/
 └── ProjectSettings/
@@ -86,9 +91,9 @@ flowchart LR
 | 程序集 | 依赖与职责 | 限制 |
 |---|---|---|
 | Data | 数据类型、不可变船型定义、可变运行时数据、枚举 | `noEngineReferences=true`；无 Unity 类型、无 JSON 库 |
-| Core | Grid 占格、路径查询、不可变事务、船移动、航道时钟与 FIFO、创建单局、类型化事件总线 | 只引用 Data；无 Unity、物理系统、旧停车程序集 |
-| Unity | SO/JSON 适配、Grid 世界映射、指针视图、移动与航道表现协调器 | 引用 Data、Core 与 `Newtonsoft.Json.dll`；无 UnityEditor；不决定占格或入舰顺序 |
-| Editor | 配置 Inspector 数据验证与 Tidebound Level Studio V0 | 仅 Editor；不进入 Player；保存前复用 Core 校验 |
+| Core | Grid 占格、路径查询、不可变事务、船移动、航道 FIFO、依赖分析、产品验证、搜索和解法证明 | 只引用 Data；无 Unity、物理系统、旧停车程序集 |
+| Unity | SO/JSON 适配、Grid 世界映射、移动与航道表现、候选灰盒预览 | 引用 Data、Core 与 `Newtonsoft.Json.dll`；无 UnityEditor；不决定占格、可解性或入舰顺序 |
+| Editor | 配置 Inspector、Tidebound Level Studio 编辑／分析／试玩／证明 | 仅 Editor；不进入 Player；保存前复用 Core 校验和真实事务 |
 | Tests.EditMode | 真实序列化资产、负例、隔离及事件测试 | 仅 Editor、`UNITY_INCLUDE_TESTS`；显式 NUnit/TestRunner 引用 |
 
 全部 `autoReferenced=false`、`overrideReferences=true`。预定义的旧 `Assembly-CSharp` 不会自动获得 Tidebound 引用，新代码也不引用旧 `Assembly-CSharp`、DOTween、广告或归因程序集。后续 UI 与 MonoBehaviour 必须放在自己的业务程序集下。
@@ -154,9 +159,9 @@ flowchart TD
 
 Phase 3 的 `ShipMovementSystem` 是提交入口。它在表现报告到达逻辑完成点时，同时替换 `GameSession.Board`、更新 `ShipRuntimeData.Position/State` 并发布事件；这些属性只允许 Data/Core 和测试程序集写入，Unity 表现层不能直接修改。禁止表现脚本绕过状态机写格子或运行时位置。
 
-当前校验：schema v2、唯一且非空 ID、唯一基础船型与 Boss 引用、棋盘上限 12×18、逻辑长度 2／3、固定伤害、Int32 总伤害溢出、四方向、完整占格越界与重叠。正式 12×18 关卡还限制总船数≤82、长船≤8且≤10%、总占格≤172、空格≥44。
+当前运行时校验：schema v2、唯一且非空ID、唯一基础船型与Boss引用、技术安全上限24×24／160艘、逻辑长度2／3、固定伤害、Int32总伤害溢出、四方向、完整占格越界与重叠。船数区间、长船比例、方向熵、最大方向占比、空间聚集、初始出口和硬锁环由 `LevelProductionProfile` 与编辑器生产验证负责，不再污染运行时合法性。
 
-**合法布局不等于可解布局。** Phase 2 已提供单船路径扫描和显式事务，可用指定序列验证关卡；没有通用自动求解器、卡局搜索或洗牌可解性证明。
+**合法布局不等于可解布局，更不等于合格关卡。** Phase 5R 已增加真实首阻挡依赖图、强连通分量、硬锁环、小图有界精确搜索、布局指纹与证明回放；真人可读性、触控和正式难度仍必须单独验收。
 
 ## 7. 状态与事件契约
 
@@ -246,17 +251,18 @@ y=0   1  1  .  2
   -logFile '/private/tmp/TideboundFleet_EditMode.log'
 ```
 
-默认 Transform 动画另使用同一命令的 `-testPlatform PlayMode -assemblyNames Tidebound.Tests.PlayMode`，测试结果写入独立 XML。当前完整结果见 [Phase 5 验收记录](验证记录/Phase5_高密度棋盘基础/PHASE5_VALIDATION.md)。
+默认 Transform 动画和候选灰盒另使用同一命令的 `-testPlatform PlayMode -assemblyNames Tidebound.Tests.PlayMode`，测试结果写入独立 XML。当前结果为119/119 EditMode、6/6 PlayMode，详见 [Phase 5R 验证记录](验证记录/Phase5R_关卡体系校准/PHASE5R_VALIDATION.md)。
 
 不要在另一个 Editor 已打开同一工程时运行命令。测试由 Test Runner 管理退出，不添加可能提前终止测试的 `-quit`。命令行测试参数参考 [Unity Test Framework 1.1 文档](https://docs.unity3d.com/Packages/com.unity.test-framework@1.1/manual/reference-command-line.html)。程序集边界参考 [Unity 2022.3 手册](https://docs.unity3d.com/2022.3/Documentation/Manual/ScriptCompilationAssemblyDefinitionFiles.html)。
 
 ## 10. 后续开发顺序
 
-1. **Phase 6 关卡验证与生产工具：**在 Level Studio V0 上增加解法录制回放、难度指标、候选关卡流程和 30 关灰盒数据。
-2. **Phase 7 舰队与战斗：**消费 ShipEnterFleetEvent，建立最多五个标准船皮肤席位、长船支援计数、AttackToken、Boss 扣血与一次胜利。
-3. **Phase 8–11 产品闭环：**依次接入道具与死局、皮肤经济与存档、UI 与 30 关、IAA 与分析。
-4. **Phase 12 发布工程：**处理旧 Helper／商业 SDK 的 Editor 引用边界，确定安全修复后的引擎版本，验证 Android／iOS 构建和真机。
+1. **Phase 5R 重新验收：**先复验受阻前进、动态依赖Solver与反向生成，完成7／80艘的10关回放和竖屏灰盒；再做真人与最低Android设备测试，冻结规格。后续顺序以重设计方案为准。
+2. **Phase 6A 最小验证工具：**随5R接入生成、求解、回放、十关批量校验和报告；保留v2布局，增量完善版本化证明。不等待完整编辑器。
+3. **Phase 7 舰队与战斗：**消费 ShipEnterFleetEvent，建立最多五个标准船皮肤席位、长船支援计数、AttackToken、Boss 扣血与一次胜利。
+4. **Phase 8–11 产品闭环：**依次接入道具与死局、离线存档与皮肤经济，再进入6B量产工具及30关、正式UI，最后IAA与分析。
+5. **平台验证与Phase 12发布：**5R先本地试构建Android并只修必要的旧依赖阻断；发布阶段再完成工具链、Android／iOS和设备覆盖验收。
 
-详细入口、退出和回退条件见 [Phase 5 及后续开发计划](PHASE5_PLUS_PLAN.md)，关卡工具范围见 [关卡编辑器调研与规划](LEVEL_EDITOR_PLAN.md)。Phase 5 已把代码事实迁移到 12×18、长度 2／3、单基础船和 schema v2；真机触控、方向可读性和最低设备性能仍需用后续灰盒场景验收。
+详细入口、退出和回退条件见 [Phase 5R及后续开发计划](PHASE5_PLUS_PLAN.md)，关卡工具范围见 [关卡编辑器与验证工具规划](LEVEL_EDITOR_PLAN.md)。Phase 5已把代码迁移到长度2／3、单基础船和schema v2；12×18／80艘只保留为技术回归事实。正式网格、完整体量、方向交错、真机触控和最低设备性能由Phase 5R重新验收。
 
 2022.3.25f1 当前用于复现购买工程与本阶段验证，不等于已锁定最终上架版本。已有安全公告及商店工具链要求仍需在发布阶段单独验收。
