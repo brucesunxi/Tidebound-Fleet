@@ -10,19 +10,20 @@ namespace Tidebound.Tests
 {
     public sealed class DenseBoardInputAndLayoutTests
     {
-        [TestCase(360f, 640f, 0.12f, 0.74f, 0.14f, 24f, 26f)]
-        [TestCase(390f, 844f, 0.17f, 0.68f, 0.15f, 28f, 30f)]
-        [TestCase(430f, 932f, 0.17f, 0.68f, 0.15f, 31f, 33f)]
-        public void SafeAreaClassesKeepFormalBoardWithinPlannedCellRange(float width, float height,
-            float boss, float board, float tools, float minCell, float maxCell)
+        [TestCase(360f, 640f, 0.12f, 0.74f, 0.14f, 18, 18, 18f, 19f)]
+        [TestCase(390f, 844f, 0.17f, 0.68f, 0.15f, 18, 22, 19f, 21f)]
+        [TestCase(430f, 932f, 0.17f, 0.68f, 0.15f, 20, 20, 19.5f, 22f)]
+        [TestCase(430f, 932f, 0.17f, 0.68f, 0.15f, 22, 22, 18f, 19f)]
+        public void SafeAreaClassesCalculateEveryCandidateGridWithoutAFormalSizeConstant(float width, float height,
+            float boss, float board, float tools, int columns, int rows, float minCell, float maxCell)
         {
-            var metrics = BoardLayoutCalculator.Calculate(width, height);
+            var metrics = BoardLayoutCalculator.Calculate(width, height, columns, rows);
             Assert.That(metrics.BossRatio, Is.EqualTo(boss).Within(0.0001f));
             Assert.That(metrics.BoardRatio, Is.EqualTo(board).Within(0.0001f));
             Assert.That(metrics.ToolsRatio, Is.EqualTo(tools).Within(0.0001f));
             Assert.That(metrics.CellSize, Is.InRange(minCell, maxCell));
-            Assert.That(metrics.GridSize.x, Is.EqualTo(metrics.CellSize * 12f).Within(0.001f));
-            Assert.That(metrics.GridSize.y, Is.EqualTo(metrics.CellSize * 18f).Within(0.001f));
+            Assert.That(metrics.GridSize.x, Is.EqualTo(metrics.CellSize * columns).Within(0.001f));
+            Assert.That(metrics.GridSize.y, Is.EqualTo(metrics.CellSize * rows).Within(0.001f));
             Assert.That(metrics.LaneThickness, Is.LessThanOrEqualTo(width * 0.04f));
         }
 

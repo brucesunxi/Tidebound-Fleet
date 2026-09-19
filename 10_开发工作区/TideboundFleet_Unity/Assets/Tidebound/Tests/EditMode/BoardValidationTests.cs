@@ -54,8 +54,8 @@ namespace Tidebound.Tests
                 case "schema": level.SchemaVersion = 1; break;
                 case "levelId": level.LevelId = " "; break;
                 case "widthZero": level.Width = 0; break;
-                case "widthLarge": level.Width = 13; break;
-                case "heightLarge": level.Height = 19; break;
+                case "widthLarge": level.Width = FoundationLimits.MaxTechnicalBoardWidth + 1; break;
+                case "heightLarge": level.Height = FoundationLimits.MaxTechnicalBoardHeight + 1; break;
                 case "boss": level.BossId = "missing"; break;
                 case "empty": level.Ships = new ShipPlacementData[0]; break;
                 case "nullShips": level.Ships = null; break;
@@ -111,19 +111,15 @@ namespace Tidebound.Tests
         }
 
         [Test]
-        public void FormalBoardCapacityLimitsReturnSpecificDiagnostics()
+        public void RuntimeValidatorUsesTechnicalSafetyLimitInsteadOfProductDensityRules()
         {
             var fixture = LevelJsonReader.Read(LevelLoadingTests.DenseFixture().LevelJson.text);
-            var tooMany = Copy(fixture, Enumerable.Range(0, 83).Select(i =>
+            var tooMany = Copy(fixture, Enumerable.Range(0, FoundationLimits.MaxTechnicalShipCount + 1).Select(i =>
                 Ship("X" + i, 0, 0, ShipDirection.Right)).ToArray());
-            var tooManyLong = Copy(fixture, Enumerable.Range(0, 82).Select(i =>
-                Ship("L" + i, 0, 0, ShipDirection.Right, i < 9 ? 3 : 2)).ToArray());
 
             var countResult = BoardValidator.Validate(tooMany, Ships(), Bosses());
-            var longResult = BoardValidator.Validate(tooManyLong, Ships(), Bosses());
             Assert.That(countResult.Issues.Any(x => x.Code == "SHIP_COUNT_INVALID"), Is.True);
-            Assert.That(longResult.Issues.Any(x => x.Code == "LONG_SHIP_COUNT_INVALID"), Is.True);
-            Assert.That(longResult.Issues.Any(x => x.Code == "EMPTY_CELL_MINIMUM"), Is.True);
+            Assert.That(BoardValidator.Validate(fixture, Ships(), Bosses()).IsValid, Is.True);
         }
 
         private static LevelData Copy(LevelData source, ShipPlacementData[] ships) => new LevelData

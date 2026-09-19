@@ -29,13 +29,10 @@ namespace Tidebound.Unity.Layout
     /// <summary>Pure SafeArea sizing. It does not inspect sprites, renderers, colliders, or authored ships.</summary>
     public static class BoardLayoutCalculator
     {
-        public const int FormalColumns = 12;
-        public const int FormalRows = 18;
         private const float LaneCellRatio = 0.45f;
         private const float HorizontalOuterPaddingRatio = 0.015f;
 
-        public static BoardLayoutMetrics Calculate(float safeWidth, float safeHeight,
-            int columns = FormalColumns, int rows = FormalRows)
+        public static BoardLayoutMetrics Calculate(float safeWidth, float safeHeight, int columns, int rows)
         {
             if (safeWidth <= 0f) throw new ArgumentOutOfRangeException(nameof(safeWidth));
             if (safeHeight <= 0f) throw new ArgumentOutOfRangeException(nameof(safeHeight));

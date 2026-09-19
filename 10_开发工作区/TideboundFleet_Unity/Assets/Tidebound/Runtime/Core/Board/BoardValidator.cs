@@ -43,20 +43,18 @@ namespace Tidebound.Board
             if (level == null) { result.Add("LEVEL_NULL", "level", "Level is required."); return result; }
             if (level.SchemaVersion != FoundationLimits.LevelSchemaVersion) result.Add("SCHEMA_UNSUPPORTED", "schemaVersion", $"Expected schemaVersion {FoundationLimits.LevelSchemaVersion}.");
             if (!ValidId(level.LevelId)) result.Add("ID_INVALID", "levelId", "A nonempty, trimmed levelId is required.");
-            var boardValid = level.Width > 0 && level.Width <= FoundationLimits.MaxBoardWidth &&
-                             level.Height > 0 && level.Height <= FoundationLimits.MaxBoardHeight;
-            if (!boardValid) result.Add("BOARD_SIZE_INVALID", "width/height", $"Board must fit within 1..{FoundationLimits.MaxBoardWidth} columns and 1..{FoundationLimits.MaxBoardHeight} rows.");
+            var boardValid = level.Width > 0 && level.Width <= FoundationLimits.MaxTechnicalBoardWidth &&
+                             level.Height > 0 && level.Height <= FoundationLimits.MaxTechnicalBoardHeight;
+            if (!boardValid) result.Add("BOARD_SIZE_INVALID", "width/height", $"Board must fit within 1..{FoundationLimits.MaxTechnicalBoardWidth} columns and 1..{FoundationLimits.MaxTechnicalBoardHeight} rows.");
             if (!ValidId(level.BossId) || !bossIds.Contains(level.BossId)) result.Add("BOSS_UNKNOWN", "bossId", "Boss must resolve in the catalog.");
             if (level.Ships == null || level.Ships.Length == 0)
             { result.Add("SHIPS_EMPTY", "ships", "At least one ship is required."); return result; }
-            if (level.Ships.Length > FoundationLimits.MaxShipCount)
-                result.Add("SHIP_COUNT_INVALID", "ships", $"A level may contain at most {FoundationLimits.MaxShipCount} ships.");
+            if (level.Ships.Length > FoundationLimits.MaxTechnicalShipCount)
+                result.Add("SHIP_COUNT_INVALID", "ships", $"A level may contain at most {FoundationLimits.MaxTechnicalShipCount} ships.");
 
             var ids = new HashSet<string>(StringComparer.Ordinal);
             var occupancy = new Dictionary<GridPosition, string>();
             long totalDamage = 0;
-            var longShipCount = 0;
-            var authoredCellCount = 0;
             for (var i = 0; i < level.Ships.Length; i++)
             {
                 var ship = level.Ships[i]; var path = $"ships[{i}]";
@@ -68,8 +66,6 @@ namespace Tidebound.Board
                 totalDamage += definition.DamageLv1;
                 if (ship.Length < FoundationLimits.MinShipLength || ship.Length > FoundationLimits.MaxShipLength)
                 { result.Add("LENGTH_INVALID", path + ".length", "MVP logical length must be 2 or 3 cells."); continue; }
-                authoredCellCount = checked(authoredCellCount + ship.Length);
-                if (ship.Length == FoundationLimits.MaxShipLength) longShipCount++;
                 if (!Enum.IsDefined(typeof(ShipDirection), ship.Direction))
                 { result.Add("DIRECTION_INVALID", path + ".direction", "Expected Up, Down, Left or Right."); continue; }
                 if (!boardValid) continue;
@@ -86,13 +82,6 @@ namespace Tidebound.Board
                     else occupancy.Add(cell, ship.Id);
                 }
             }
-            if (longShipCount > FoundationLimits.MaxLongShipCount || longShipCount * 10 > level.Ships.Length)
-                result.Add("LONG_SHIP_COUNT_INVALID", "ships", $"Length-3 ships may be at most {FoundationLimits.MaxLongShipCount} and 10% of the level.");
-            if (authoredCellCount > FoundationLimits.MaxOccupiedCellCount)
-                result.Add("OCCUPANCY_LIMIT_EXCEEDED", "ships", $"Authored footprints may occupy at most {FoundationLimits.MaxOccupiedCellCount} cells.");
-            if (boardValid && level.Width == FoundationLimits.MaxBoardWidth && level.Height == FoundationLimits.MaxBoardHeight &&
-                level.Width * level.Height - authoredCellCount < FoundationLimits.MinFormalBoardEmptyCellCount)
-                result.Add("EMPTY_CELL_MINIMUM", "ships", $"A formal board must keep at least {FoundationLimits.MinFormalBoardEmptyCellCount} empty cells.");
             if (totalDamage <= 0 || totalDamage > int.MaxValue) result.Add("TOTAL_DAMAGE_INVALID", "ships", "Initial Lv1 total damage must fit in a positive Int32.");
             return result;
         }
