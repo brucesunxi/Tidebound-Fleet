@@ -15,6 +15,7 @@ namespace Tidebound.LevelDesign
     public sealed class LevelGenerationResult
     {
         public LevelGenerationStatus Status { get; }
+        public string GeneratorVersion { get; }
         public string Reason { get; }
         public LevelData Level { get; }
         public LevelSolutionProof ConstructionProof { get; }
@@ -29,8 +30,9 @@ namespace Tidebound.LevelDesign
         internal LevelGenerationResult(LevelGenerationStatus status, string reason, int evaluations,
             int backtracks, int deepest, int independentSeeds, LevelData level = null,
             LevelSolutionProof construction = null, LevelSolutionProof solverProof = null,
-            LevelSolverResult solver = null, LevelAnalysisReport analysis = null)
+            LevelSolverResult solver = null, LevelAnalysisReport analysis = null, string generatorVersion = ReverseLevelGenerator.Version)
         {
+            GeneratorVersion = generatorVersion;
             Status = status; Reason = reason; CandidateEvaluations = evaluations; Backtracks = backtracks;
             DeepestShipCount = deepest; IndependentSeedCount = independentSeeds; Level = level;
             ConstructionProof = construction; SolverProof = solverProof; Solver = solver; Analysis = analysis;

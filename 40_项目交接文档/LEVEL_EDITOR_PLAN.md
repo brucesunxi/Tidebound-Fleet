@@ -2,7 +2,7 @@
 
 版本：3.1
 日期：2026-09-19
-状态：旧原型工具保留；I1算法与两个样关导出入口已实现，I2／6A完整工具接线待实施，6B量产工具后移。当前顺序以[后续计划](PHASE5_PLUS_PLAN.md)为准。
+状态：旧原型工具保留；I2b十关批量生成与证明导出已实现，I2／6A完整工具接线待实施，6B量产工具后移。当前顺序以[后续计划](PHASE5_PLUS_PLAN.md)为准。
 
 I2a已增加只读局部诊断：Level Studio的`Local Layout Diagnostics`按钮可分析编辑布局或当前试玩棋盘；可选自定义区域，默认完整棋盘。报告同向行列／跨空隙排列、4×4方向熵和覆盖率、最大空矩形、四分区占用率。`Tools > Tidebound > Export I1 Local Layout Audit`可导出实际样关报告；[验收及操作说明](验证记录/Phase5R_I2a_局部结构诊断/I2A_VALIDATION.md)。诊断不自动批准关卡，阈值待校准。
 
@@ -170,7 +170,7 @@ V0 是技术基础，原12×18产品限制已移除；`TestLevel_002` 不代表�
 
 ### Phase 5R＋6A：先做最小验证入口
 
-I1已提供 `Tools/Tidebound/Export I1 Algorithm Samples`，保存两个带证明样关；LevelSolver、反向生成、完整图和证明适配已就绪。下列编辑器可视接线与十关批量流程仍由I2完成，详见[I1验收](验证记录/Phase5R_I1_反向生成与求解/I1_VALIDATION.md)。
+I1已提供 `Tools/Tidebound/Export I1 Algorithm Samples`，保存两个带证明样关；LevelSolver、反向生成、完整图和证明适配已就绪。I2b新增 `Tools/Tidebound/Generate Ten Recipe Candidates`，全批成功才导出，已有不同内容拒绝覆盖；下列编辑器可视接线仍待完成，详见[I1验收](验证记录/Phase5R_I1_反向生成与求解/I1_VALIDATION.md)。
 
 - 新LevelSolver与反向生成器接入现有工具，保留v2布局及版本化伴随证明。
 - 新10关批量校验、实际运行时回放、证明失效与草稿／批准清单。
@@ -210,4 +210,4 @@ I1已提供 `Tools/Tidebound/Export I1 Algorithm Samples`，保存两个带证�
 
 ## 11. 当前下一步
 
-I1算法已通过；下一步将新Solver与反向生成接入完整编辑器流程，扩展10关证明并完成真实运行时三段灰盒。再执行5名首次玩家和最低Android设备测试，冻结正式网格与体量；通过后用这10关接战斗。30关与完整编辑器能力后移到核心闭环之后。
+I2b十关候选及模型回放已通过；下一步将新Solver与证明接入最小编辑器流程，加载已保存十关并完成真实运行时三段灰盒。再执行5名首次玩家和最低Android设备测试，冻结正式网格与体量；通过后用这10关接战斗。30关与完整编辑器能力后移到核心闭环之后。

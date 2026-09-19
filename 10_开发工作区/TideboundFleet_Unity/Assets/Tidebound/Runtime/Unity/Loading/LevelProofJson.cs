@@ -36,7 +36,7 @@ namespace Tidebound.Config
                 throw new ArgumentException("A successful generation and its profile are required.");
             var root = JObject.Parse(Write(result.SolverProof));
             root["status"] = "AlgorithmPrototypeOnly";
-            root["generatorVersion"] = ReverseLevelGenerator.Version;
+            root["generatorVersion"] = result.GeneratorVersion;
             root["solverVersion"] = LevelSolver.Version;
             root["seed"] = seed; root["profileId"] = profile.Id;
             root["optimality"] = result.Solver.Optimality.ToString();

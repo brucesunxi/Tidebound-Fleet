@@ -1,12 +1,12 @@
 # Tidebound Fleet — Unity 架构与关卡体系基础
 
-状态：Phase 5R I1算法已实现并通过自动化；I2完整十关及真实竖屏灰盒待实施。日期：2026-09-19。
+状态：Phase 5R I2b十关候选及模型验证已通过；真实竖屏灰盒待实施。日期：2026-09-19。
 
-I2a增量：Core新增独立`LocalLayoutAnalyzer`，提供同向船列、局部方向窗口、最大空矩形和分区占用报告；Editor接只读诊断与审计导出。没有更改生成器、移动事务或v2布局。168/168 EditMode通过，见[I2a验收](验证记录/Phase5R_I2a_局部结构诊断/I2A_VALIDATION.md)；筛选阈值与完整十关仍待后续。
+I2a增量：Core新增独立`LocalLayoutAnalyzer`，提供同向船列、局部方向窗口、最大空矩形和分区占用报告；Editor接只读诊断与审计导出。没有更改生成器、移动事务或v2布局。168/168 EditMode通过，见[I2a验收](验证记录/Phase5R_I2a_局部结构诊断/I2A_VALIDATION.md)；I2b进一步加入RecipeLevelGenerator、LevelRecipe、几何归一及候选JSON／manifest，十关217/217 EditMode通过，见[I2b验收](验证记录/Phase5R_I2b_十关候选/I2B_VALIDATION.md)；本轮筛选版本为暂定，未改Movement／Transit和v2布局结构。
 
 当前移动规则为受阻前进到最近阻挡前停住，不退回。I1复用现有移动和航道，新增完整阻挡图、LevelSolver、反向插入生成及版本化证明；7／80船两个样关已通过独立求解与移动／航道模型回放。最终153/153 EditMode、6/6 PlayMode通过，见[I1验收](验证记录/Phase5R_I1_反向生成与求解/I1_VALIDATION.md)。
 
-旧首阻挡图、FNV证明和12个历史原型继续保留回归；新证明使用规则／出口版本与SHA-256，布局仍为v2。完整十关、真实场景、触控与Android验收未完成。目标边界见[重设计方案](PHASE5R_REDESIGN.md)，剩余顺序见[后续计划](PHASE5_PLUS_PLAN.md)。
+旧首阻挡图、FNV证明和12个历史原型继续保留回归；新证明使用规则／出口版本与SHA-256，布局仍为v2。十关候选的模型验证已完成；真实场景、触控与Android验收未完成。目标边界见[重设计方案](PHASE5R_REDESIGN.md)，剩余顺序见[后续计划](PHASE5_PLUS_PLAN.md)。
 
 ## 1. 工作工程与边界
 

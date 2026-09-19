@@ -1,0 +1,410 @@
+{
+  "proofVersion": 1,
+  "rulesVersion": "ForwardUntilBlockedV1",
+  "exitMode": "AllBoundaryEdges",
+  "levelId": "P5R_Ten_001",
+  "layoutFingerprint": "0AC44EA4BB78F82C139BCA2460B9902CBBAD218D9D3DC0F9F15028466256593F",
+  "solutionSteps": [
+    {
+      "shipId": "S005",
+      "from": {
+        "x": 9,
+        "y": 12
+      },
+      "to": {
+        "x": 9,
+        "y": -1
+      },
+      "outcome": "Exit",
+      "beforeHash": "0AC44EA4BB78F82C139BCA2460B9902CBBAD218D9D3DC0F9F15028466256593F",
+      "afterHash": "9249F912ADD44371145330AAA2A4D5A2689CE96FC55D2B23C6AD6C4E67E32DC1"
+    },
+    {
+      "shipId": "S006",
+      "from": {
+        "x": 6,
+        "y": 7
+      },
+      "to": {
+        "x": 14,
+        "y": 7
+      },
+      "outcome": "Exit",
+      "beforeHash": "9249F912ADD44371145330AAA2A4D5A2689CE96FC55D2B23C6AD6C4E67E32DC1",
+      "afterHash": "4F3C7B64388BA2A78EC8853B2F2E0FDC1BF6AFA2888C9C5F31BF2FDB66537396"
+    },
+    {
+      "shipId": "S003",
+      "from": {
+        "x": 7,
+        "y": 10
+      },
+      "to": {
+        "x": 7,
+        "y": -1
+      },
+      "outcome": "Exit",
+      "beforeHash": "4F3C7B64388BA2A78EC8853B2F2E0FDC1BF6AFA2888C9C5F31BF2FDB66537396",
+      "afterHash": "38004C6936C5F675DEC250B2F5B584345C750E8E4ACF4843779F2D95AE52686E"
+    },
+    {
+      "shipId": "S002",
+      "from": {
+        "x": 7,
+        "y": 12
+      },
+      "to": {
+        "x": 7,
+        "y": -1
+      },
+      "outcome": "Exit",
+      "beforeHash": "38004C6936C5F675DEC250B2F5B584345C750E8E4ACF4843779F2D95AE52686E",
+      "afterHash": "EB80368F900C6ECCF278058DDB3DF14657552109DF8229FF27F37FD8ADA9384B"
+    },
+    {
+      "shipId": "S007",
+      "from": {
+        "x": 6,
+        "y": 9
+      },
+      "to": {
+        "x": -1,
+        "y": 9
+      },
+      "outcome": "Exit",
+      "beforeHash": "EB80368F900C6ECCF278058DDB3DF14657552109DF8229FF27F37FD8ADA9384B",
+      "afterHash": "DFF5196CC658CEE7562C6F0044DEB0401744A8FF3CCF22452D229022CA0BC35B"
+    },
+    {
+      "shipId": "S004",
+      "from": {
+        "x": 5,
+        "y": 7
+      },
+      "to": {
+        "x": 5,
+        "y": 18
+      },
+      "outcome": "Exit",
+      "beforeHash": "DFF5196CC658CEE7562C6F0044DEB0401744A8FF3CCF22452D229022CA0BC35B",
+      "afterHash": "A13E6E561557890113CC73C75414D94204946EC8FAEC423D95203AC1BC33D096"
+    },
+    {
+      "shipId": "S001",
+      "from": {
+        "x": 5,
+        "y": 5
+      },
+      "to": {
+        "x": 5,
+        "y": 18
+      },
+      "outcome": "Exit",
+      "beforeHash": "A13E6E561557890113CC73C75414D94204946EC8FAEC423D95203AC1BC33D096",
+      "afterHash": "A31DEC1EBC6BB20CD73E61A070CFA9B9F55E6B37E05978E441A2CC7D7BCC2939"
+    }
+  ],
+  "status": "CandidateNeedsPlaytest",
+  "generatorVersion": "ReverseRefinementV1",
+  "solverVersion": "LevelSolverV1",
+  "seed": 20260919,
+  "profileId": "I1_Tutorial_7",
+  "optimality": "Proven",
+  "constructionOrder": [
+    "S007",
+    "S006",
+    "S005",
+    "S004",
+    "S003",
+    "S002",
+    "S001"
+  ],
+  "metrics": {
+    "shipCount": 7,
+    "longShipCount": 0,
+    "initialExitCount": 3,
+    "initialPartialMoveCount": 1,
+    "completeDependencyDepthNodes": 3,
+    "directionEntropy": 0.92118549658855442,
+    "directionClustering": 0.4,
+    "maximumDirectionShare": 0.42857142857142855,
+    "occupancyRatio": 0.055555555555555552,
+    "independentSeeds": 3,
+    "candidateEvaluations": 1248,
+    "backtracks": 4,
+    "availableByStep": [
+      3,
+      2,
+      2,
+      2,
+      1,
+      1,
+      1
+    ],
+    "unlockedByStep": [
+      0,
+      1,
+      1,
+      0,
+      1,
+      1,
+      0
+    ]
+  },
+  "recipeVersion": "TenRecipesV1",
+  "screeningVersion": "LocalCandidateScreenV1",
+  "recipe": {
+    "id": "I1_Tutorial_7",
+    "width": 14,
+    "height": 18,
+    "shipCount": 7,
+    "longShipCount": 0,
+    "minInitialExits": 2,
+    "maxInitialExits": 3,
+    "minDependencyDepth": 3,
+    "maxDependencyDepth": 4,
+    "maxIndependentSeeds": 4,
+    "minDirectionEntropy": 0.9,
+    "maxDirectionClustering": 0.6,
+    "maxDirectionShare": 0.43,
+    "minPartialMoves": 1,
+    "area": {
+      "x": 4,
+      "y": 5,
+      "width": 6,
+      "height": 8
+    }
+  },
+  "localScreen": {
+    "maximumRunShips": 3,
+    "minimumLocalEntropy": 0.3,
+    "minimumP10Entropy": 0.4,
+    "maximumEmptyArea": 16
+  },
+  "bootstrapGeneratorVersion": "ReverseInsertionV1",
+  "bootstrapProfile": {
+    "id": "I1_Tutorial_7",
+    "width": 14,
+    "height": 18,
+    "shipCount": 7,
+    "longShipCount": 0,
+    "minInitialExits": 2,
+    "maxInitialExits": 3,
+    "minDependencyDepth": 3,
+    "maxDependencyDepth": 4,
+    "maxIndependentSeeds": 4,
+    "minDirectionEntropy": 0.9,
+    "maxDirectionClustering": 0.6,
+    "maxDirectionShare": 0.43,
+    "minPartialMoves": 1,
+    "area": {
+      "x": 4,
+      "y": 5,
+      "width": 6,
+      "height": 8
+    }
+  },
+  "refinement": {
+    "maxMutations": 60000,
+    "timeLimitMilliseconds": 60000,
+    "bootstrapMaxCandidateEvaluations": 2000000,
+    "bootstrapMaxBacktracks": 1000,
+    "bootstrapBranchWidth": 16,
+    "bootstrapTimeLimitMilliseconds": 15000,
+    "mutationsAttempted": 0,
+    "mutationsAccepted": 0,
+    "finalPenalty": 0.0
+  },
+  "localMetrics": {
+    "analyzerVersion": "LocalLayoutV1",
+    "area": {
+      "x": 4,
+      "y": 5,
+      "width": 6,
+      "height": 8
+    },
+    "windowSize": 4,
+    "minimumWindowShips": 4,
+    "allowedGapCells": 1,
+    "longestRunShips": 2,
+    "minimumWindowEntropy": 0.40563906222956642,
+    "p10WindowEntropy": 0.40563906222956642,
+    "eligibleWindows": 8,
+    "totalWindows": 15,
+    "largestEmptyRectangle": {
+      "x": 8,
+      "y": 5,
+      "width": 2,
+      "height": 6
+    },
+    "regionOccupancy": [
+      {
+        "area": {
+          "x": 4,
+          "y": 5,
+          "width": 3,
+          "height": 4
+        },
+        "occupancyRatio": 0.41666666666666669
+      },
+      {
+        "area": {
+          "x": 7,
+          "y": 5,
+          "width": 3,
+          "height": 4
+        },
+        "occupancyRatio": 0.083333333333333329
+      },
+      {
+        "area": {
+          "x": 4,
+          "y": 9,
+          "width": 3,
+          "height": 4
+        },
+        "occupancyRatio": 0.16666666666666666
+      },
+      {
+        "area": {
+          "x": 7,
+          "y": 9,
+          "width": 3,
+          "height": 4
+        },
+        "occupancyRatio": 0.5
+      }
+    ]
+  },
+  "releaseTraces": [
+    {
+      "strategy": "solver-ascending",
+      "shipIds": [
+        "S005",
+        "S006",
+        "S003",
+        "S002",
+        "S007",
+        "S004",
+        "S001"
+      ],
+      "availableBefore": [
+        3,
+        2,
+        2,
+        2,
+        1,
+        1,
+        1
+      ],
+      "partialBefore": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "newExits": [
+        0,
+        1,
+        1,
+        0,
+        1,
+        1,
+        0
+      ],
+      "first60PercentMeanExits": 2.0,
+      "first60PercentMaximumExits": 3,
+      "first60PercentLongestSingleExitRun": 1,
+      "remainingShips": 0
+    },
+    {
+      "strategy": "construction-descending",
+      "shipIds": [
+        "S007",
+        "S006",
+        "S005",
+        "S004",
+        "S003",
+        "S002",
+        "S001"
+      ],
+      "availableBefore": [
+        3,
+        3,
+        3,
+        2,
+        2,
+        2,
+        1
+      ],
+      "partialBefore": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "newExits": [
+        1,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0
+      ],
+      "first60PercentMeanExits": 2.6,
+      "first60PercentMaximumExits": 3,
+      "first60PercentLongestSingleExitRun": 0,
+      "remainingShips": 0
+    },
+    {
+      "strategy": "seeded-exits",
+      "shipIds": [
+        "S005",
+        "S006",
+        "S007",
+        "S003",
+        "S002",
+        "S004",
+        "S001"
+      ],
+      "availableBefore": [
+        3,
+        2,
+        2,
+        2,
+        2,
+        1,
+        1
+      ],
+      "partialBefore": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "newExits": [
+        0,
+        1,
+        1,
+        1,
+        0,
+        1,
+        0
+      ],
+      "first60PercentMeanExits": 2.2,
+      "first60PercentMaximumExits": 3,
+      "first60PercentLongestSingleExitRun": 0,
+      "remainingShips": 0
+    }
+  ]
+}
