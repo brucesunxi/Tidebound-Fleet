@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using Tidebound.Board;
@@ -33,8 +34,12 @@ namespace Tidebound.Unity.LevelDesign
         private ShipMovementController movement;
         private TransitSystem transit;
         private ShipToolSystem tools;
+        private ToolInventory toolInventory;
+        private readonly ToolGiftPolicy toolGiftPolicy=new ToolGiftPolicy();
         private BoardProgressMonitor progress;
-        private RectTransform menuPanel;
+        private RectTransform menuPanel, acquisitionPanel;
+        private bool acquisitionPauseOwned;
+        private Text acquisitionTitle;
         private bool menuPauseOwned;
         private Button rescueButton,shuffleButton,reverseButton;
         private FleetCombatSystem combat;
@@ -78,24 +83,36 @@ namespace Tidebound.Unity.LevelDesign
         public bool IsCleared => combat != null && combat.IsVictorious;
         public FleetCombatSystem Combat => combat;
         public ShipToolSystem Tools => tools;
+        public ToolInventory ToolInventory => toolInventory;
         public BoardProgressMonitor Progress => progress;
         public bool IsMenuOpen => menuPanel!=null && menuPanel.gameObject.activeSelf;
+        public bool IsAcquisitionOpen => acquisitionPanel!=null && acquisitionPanel.gameObject.activeSelf;
         public FleetCombatGrayboxView CombatView => combatView;
         public Vector3 ViewPosition(string id) => shipViews[id].transform.position;
 
         private void Start()
         {
             if (initialized || manifest == null) return;
-            try { Initialize(new CandidateLevelCatalog(manifest.text, layouts.Select(x => x.text), proofs.Select(x => x.text))); }
+            try
+            {
+                var saveRoot=Application.persistentDataPath;
+#if UNITY_EDITOR
+                // Keep editor trials project-local, separate from installed player data.
+                saveRoot=Path.GetFullPath(Path.Combine(Application.dataPath,"../Library/Tidebound"));
+#endif
+                Initialize(new CandidateLevelCatalog(manifest.text,layouts.Select(x=>x.text),proofs.Select(x=>x.text)),
+                    inventory:new ToolInventory(new ToolInventoryFileStore(Path.Combine(saveRoot,"tool-inventory-v1.json"))));
+            }
             catch (Exception e) { Debug.LogError("Graybox candidate validation failed: " + e.Message); enabled = false; }
         }
 
         public void ConfigureAssets(TextAsset manifestAsset, TextAsset[] levelAssets, TextAsset[] proofAssets)
         { manifest = manifestAsset; layouts = levelAssets; proofs = proofAssets; }
 
-        public void Initialize(CandidateLevelCatalog source, ShipMovementTiming timing = null, LaneTransitTiming laneTiming = null, CombatTiming combatTiming = null)
+        public void Initialize(CandidateLevelCatalog source, ShipMovementTiming timing = null, LaneTransitTiming laneTiming = null, CombatTiming combatTiming = null, ToolInventory inventory = null)
         {
             catalog = source ?? throw new ArgumentNullException(nameof(source));
+            toolInventory=inventory ?? new ToolInventory();
             movementTiming = timing ?? new ShipMovementTiming();
             transitTiming = laneTiming ?? new LaneTransitTiming();
             this.combatTiming = combatTiming ?? new CombatTiming();
@@ -116,7 +133,8 @@ namespace Tidebound.Unity.LevelDesign
             BuildBoard();
             var system = new ShipMovementSystem(session);
             movement = new ShipMovementController(system, mapper, shipViews.Values, movementTiming);
-            tools = new ShipToolSystem(session,system,index>=2);
+            toolInventory.ReachLevel(index+1,toolGiftPolicy);
+            tools = new ShipToolSystem(session,system,toolInventory,index+1>=toolGiftPolicy.UnlockLevel);
             progress = new BoardProgressMonitor(session,system);
             transit = new TransitSystem(session, transitTiming);
             combat = new FleetCombatSystem(session, transit, combatTiming);
@@ -126,7 +144,7 @@ namespace Tidebound.Unity.LevelDesign
             subscriptions.Add(session.Events.Subscribe<ShipExitBoardEvent>(e => exited.Add(e.Ship.ShipId)));
             subscriptions.Add(session.Events.Subscribe<ShipEnterFleetEvent>(e => entered.Add(e.Ship.ShipId)));
             input.Configure(() => session?.Board, ClickShip);
-            movement.StartPlaying(); notice = index==2 ? "Tools: 1 use each. Choose a tool, then a ship." : "Tap a ship to move forward.";
+            movement.StartPlaying(); notice = index==2 ? "Tools are limited. Restart does not refill." : "Tap a ship to move forward.";
             RefreshViewport(); UpdateLabels();
         }
 
@@ -155,14 +173,30 @@ namespace Tidebound.Unity.LevelDesign
 
         public void SelectTool(ShipTool tool)
         {
-            if(demo!=null || IsMenuOpen)return;
+            if(demo!=null || IsMenuOpen || IsAcquisitionOpen)return;
+            if(tools.Enabled && session.State==GameState.Playing && !IsBusy && toolInventory.IsAvailable && tools.Remaining(tool)==0)
+            { ShowAcquisition(tool);return; }
             input.CancelSelection();
-            ApplyToolResult(tool==ShipTool.Shuffle ? tools.Shuffle() : tools.Select(tool));
+            ApplyToolResult(tool==ShipTool.Rescue ? tools.Rescue() : tool==ShipTool.Shuffle ? tools.Shuffle() : tools.Select(tool));
+        }
+        private void ShowAcquisition(ShipTool tool)
+        {
+            input.CancelSelection();tools.CancelSelection();
+            acquisitionTitle.text="Get "+(tool==ShipTool.Rescue ? "Rescue" : tool==ShipTool.Shuffle ? "Shuffle" : "Reverse");
+            acquisitionPauseOwned=session.State==GameState.Playing;
+            if(acquisitionPauseOwned)movement.Pause();
+            acquisitionPanel.gameObject.SetActive(true);UpdateLabels();
+        }
+        public void CloseAcquisition()
+        {
+            if(acquisitionPanel==null)return;
+            acquisitionPanel.gameObject.SetActive(false);
+            if(acquisitionPauseOwned && IsPaused)movement.Resume();
+            acquisitionPauseOwned=false;UpdateLabels();
         }
         public void CancelTool() { tools.CancelSelection();notice="Tool cancelled.";UpdateLabels(); }
         private void ApplyToolResult(ToolUseStatus result)
         {
-            if(result==ToolUseStatus.PendingAnimation)movement.PresentActiveOperation();
             if(result==ToolUseStatus.Applied)
             {
                 foreach(var ship in session.Board.Ships)
@@ -173,7 +207,9 @@ namespace Tidebound.Unity.LevelDesign
                 ResetBodyColors();
             }
             notice=result==ToolUseStatus.Selected ? "Tap a ship. Tap the tool again to cancel." :
-                result==ToolUseStatus.Applied ? "Tool applied." : result==ToolUseStatus.PendingAnimation ? "Rescuing ship to the nearest edge." :
+                result==ToolUseStatus.Applied ? "Tool used. Stock saved." :
+                result==ToolUseStatus.NoUses ? "No stock. Level gifts; ad / shop coming soon." :
+                result==ToolUseStatus.StorageUnavailable ? "Cannot save inventory. No tool used." :
                 result==ToolUseStatus.Unproven ? "No proven safe result. No use consumed." : "Tool: "+result;
             progress.Refresh();UpdateLabels();
         }
@@ -339,6 +375,15 @@ namespace Tidebound.Unity.LevelDesign
             Button("Next",menuPanel,"Next",()=>{CloseMenu();SelectLevel((LevelIndex+1)%catalog.Count);});
             Button("Continue",menuPanel,"Continue",CloseMenu);
             menuPanel.gameObject.SetActive(false);
+            acquisitionPanel=Panel("ToolAcquisition",canvasRect,new Rect(),new Color(.025f,.055f,.08f,.97f));
+            acquisitionPanel.GetComponent<Image>().raycastTarget=true;
+            acquisitionTitle=Label("Title",acquisitionPanel,"Get tools",20);
+            Label("Availability",acquisitionPanel,"Not available in this build.\nLevel gifts remain available.",14);
+            Button("Ad",acquisitionPanel,"Watch ad",null).interactable=false;
+            Button("Coins",acquisitionPanel,"Buy with coins",null).interactable=false;
+            Button("GooglePlay",acquisitionPanel,"Google Play pack",null).interactable=false;
+            Button("Close",acquisitionPanel,"Continue",CloseAcquisition);
+            acquisitionPanel.gameObject.SetActive(false);
             if (FindObjectOfType<EventSystem>() == null)
             {
                 var events = new GameObject("GrayboxEventSystem",typeof(EventSystem),typeof(StandaloneInputModule));
@@ -360,7 +405,12 @@ namespace Tidebound.Unity.LevelDesign
             for (var i=0;i<3;i++) Place((RectTransform)toolsPanel.Find(names[i]),new Rect(8+i*(buttonWidth+8),4,buttonWidth,Mathf.Max(48,Layout.Tools.height-40)));
             var toolNames=new[]{"Rescue","Shuffle","Reverse"};
             for(var i=0;i<3;i++)Place((RectTransform)toolsPanel.Find(toolNames[i]),new Rect(8+i*(buttonWidth+8),4,buttonWidth,Mathf.Max(48,Layout.Tools.height-40)));
-            Place(menuPanel,Layout.Safe);
+            Place(menuPanel,Layout.Safe);Place(acquisitionPanel,Layout.Safe);
+            var acquireY=Layout.Safe.height/2;
+            Place(acquisitionTitle.rectTransform,new Rect(16,acquireY+108,w-32,36));
+            Place((RectTransform)acquisitionPanel.Find("Availability"),new Rect(16,acquireY+56,w-32,44));
+            var sources=new[]{"Ad","Coins","GooglePlay","Close"};
+            for(var i=0;i<sources.Length;i++)Place((RectTransform)acquisitionPanel.Find(sources[i]),new Rect(32,acquireY-i*56,w-64,48));
             var menuWidth=(w-40)/2;var menuY=Layout.Safe.height/2-84;
             Place((RectTransform)menuPanel.Find("MenuTitle"),new Rect(8,menuY+176,w-16,32));
             var menuNames=new[]{"Previous","Next","Hint","Auto","Restart","Continue"};
@@ -380,12 +430,12 @@ namespace Tidebound.Unity.LevelDesign
             auto.interactable = demo != null || (!IsPaused && !IsBusy && !IsCleared);
             hint.interactable = session.State==GameState.Playing && !IsBusy && demo == null && session.Board.ShipCount>0;
             var toolKinds=new[]{ShipTool.Rescue,ShipTool.Shuffle,ShipTool.Reverse};var buttons=new[]{rescueButton,shuffleButton,reverseButton};
-            var labels=new[]{"Remove","Shuffle","Flip"};
+            var labels=new[]{"Rescue 2","Shuffle 5","Reverse"};
             for(var i=0;i<3;i++)
             {
                 var selected=tools.Selection==toolKinds[i];
                 buttons[i].GetComponentInChildren<Text>(true).text=selected ? "Cancel" : labels[i]+" ("+tools.Remaining(toolKinds[i])+")";
-                buttons[i].interactable=tools.Enabled && session.State==GameState.Playing && !IsBusy && demo==null && session.Board.ShipCount>0 && tools.Remaining(toolKinds[i])>0;
+                buttons[i].interactable=tools.Enabled && session.State==GameState.Playing && !IsBusy && demo==null && session.Board.ShipCount>0;
             }
         }
 
@@ -426,7 +476,7 @@ namespace Tidebound.Unity.LevelDesign
         private void ClearSession()
         {
             demo=null; input?.CancelSelection(); movement?.Dispose(); movement=null;
-            tools?.Dispose();tools=null;progress=null;menuPanel=null;menuPauseOwned=false;
+            tools?.Dispose();tools=null;progress=null;menuPanel=null;menuPauseOwned=false;acquisitionPanel=null;acquisitionTitle=null;acquisitionPauseOwned=false;
             combat?.Dispose(); combat=null; combatView=null;
             lane?.Dispose(); lane=null; transit?.Dispose(); transit=null;
             foreach (var subscription in subscriptions) subscription.Dispose(); subscriptions.Clear();

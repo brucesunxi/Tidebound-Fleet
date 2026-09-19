@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using Tidebound.Config;
+using Tidebound.Board;
 using Tidebound.Tools;
 using Tidebound.Core;
 using Tidebound.Combat;
@@ -56,34 +57,41 @@ namespace Tidebound.Tests
         }
 
         [UnityTest]
-        public IEnumerator ToolsMenuRescueAndRestartUseRealViewsAndFreshInventory()
+        public IEnumerator ImmediateTwoShipRescueFiveShipShuffleAndStockSurviveRestart()
         {
             var game=Create(true);
             try
             {
                 yield return null;Assert.That(game.Tools.Enabled,Is.False);game.SelectLevel(2);yield return null;
-                Assert.That(game.Tools.Enabled,Is.True);game.SelectTool(ShipTool.Reverse);game.SelectTool(ShipTool.Reverse);
-                Assert.That(game.Tools.Selection,Is.EqualTo(ShipTool.None));Assert.That(game.Tools.Remaining(ShipTool.Reverse),Is.EqualTo(1));
-                game.ToggleMenu();Assert.That(game.IsPaused,Is.True);Assert.That(game.IsMenuOpen,Is.True);game.CloseMenu();Assert.That(game.IsPaused,Is.False);
+                Assert.That(game.Tools.Remaining(ShipTool.Rescue),Is.EqualTo(1));
+                game.SelectTool(ShipTool.Reverse);game.SelectTool(ShipTool.Reverse);Assert.That(game.Tools.Selection,Is.EqualTo(ShipTool.None));
+                game.ToggleMenu();Assert.That(game.IsPaused,Is.True);game.CloseMenu();Assert.That(game.IsPaused,Is.False);
                 game.TogglePause();game.ToggleMenu();game.CloseMenu();Assert.That(game.IsPaused,Is.True);game.TogglePause();
-                game.SelectTool(ShipTool.Shuffle);Assert.That(game.Tools.Remaining(ShipTool.Shuffle),Is.Zero);
-                foreach(var ship in game.Session.Board.Ships)Assert.That(game.ViewPosition(ship.Id),Is.EqualTo(new Vector3(ship.Position.X+.5f,ship.Position.Y+.5f)));
-                var reversed=false;
-                foreach(var id in game.Session.Board.Ships.Select(x=>x.Id).ToArray())
+                // An isolated upward/rightward exit reverses safely; choose by solving a candidate in this end-to-end fixture only.
+                var chosen=game.Session.Board.Ships.First(x=>
                 {
-                    if(game.Tools.Selection==ShipTool.None)game.SelectTool(ShipTool.Reverse);game.ClickShip(id);
-                    if(game.Tools.Remaining(ShipTool.Reverse)==0){reversed=true;break;}
+                    var opposite=x.Direction==ShipDirection.Up?ShipDirection.Down:x.Direction==ShipDirection.Down?ShipDirection.Up:x.Direction==ShipDirection.Left?ShipDirection.Right:ShipDirection.Left;
+                    var placements=game.Session.Board.Ships.Select(y=>new ShipPlacementData{Id=y.Id,TypeId=y.TypeId,Length=y.Length,
+                        Position=y.Id==x.Id?x.OccupiedCells[x.Length-1]:y.Position,Direction=y.Id==x.Id?opposite:y.Direction}).ToArray();
+                    var level=new LevelData{SchemaVersion=2,LevelId="ReverseTest",Width=game.Session.Width,Height=game.Session.Height,BossId="TF_KRAKEN_01",Ships=placements};
+                    return LevelSolver.Solve(level,new[]{new ShipDefinition("TF_BASE_SHIP",10)},new[]{new Tidebound.Boss.BossDefinition("TF_KRAKEN_01")}).Status==LevelSolverStatus.Solved;
+                });
+                game.SelectTool(ShipTool.Reverse);game.ClickShip(chosen.Id);Assert.That(game.Tools.Remaining(ShipTool.Reverse),Is.Zero);
+                game.SelectTool(ShipTool.Shuffle);Assert.That(game.Tools.Remaining(ShipTool.Shuffle),Is.Zero);Assert.That(game.Tools.LastAffectedIds.Count,Is.EqualTo(5));
+                game.SelectTool(ShipTool.Rescue);Assert.That(game.ExitedIds.Count,Is.EqualTo(2));Assert.That(game.Session.Board.ShipCount,Is.EqualTo(78));Assert.That(game.IsBusy,Is.False);
+                Assert.That(game.Tools.Selection,Is.EqualTo(ShipTool.None));Assert.That(game.Tools.Remaining(ShipTool.Rescue),Is.Zero);
+                foreach(var id in game.Tools.LastAffectedIds)
+                {
+                    var view=game.GetComponentsInChildren<PlanarShipLaneView>().Single(x=>x.ShipId==id);
+                    Assert.That(view.transform.localScale,Is.EqualTo(Vector3.one*.8f));
+                    var p=view.VisualCenter;var distance=Mathf.Min(Mathf.Abs(p.x+.75f),Mathf.Abs(p.x-game.Session.Width-.75f),Mathf.Abs(p.y+.75f),Mathf.Abs(p.y-game.Session.Height-.75f));
+                    Assert.That(distance,Is.LessThan(.0001f));
                 }
-                Assert.That(reversed,Is.True);game.SelectTool(ShipTool.Rescue);var rescued=game.Session.Board.Ships.First().Id;game.ClickShip(rescued);
-                yield return Until(()=>!game.IsBusy);Assert.That(game.Tools.Remaining(ShipTool.Rescue),Is.Zero);
-                var view=game.GetComponentsInChildren<PlanarShipLaneView>().Single(x=>x.ShipId==rescued);
-                Assert.That(view.transform.localScale,Is.EqualTo(Vector3.one*.8f));Assert.That(view.GetComponent<CanvasGroup>().alpha,Is.EqualTo(1));
                 game.ToggleAuto();yield return Until(()=>game.IsCleared,25);Assert.That(game.Combat.HitCount,Is.EqualTo(80));
-                game.Restart();game.SelectTool(ShipTool.Rescue);game.ClickShip(game.Session.Board.Ships.First().Id);
-                var old=game.Session;game.Restart();yield return new WaitForSecondsRealtime(.3f);
-                Assert.That(old.State,Is.EqualTo(GameState.Failed));Assert.That(game.Tools.Remaining(ShipTool.Rescue),Is.EqualTo(1));Assert.That(game.Session.Board.ShipCount,Is.EqualTo(80));Assert.That(game.ExitedIds,Is.Empty);
+                game.Restart();yield return null;Assert.That(game.Tools.Remaining(ShipTool.Rescue),Is.Zero);Assert.That(game.Tools.Remaining(ShipTool.Shuffle),Is.Zero);Assert.That(game.Tools.Remaining(ShipTool.Reverse),Is.Zero);
+                game.SelectTool(ShipTool.Rescue);Assert.That(game.ExitedIds,Is.Empty);Assert.That(game.IsAcquisitionOpen,Is.True);Assert.That(game.IsPaused,Is.True);game.CloseAcquisition();Assert.That(game.IsPaused,Is.False);game.SelectLevel(3);yield return null;Assert.That(game.Tools.Remaining(ShipTool.Rescue),Is.Zero);
             }
-            finally { UnityEngine.Object.Destroy(game.gameObject); }
+            finally {UnityEngine.Object.Destroy(game.gameObject);}
             yield return null;
         }
 

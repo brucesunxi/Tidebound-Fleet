@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Tidebound.Board;
@@ -19,6 +20,8 @@ namespace Tidebound.Tests
     {
         private static ShipPlacementData Ship(string id,int x,int y,ShipDirection d,int length=2) => LevelSolverTests.Ship(id,x,y,d,length);
         private static GameSession Single(ShipDirection d=ShipDirection.Up,int length=2) => ShipMovementSystemTests.CreateSession(8,8,Ship("A",3,3,d,length));
+        private static ToolInventory Stock()
+        { var stock=new ToolInventory();stock.Grant("test:gift",1,1,1);return stock; }
         private static LevelSolverOptions Tiny => new LevelSolverOptions(1,1,100,useExitPeeling:false);
 
         [TestCase(ShipDirection.Up,2)][TestCase(ShipDirection.Right,2)][TestCase(ShipDirection.Down,2)][TestCase(ShipDirection.Left,2)]
@@ -27,7 +30,7 @@ namespace Tidebound.Tests
         {
             using(var s=Single(direction,length))
             {
-                var m=new ShipMovementSystem(s);m.StartPlaying();using(var t=new ShipToolSystem(s,m))
+                var m=new ShipMovementSystem(s);m.StartPlaying();using(var t=new ShipToolSystem(s,m,Stock()))
                 {
                     var old=s.Board.GetShip("A");var runtime=s.GetShip("A");
                     Assert.That(t.Select(ShipTool.Reverse),Is.EqualTo(ToolUseStatus.Selected));
@@ -44,11 +47,11 @@ namespace Tidebound.Tests
         {
             using(var s=Single())
             {
-                var m=new ShipMovementSystem(s);m.StartPlaying();using(var t=new ShipToolSystem(s,m)) using(var disabled=new ShipToolSystem(s,m,false))
+                var m=new ShipMovementSystem(s);m.StartPlaying();using(var t=new ShipToolSystem(s,m,Stock())) using(var disabled=new ShipToolSystem(s,m,Stock(),false))
                 {
                     Assert.That(disabled.Shuffle(),Is.EqualTo(ToolUseStatus.Disabled));
-                    t.Select(ShipTool.Rescue);Assert.That(t.UseSelected("missing"),Is.EqualTo(ToolUseStatus.InvalidTarget));
-                    Assert.That(t.Select(ShipTool.Rescue),Is.EqualTo(ToolUseStatus.Cancelled));Assert.That(t.Remaining(ShipTool.Rescue),Is.EqualTo(1));
+                    t.Select(ShipTool.Reverse);Assert.That(t.UseSelected("missing"),Is.EqualTo(ToolUseStatus.InvalidTarget));
+                    Assert.That(t.Select(ShipTool.Reverse),Is.EqualTo(ToolUseStatus.Cancelled));Assert.That(t.Remaining(ShipTool.Rescue),Is.EqualTo(1));
                     m.Pause();Assert.That(t.Shuffle(),Is.EqualTo(ToolUseStatus.Paused));m.Resume();
                     m.TryBeginMove("A");Assert.That(t.Select(ShipTool.Reverse),Is.EqualTo(ToolUseStatus.Busy));
                     new BoardProgressMonitor(s,m).EndForRestart();Assert.That(t.Shuffle(),Is.EqualTo(ToolUseStatus.Terminal));
@@ -56,44 +59,60 @@ namespace Tidebound.Tests
             }
         }
         [Test]
-        public void UnsafeOrUnprovenReverseLeavesBoardAndCountUntouched()
+        public void UserReverseAlwaysTurnsEvenIfResultIsDeadlocked()
         {
             using(var s=ShipMovementSystemTests.CreateSession(4,1,Ship("A",0,0,ShipDirection.Right),Ship("B",2,0,ShipDirection.Right)))
             {
-                var m=new ShipMovementSystem(s);m.StartPlaying();using(var t=new ShipToolSystem(s,m))
+                var m=new ShipMovementSystem(s);m.StartPlaying();using(var t=new ShipToolSystem(s,m,Stock(),options:Tiny))
                 {
-                    var board=s.Board;t.Select(ShipTool.Reverse);Assert.That(t.UseSelected("B"),Is.EqualTo(ToolUseStatus.Unproven));
-                    Assert.That(s.Board,Is.SameAs(board));Assert.That(t.Remaining(ShipTool.Reverse),Is.EqualTo(1));
+                    t.Select(ShipTool.Reverse);Assert.That(t.UseSelected("B"),Is.EqualTo(ToolUseStatus.Applied));
+                    Assert.That(s.GetShip("B").Direction,Is.EqualTo(ShipDirection.Left));Assert.That(t.Remaining(ShipTool.Reverse),Is.Zero);
+                    Assert.That(new BoardProgressMonitor(s,m).Refresh(),Is.EqualTo(BoardProgressStatus.NoMoves));
                 }
-            }
-            using(var s=Single())
-            {
-                var m=new ShipMovementSystem(s);m.StartPlaying();using(var t=new ShipToolSystem(s,m,options:Tiny))
-                {var board=s.Board;t.Select(ShipTool.Reverse);Assert.That(t.UseSelected("A"),Is.EqualTo(ToolUseStatus.Unproven));Assert.That(s.Board,Is.SameAs(board));Assert.That(t.Remaining(ShipTool.Reverse),Is.EqualTo(1));}
             }
         }
         [TestCase(2)][TestCase(3)]
-        public void RescueBreaksDeadlockChargesOnCommitAndStillAttacksOnce(int length)
+        public void RescueTwoBlockedShipsImmediatelyCommitsBothForOneItemAndTwoAttacks(int length)
         {
             using(var s=ShipMovementSystemTests.CreateSession(length*2,1,Ship("A",0,0,ShipDirection.Right,length),Ship("B",length*2-1,0,ShipDirection.Left,length)))
             {
-                var m=new ShipMovementSystem(s);m.StartPlaying();using(var t=new ShipToolSystem(s,m))
+                var m=new ShipMovementSystem(s);m.StartPlaying();using(var t=new ShipToolSystem(s,m,Stock()))
                 using(var lane=new TransitSystem(s,new LaneTransitTiming(.1,.01,.01))) using(var combat=new FleetCombatSystem(s,lane))
                 {
-                    var monitor=new BoardProgressMonitor(s,m);Assert.That(monitor.Refresh(),Is.EqualTo(BoardProgressStatus.NoMoves));
-                    Assert.That(s.State,Is.EqualTo(GameState.Playing));var exits=0;long sequence=0;
-                    s.Events.Subscribe<ShipExitBoardEvent>(e=>{exits++;Assert.That(e.ExitSequence,Is.EqualTo(++sequence));});
-                    t.Select(ShipTool.Rescue);Assert.That(t.UseSelected("A"),Is.EqualTo(ToolUseStatus.PendingAnimation));
-                    var op=m.ActiveOperation;Assert.That(op.IsRescue,Is.True);Assert.That(op.Direction,Is.EqualTo(ShipDirection.Up));
-                    Assert.That(s.Board.ShipCount,Is.EqualTo(2));Assert.That(t.Remaining(ShipTool.Rescue),Is.EqualTo(1));
-                    Assert.That(monitor.Refresh(),Is.EqualTo(BoardProgressStatus.Busy));m.Pause();
-                    Assert.That(m.CompleteTravel(op.OperationId),Is.EqualTo(ShipMoveAdvanceStatus.SessionPaused));m.Resume();m.CompleteTravel(op.OperationId);m.CompleteTravel(op.OperationId);
-                    Assert.That(t.Remaining(ShipTool.Rescue),Is.Zero);Assert.That(exits,Is.EqualTo(1));Assert.That(s.GetShip("A").Direction,Is.EqualTo(ShipDirection.Right));
-                    Assert.That(monitor.Refresh(),Is.EqualTo(BoardProgressStatus.Solvable));
-                    var b=m.TryBeginMove("B");m.CompleteTravel(b.Operation.OperationId);Assert.That(monitor.Refresh(),Is.EqualTo(BoardProgressStatus.Clear));
+                    var exits=0;long sequence=0;
+                    s.Events.Subscribe<ShipExitBoardEvent>(e=>
+                    {
+                        exits++;Assert.That(e.ExitSequence,Is.EqualTo(++sequence));Assert.That(s.Board.ShipCount,Is.Zero);
+                        Assert.That(s.Ships.All(x=>x.State==ShipState.InLane),Is.True);Assert.That(t.Remaining(ShipTool.Rescue),Is.Zero);
+                        Assert.That(t.Rescue(),Is.EqualTo(ToolUseStatus.Busy));
+                    });
+                    Assert.That(t.Rescue(),Is.EqualTo(ToolUseStatus.Applied));Assert.That(exits,Is.EqualTo(2));Assert.That(m.IsBusy,Is.False);
+                    Assert.That(t.LastAffectedIds.Count,Is.EqualTo(2));Assert.That(t.Remaining(ShipTool.Rescue),Is.Zero);
                     lane.Advance(2);combat.Advance();Assert.That(combat.HitCount,Is.EqualTo(2));Assert.That(combat.IsVictorious,Is.True);
                 }
             }
+        }
+        [Test]
+        public void RescueOnlyOneRemainingShipStillUsesOneItem()
+        {
+            using(var s=Single())
+            { var m=new ShipMovementSystem(s);m.StartPlaying();using(var t=new ShipToolSystem(s,m,Stock()))
+              {Assert.That(t.Rescue(),Is.EqualTo(ToolUseStatus.Applied));Assert.That(t.LastAffectedIds.Count,Is.EqualTo(1));Assert.That(t.Remaining(ShipTool.Rescue),Is.Zero);} }
+        }
+        [Test]
+        public void RandomRescueNeverSelectsAnEnclosedInteriorShip()
+        {
+            var ring=new List<ShipPlacementData>();
+            foreach(var y in new[]{0,5})foreach(var x in new[]{0,2,4})ring.Add(Ship("H"+x+"_"+y,x,y,ShipDirection.Right));
+            foreach(var x in new[]{0,5})foreach(var y in new[]{1,3})ring.Add(Ship("V"+x+"_"+y,x,y,ShipDirection.Up));
+            ring.Add(Ship("INNER",2,2,ShipDirection.Right));var selected=new HashSet<string>();
+            for(var seed=0;seed<12;seed++)using(var s=ShipMovementSystemTests.CreateSession(6,6,ring.ToArray()))
+            {
+                Assert.That(ShipToolSystem.PeripheralShips(s.Board),Does.Not.Contain("INNER"));
+                var m=new ShipMovementSystem(s);m.StartPlaying();using(var t=new ShipToolSystem(s,m,Stock(),seed:seed))
+                {t.Rescue();Assert.That(t.LastAffectedIds,Does.Not.Contain("INNER"));foreach(var id in t.LastAffectedIds)selected.Add(id);}
+            }
+            Assert.That(selected.Count,Is.GreaterThan(2));
         }
         [TestCase(0)][TestCase(1)][TestCase(2)][TestCase(3)][TestCase(4)][TestCase(5)][TestCase(6)][TestCase(7)][TestCase(8)][TestCase(9)]
         public void ShuffleRemainingCandidatePreservesIdentityAndDepartedAttack(int index)
@@ -101,12 +120,15 @@ namespace Tidebound.Tests
             var path=Path.Combine(Application.dataPath,"Tidebound/Config/LevelPrototypes/Phase5R_TenLevelCandidates",Phase5RLevelRecipes.All[index].LevelId+".json");
             using(var s=ReverseLevelGeneratorTests.Create(LevelJsonReader.Read(File.ReadAllText(path))))
             {
-                var m=new ShipMovementSystem(s);m.StartPlaying();using(var t=new ShipToolSystem(s,m,options:new LevelSolverOptions(4000,400000,500)))
+                var m=new ShipMovementSystem(s);m.StartPlaying();using(var t=new ShipToolSystem(s,m,Stock(),options:new LevelSolverOptions(4000,400000,500),seed:20260920+index))
                 using(var lane=new TransitSystem(s,new LaneTransitTiming(.1,.01,.01))) using(var combat=new FleetCombatSystem(s,lane))
                 {
                     var departing=s.Board.Ships.First(x=>s.Board.QueryForwardPath(x.Id).CanExit);var op=m.TryBeginMove(departing.Id);m.CompleteTravel(op.Operation.OperationId);
                     var departed=s.GetShip(departing.Id);var pos=departed.Position;var board=s.Board;var ships=s.Ships.ToArray();
                     Assert.That(t.Shuffle(),Is.EqualTo(ToolUseStatus.Applied));Assert.That(s.Board,Is.Not.SameAs(board));
+                    Assert.That(t.LastAffectedIds.Count,Is.EqualTo(Math.Min(5,board.ShipCount)));
+                    foreach(var unchanged in board.Ships.Where(x=>!t.LastAffectedIds.Contains(x.Id)))
+                    {Assert.That(s.Board.GetShip(unchanged.Id).Position,Is.EqualTo(unchanged.Position));Assert.That(s.Board.GetShip(unchanged.Id).Direction,Is.EqualTo(unchanged.Direction));}
                     CollectionAssert.AreEquivalent(board.Ships.Select(x=>x.Id),s.Board.Ships.Select(x=>x.Id));
                     foreach(var ship in s.Board.Ships) {Assert.That(ship.Length,Is.EqualTo(board.GetShip(ship.Id).Length));Assert.That(s.GetShip(ship.Id).Position,Is.EqualTo(ship.Position));}
                     CollectionAssert.AreEqual(ships,s.Ships);Assert.That(departed.Position,Is.EqualTo(pos));Assert.That(departed.State,Is.EqualTo(ShipState.InLane));
@@ -117,12 +139,19 @@ namespace Tidebound.Tests
                 }
             }
         }
+        [TestCase(1)][TestCase(2)][TestCase(3)][TestCase(4)]
+        public void ShuffleWithFewerThanFiveChangesEveryRemainingShip(int count)
+        {
+            using(var s=ShipMovementSystemTests.CreateSession(10,8,Enumerable.Range(0,count).Select(i=>Ship("S"+i,i*2,3,ShipDirection.Up)).ToArray()))
+            {var m=new ShipMovementSystem(s);m.StartPlaying();using(var t=new ShipToolSystem(s,m,Stock(),seed:3))
+             {Assert.That(t.Shuffle(),Is.EqualTo(ToolUseStatus.Applied));Assert.That(t.LastAffectedIds.Count,Is.EqualTo(count));}}
+        }
         [TestCase(0,false)][TestCase(8,true)]
         public void FailedShuffleIsFreeAndAtomic(int attempts,bool tiny)
         {
             using(var s=Single())
             {
-                var m=new ShipMovementSystem(s);m.StartPlaying();using(var t=new ShipToolSystem(s,m,options:tiny?Tiny:null,shuffleAttempts:attempts))
+                var m=new ShipMovementSystem(s);m.StartPlaying();using(var t=new ShipToolSystem(s,m,Stock(),options:tiny?Tiny:null,shuffleAttempts:attempts))
                 {var board=s.Board;Assert.That(t.Shuffle(),Is.EqualTo(ToolUseStatus.Unproven));Assert.That(s.Board,Is.SameAs(board));Assert.That(t.Remaining(ShipTool.Shuffle),Is.EqualTo(1));}
             }
         }

@@ -1,92 +1,109 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Tidebound.Board;
 using Tidebound.Core;
-using Tidebound.Events;
 using Tidebound.LevelDesign;
 using Tidebound.Ship;
 
 namespace Tidebound.Tools
 {
     public enum ShipTool { None, Rescue, Shuffle, Reverse }
-    public enum ToolUseStatus { Selected, Cancelled, Applied, PendingAnimation, Disabled, Busy, Paused, Terminal, Empty, NoUses, InvalidTarget, Unproven }
+    public enum ToolUseStatus { Selected, Cancelled, Applied, Disabled, Busy, Paused, Terminal, Empty, NoUses, InvalidTarget, Unproven, StorageUnavailable }
     public sealed class ShipToolSystem : IDisposable
     {
         private readonly GameSession session;
         private readonly ShipMovementSystem movement;
+        private readonly ToolInventory inventory;
         private readonly LevelSolverOptions solverOptions;
-        private readonly IDisposable exitSubscription;
-        private readonly int[] uses={0,1,1,1};
         private readonly int shuffleAttempts;
-        private string pendingRescue;
-        private int shuffleSeed=20260920;
+        private readonly Random random;
+        private bool applying;
         private bool disposed;
         public bool Enabled { get; }
         public ShipTool Selection { get; private set; }
-        public int Remaining(ShipTool tool) => tool==ShipTool.None ? 0 : uses[(int)tool];
-        public ShipToolSystem(GameSession session,ShipMovementSystem movement,bool enabled=true,LevelSolverOptions options=null,int shuffleAttempts=8)
+        public IReadOnlyList<string> LastAffectedIds { get; private set; } = Array.Empty<string>();
+        public int Remaining(ShipTool tool) => inventory.Count(tool);
+        public ShipToolSystem(GameSession session,ShipMovementSystem movement,ToolInventory inventory,bool enabled=true,LevelSolverOptions options=null,int shuffleAttempts=32,int? seed=null)
         {
-            this.session=session;this.movement=movement;Enabled=enabled;this.shuffleAttempts=shuffleAttempts;
+            this.session=session;this.movement=movement;this.inventory=inventory ?? throw new ArgumentNullException(nameof(inventory));
+            Enabled=enabled;this.shuffleAttempts=shuffleAttempts;random=seed.HasValue ? new Random(seed.Value) : new Random();
             solverOptions=options ?? new LevelSolverOptions(4000,400000,50);
-            exitSubscription=session.Events.Subscribe<ShipExitBoardEvent>(e=>
-            {
-                if(!disposed && e.Ship.SessionId==session.SessionId && e.Ship.ShipId==pendingRescue)
-                { pendingRescue=null;uses[(int)ShipTool.Rescue]--; }
-            });
         }
         public void CancelSelection() => Selection=ShipTool.None;
         private ToolUseStatus? Guard(ShipTool tool)
         {
-            if(disposed) throw new ObjectDisposedException(nameof(ShipToolSystem));
+            if(disposed)throw new ObjectDisposedException(nameof(ShipToolSystem));
             if(!Enabled)return ToolUseStatus.Disabled;
             if(session.State==GameState.Paused)return ToolUseStatus.Paused;
             if(session.State!=GameState.Playing)return ToolUseStatus.Terminal;
-            if(movement.IsBusy)return ToolUseStatus.Busy;
+            if(applying || movement.IsBusy)return ToolUseStatus.Busy;
             if(session.Board.ShipCount==0)return ToolUseStatus.Empty;
+            if(!inventory.IsAvailable)return ToolUseStatus.StorageUnavailable;
             if(Remaining(tool)<=0)return ToolUseStatus.NoUses;
             return null;
         }
         public ToolUseStatus Select(ShipTool tool)
         {
-            if(tool!=ShipTool.Rescue && tool!=ShipTool.Reverse)throw new ArgumentException("Select a targeted tool.");
+            if(tool!=ShipTool.Reverse)throw new ArgumentException("Only reverse needs a target.");
             if(Selection==tool) { CancelSelection();return ToolUseStatus.Cancelled; }
             var error=Guard(tool);if(error.HasValue)return error.Value;
             Selection=tool;return ToolUseStatus.Selected;
         }
         public ToolUseStatus UseSelected(string shipId)
         {
-            var tool=Selection;if(tool==ShipTool.None)return ToolUseStatus.InvalidTarget;
-            var error=Guard(tool);if(error.HasValue)return error.Value;
+            if(Selection!=ShipTool.Reverse)return ToolUseStatus.InvalidTarget;
+            var error=Guard(ShipTool.Reverse);if(error.HasValue)return error.Value;
             if(!session.Board.TryGetShip(shipId,out var ship) || session.GetShip(shipId).State!=ShipState.Idle)return ToolUseStatus.InvalidTarget;
-            if(tool==ShipTool.Rescue)
-            {
-                pendingRescue=shipId;
-                var request=movement.TryBeginRescue(shipId);
-                if(!request.IsAccepted) { pendingRescue=null;return ToolUseStatus.InvalidTarget; }
-                CancelSelection();return ToolUseStatus.PendingAnimation;
-            }
-            var opposite=ship.Direction==ShipDirection.Up ? ShipDirection.Down : ship.Direction==ShipDirection.Down ? ShipDirection.Up :
-                ship.Direction==ShipDirection.Left ? ShipDirection.Right : ShipDirection.Left;
-            var head=ship.OccupiedCells[ship.Length-1];
-            var candidate=session.Board.WithPlacements(session.Board.Ships.Select(s=>s.Id==shipId ? s.WithPlacement(head,opposite) : s));
-            if(LevelSolver.Solve(candidate,solverOptions).Status!=LevelSolverStatus.Solved)return ToolUseStatus.Unproven;
-            Commit(candidate);uses[(int)ShipTool.Reverse]--;CancelSelection();return ToolUseStatus.Applied;
+            var candidate=session.Board.WithPlacements(session.Board.Ships.Select(s=>s.Id==shipId ?
+                s.WithPlacement(ship.OccupiedCells[ship.Length-1],RemainingFleetShuffler.Opposite(ship.Direction)) : s));
+            if(!inventory.TrySpend(ShipTool.Reverse))return ToolUseStatus.StorageUnavailable;
+            Commit(candidate);LastAffectedIds=new[]{shipId};CancelSelection();return ToolUseStatus.Applied;
+        }
+        public ToolUseStatus Rescue()
+        {
+            var error=Guard(ShipTool.Rescue);if(error.HasValue)return error.Value;
+            var outer=PeripheralShips(session.Board).ToArray();RemainingFleetShuffler.Randomize(outer,random);
+            var targets=outer.Take(2).ToArray();
+            if(targets.Length==0)return ToolUseStatus.InvalidTarget;
+            if(!inventory.TrySpend(ShipTool.Rescue))return ToolUseStatus.StorageUnavailable;
+            CancelSelection();LastAffectedIds=targets;applying=true;
+            try { movement.RescueDirectlyToLane(targets); }
+            finally { applying=false; }
+            return ToolUseStatus.Applied;
         }
         public ToolUseStatus Shuffle()
         {
             var error=Guard(ShipTool.Shuffle);if(error.HasValue)return error.Value;
-            CancelSelection();
-            var candidate=RemainingFleetShuffler.Propose(session.Board,session.InitialBoard,shuffleSeed++,solverOptions,shuffleAttempts);
+            CancelSelection();var before=session.Board;
+            var candidate=RemainingFleetShuffler.Propose(before,random.Next(),solverOptions,shuffleAttempts);
             if(candidate==null)return ToolUseStatus.Unproven;
-            Commit(candidate);uses[(int)ShipTool.Shuffle]--;return ToolUseStatus.Applied;
+            if(!inventory.TrySpend(ShipTool.Shuffle))return ToolUseStatus.StorageUnavailable;
+            LastAffectedIds=before.Ships.Where(s=>!candidate.GetShip(s.Id).Position.Equals(s.Position) || candidate.GetShip(s.Id).Direction!=s.Direction).Select(s=>s.Id).ToArray();
+            Commit(candidate);return ToolUseStatus.Applied;
+        }
+        // Exposed outline of an irregular fleet: first/last occupied cells in each row and column.
+        public static IReadOnlyList<string> PeripheralShips(BoardModel board)
+        {
+            var ids=new HashSet<string>(StringComparer.Ordinal);
+            for(var y=0;y<board.Height;y++)
+            {
+                var row=Enumerable.Range(0,board.Width).Select(x=>board.GetShipId(new GridPosition(x,y))).Where(x=>x!=null).ToArray();
+                if(row.Length>0) { ids.Add(row[0]);ids.Add(row[row.Length-1]); }
+            }
+            for(var x=0;x<board.Width;x++)
+            {
+                var column=Enumerable.Range(0,board.Height).Select(y=>board.GetShipId(new GridPosition(x,y))).Where(y=>y!=null).ToArray();
+                if(column.Length>0) { ids.Add(column[0]);ids.Add(column[column.Length-1]); }
+            }
+            return ids.OrderBy(x=>x,StringComparer.Ordinal).ToArray();
         }
         private void Commit(BoardModel next)
         {
-            // Fully validated immutable board first; identities, skin, length, damage and departed ships remain intact.
             session.Board=next;
             foreach(var placement in next.Ships)
             { var runtime=session.GetShip(placement.Id);runtime.Position=placement.Position;runtime.Direction=placement.Direction; }
         }
-        public void Dispose() { if(disposed)return;disposed=true;exitSubscription.Dispose();Selection=ShipTool.None; }
+        public void Dispose() { disposed=true;Selection=ShipTool.None; }
     }
 }

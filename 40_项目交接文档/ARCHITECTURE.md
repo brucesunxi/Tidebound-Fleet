@@ -223,7 +223,7 @@ Phase 3 在船尾完整离界时分配单局 `ExitSequence`。Phase 4 只消费�
 
 胜利要求棋盘空、航道空、攻击全部命中、HP=0，并核对AttackToken总数等于开局船数；GameState先置Victory再发一次GameWinEvent。HP被异常修改或清盘后缺失攻击账本会明确Failed，不能假胜利。
 
-顶部FleetCombatGrayboxView显示Boss方块、血条、最多5个舰队计数、独立长船支援、飞行炮弹和Victory。所有图形限制在顶部区域；测试Restart／Hint／Auto移至底部预留按钮位，尚未实现三道具。只用UGUI灰盒几何，不导入美术或旧源码战斗脚本。
+顶部FleetCombatGrayboxView显示Boss方块、血条、最多5个舰队计数、独立长船支援、飞行炮弹和Victory。所有图形限制在顶部区域；测试Restart／Hint／Auto移至底部预留按钮位，此为I3初版；最新道具入口见下文I4修订。只用UGUI灰盒几何，不导入美术或旧源码战斗脚本。
 
 ## 8. TestLevel_001 教学测试数据
 
@@ -285,13 +285,14 @@ y=0   1  1  .  2
 2022.3.25f1 当前用于复现购买工程与本阶段验证，不等于已锁定最终上架版本。已有安全公告及商店工具链要求仍需在发布阶段单独验收。
 
 
-## Phase 8 I4道具事务与结束事件
+## Phase 8 I4修订：两船救援、五船洗牌与库存
 
-- `Tidebound.Tools.ShipToolSystem`属于Core，维护单局三个免费计数和目标选择；仅接受Playing／静止棋盘，取消或失败不扣数。
-- `BoardModel.WithPlacements`验证身份、类型、长度、范围和完整占格后返回不可变快照；翻转与洗牌先Solver验证，再同步Board及剩余Runtime位置／方向。皮肤与伤害无写入。
-- `RemainingFleetShuffler`使用InitialBoard中剩余身份对应的合法槽位，按长度置换并镜像提出候选；最多8次且有运行预算，Solver不返回Solved则不提交。这是救援道具策略，生产关卡仍用RecipeLevelGenerator。
-- `ShipMovementSystem.TryBeginRescue`复用同一操作ID、完成提交和ExitSequence；动画完成前保留占格，完成后移除快照、进入InLane并发原离场事件。ShipToolSystem在该事件扣一次；正常航道与战斗照常运行。
-- Unity `IShipRescueView`提供置顶、淡化和轻微放大拖离反馈，在完成回调前恢复透明度／原比例。`PlanarShipLaneView.CurrentPosition`返回船体中心，横向拖离同样居中接轨；航道仍立即0.8倍和切航向。
-- `BoardProgressMonitor`按不可变Board引用缓存，Busy不对中途画面求解；无合法前进=NoMoves，Solver穷尽=Unsolvable，超预算=Unknown。无直接出口并不等于死局。诊断不结束会话，道具仍可救援，航道／战斗可继续。
-- `GameSession.TryEnd`先提交唯一Victory或Failed，再发布AttemptEndedEvent；正常胜利兼容GameWinEvent。重开／切关记录Restarted，确认死局放弃记录DeadlockAbandoned，重复终态无副作用。事件订阅者若同步销毁Session，不再发布后续兼容事件。
-- 结束事件只记录单局结果；无持久化、金币或重开奖励扣账。I5由独立账本消费，不能依赖动画完成次数结算。
+- `ShipToolSystem`消费外部共享的`ToolInventory`，不在GameSession中创建每局计数。`ToolInventoryData`v1保存三类余额和已发放回执，`IToolInventoryStore`隔离纯Core与Unity文件适配器。
+- `ToolGiftPolicy`当前第3关解锁各送1个，第10／20／30……关随机送1个；里程碑唯一回执先写入再暴露余额。切关、重开及重新加载不再次赠送。
+- `PeripheralShips`取每行／列首尾占格所属船集合。救援抽取最多2个不同身份，库存扣1后`RescueDirectlyToLane`一次提交两船离场，再分配原共享ExitSequence并发布ShipExitBoardEvent；逻辑批次发布时锁普通移动。两船视图立即对齐航道中心、0.8倍和航向，后续FIFO／攻击不变。
+- `RemainingFleetShuffler`随机选最多5艘，只在选中集合内按同长度循环交换槽位并转向；至少一处实际转向。其余船的坐标和朝向不变。快速独立Solver验证后整体提交；每个候选有限搜索，整次有预算，失败不扣数。它不是关卡生产生成器。
+- 反转只需手选目标与合法足迹，以中心转180°直接提交；不再Solver拦截。`BoardProgressMonitor`继续按Board快照缓存运行中死局，Busy不判定，穷尽无解与预算Unknown分开；诊断不结束会话，仍可救援。
+- `ToolInventoryFileStore`将版本化JSON和完整性摘要写临时文件、flush并原子替换主文件，保留上版bak。校验失败不自动回滚余额或清空重赠，保留文件并关闭库存写入，核心仍可玩。摘要仅检测意外损坏，不作为付费防作弊或订单验证。
+- Editor试玩库存位于项目Library/Tidebound，不进入Git；移动端位于Application.persistentDataPath。测试默认注入内存库存，不污染实际试玩。
+- 余额先保存后生效，避免正常重开／重载补满；目前尚无整局断点存档，极端退出若发生在扣库存到提交棋盘之间，不能保证恢复该次效果。I5应将库存消耗与可恢复的局面事务统一，真实付费前完成崩溃恢复验收。
+- `AttemptEndedEvent`保持终态互斥和会话隔离，无金币结算。取得道具的Ad／Coins／GooglePlay灰盒入口暂不可交易；未来接入已确认奖励／已验证订单，不能用打开界面或本地模拟回调当付款成功。

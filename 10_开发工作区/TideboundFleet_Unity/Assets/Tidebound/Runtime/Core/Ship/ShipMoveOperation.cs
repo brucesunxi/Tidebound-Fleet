@@ -15,7 +15,6 @@ namespace Tidebound.Ship
     {
         internal ForwardPathResult PathResult { get; }
 
-        public bool IsRescue { get; }
         public long OperationId { get; }
         public string ShipId => PathResult.ShipId;
         public GridPosition OriginTail => PathResult.OriginTail;
@@ -27,12 +26,11 @@ namespace Tidebound.Ship
         public string BlockerShipId => PathResult.BlockerShipId;
         public ShipMoveStage Stage { get; internal set; }
 
-        internal ShipMoveOperation(long operationId, ForwardPathResult pathResult, bool isRescue=false)
+        internal ShipMoveOperation(long operationId, ForwardPathResult pathResult)
         {
             if (operationId <= 0) throw new ArgumentOutOfRangeException(nameof(operationId));
             PathResult = pathResult ?? throw new ArgumentNullException(nameof(pathResult));
             OperationId = operationId;
-            IsRescue = isRescue;
             Stage = pathResult.IsBlocked && pathResult.TravelDistance == 0
                 ? ShipMoveStage.BlockedFeedback
                 : ShipMoveStage.Traveling;

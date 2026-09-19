@@ -2,7 +2,7 @@
 
 日期：2026-09-19。状态：本地源码只读复核；行为与缺陷可作为实施依据，未宣称三个原工程已运行通过。当前规则与阶段以 [重设计方案](PHASE5R_REDESIGN.md) 和 [后续计划 v3](PHASE5_PLUS_PLAN.md) 为准。
 
-进度更新：S16中的Solver与反向生成已在I1原创实现并验收，S01已有移动逻辑继续复用；见[I1验收](验证记录/Phase5R_I1_反向生成与求解/I1_VALIDATION.md)。I3已继续复用S05现有航道／FIFO，并原创补齐S16的舰队AttackToken、命中和胜利；未导入原车辆脚本。I4已借鉴S07目标选择／取消和S08真实洗牌／翻转行为，接入自己的事务、Solver与航道攻击链；原代码里onFlip／onShuffle命名与真实行为相反，未照搬。其他后续借鉴项仍按阶段推进。
+进度更新：S16中的Solver与反向生成已在I1原创实现并验收，S01已有移动逻辑继续复用；见[I1验收](验证记录/Phase5R_I1_反向生成与求解/I1_VALIDATION.md)。I3已继续复用S05现有航道／FIFO，并原创补齐S16的舰队AttackToken、命中和胜利；未导入原车辆脚本。I4已借鉴S07目标选择／取消和S08真实洗牌／翻转行为，接入自己的事务、Solver与航道攻击链；按2026-09-20最新用户规则，救援改为一键随机外围2船，洗牌仅随机5船，反转保持手选；库存跨关保存且不每局补满。原代码里onFlip／onShuffle命名与真实行为相反，未照搬。其他后续借鉴项仍按阶段推进。
 
 百关扩展补充：S02笔刷、S03按数据表加载、S13内容差异研究继续作为最短复用路线；新增[外部工具调查](EXTERNAL_LEVEL_TOOLS_RESEARCH.md)和[内容生产体系](LEVEL_CONTENT_PIPELINE.md)。已有89个模板只提供结构研究入口，不能因已购买源码就默认全部关卡及素材可直接移植；本轮未导入任何原始布局。
 
@@ -32,8 +32,8 @@
 | S04／5R，B | R `assets/scripts/GameMgr.js:726`，`optimizePos` | 坐标归一和统一摆放 | 使用自己的 Grid→世界／屏幕映射；上战区、中棋盘及航道、下道具区，三类安全区统一公式；不用每关手调 Transform |
 | S05／7，A+B | U `Assets/TJ/Scripts/Vehicle.cs:390,422` | 出场后的航点、转弯、完成回调 | 保留已有 `TransitSystem` 和 FIFO，只借鉴动画节奏；同船只入舰一次，取消与暂停不重复完成 |
 | S06／7、10，B+C | U `Assets/TJ/Scripts/SoundController.cs:20,29`；R `assets/scripts/UIMgr.js:338,349` | 音效开关、连击层级与表现递进 | 薄音效适配器；本产品连击按 GDD 的 5 秒窗口，仅影响表现，不改变每船 10 伤害；不复制参考的 7 秒参数 |
-| S07／8，B | R `assets/scripts/PropsPanel.js:177`、`GameMgr.js:256` | 移除道具进入选目标状态、确认后执行 | 选择／取消／消耗事务分开；成功才扣次数；一艘被移除的船按 GDD 进入统一离场及攻击路径，不能漏奖励或重复攻击 |
-| S08／8，B | R `assets/scripts/GameMgr.js:285`；`Animal.js:274` | 洗牌、180°翻转和目标反馈 | 依据实际行为迁移：`onFlip` 是洗牌流程，`onShuffle` 是翻转。翻转后验证足迹和动态可解性；洗牌保留剩余船身份与属性，失败回滚且不扣次数 |
+| S07／8，B | R `assets/scripts/PropsPanel.js:177`、`GameMgr.js:256` | 移除道具进入选目标状态、确认后执行 | 只借鉴交互事务；最新救援不选目标，一键随机外围2船，每次消耗1个库存，统一离场及攻击路径，不能漏攻击或重复扣数 |
+| S08／8，B | R `assets/scripts/GameMgr.js:285`；`Animal.js:274` | 洗牌、180°翻转和目标反馈 | 依据实际行为迁移：`onFlip` 是洗牌流程，`onShuffle` 是翻转。反转手选原地180°，只检查足迹并重新诊断局面；洗牌仅变动随机5船，验证全盘可解，保留身份与属性，失败不扣库存 |
 | S09／9、10，B | R `assets/scripts/UIMgr.js:300`、`IllustratedPanel.js`、`AnimalDecPanel.js` | 图鉴未拥有／拥有／使用状态、解锁进度 | 借鉴交互状态，重写皮肤定义、5 装备槽与本产品金币规则；先占位图跑通保存／读档／装备，再做正式资产 |
 | S10／9，反例 | R `assets/scripts/StorageMgr.js:17,39,47`；U `Assets/TJ/Scripts/CoinsManager.cs:27` | 存取入口及其缺陷 | 使用有版本、强类型、可恢复的离线 SaveData；结算账本独立于动画。不能复制字符串 Boolean、全局 clear 或直接加金币模式 |
 | S11／10，B+C | U `Assets/TJ/Scripts/UIManager.cs:32,71` | 按钮锁、页面转换、金币飞行动画 | 只借鉴视图和反馈；剥离旧 SDK／LevelManager。账本先幂等提交，动画播放不决定是否入账 |

@@ -109,9 +109,7 @@ namespace Tidebound.Unity.Ship
 
             var target = mapper.TailToWorld(operation.TargetTail);
             var duration = timing.CalculateTravelDuration(operation.TravelDistance);
-            if(operation.IsRescue && view is IShipRescueView rescue)
-                rescue.PlayRescue(target,duration,()=>OnTravelCompleted(operation.OperationId));
-            else view.PlayTravel(target, duration, () => OnTravelCompleted(operation.OperationId));
+            view.PlayTravel(target, duration, () => OnTravelCompleted(operation.OperationId));
         }
 
         private void PresentBlockedFeedback(ShipMoveOperation operation, IShipMovementView view)
