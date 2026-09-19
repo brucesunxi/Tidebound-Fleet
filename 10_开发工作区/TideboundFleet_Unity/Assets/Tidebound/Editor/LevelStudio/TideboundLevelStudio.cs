@@ -34,6 +34,9 @@ namespace Tidebound.EditorTools
         private IntegerField lengthField;
         private Label statistics;
         private Label validation;
+        private Label layoutDiagnostics;
+        private Toggle customDiagnosticArea;
+        private IntegerField diagnosticX, diagnosticY, diagnosticWidth, diagnosticHeight;
         private VisualElement grid;
 
         [MenuItem("Tools/Tidebound/Level Studio")]
@@ -47,10 +50,13 @@ namespace Tidebound.EditorTools
             rootVisualElement.style.paddingBottom = 8;
             BuildToolbar();
             BuildSettings();
+            BuildDiagnosticSettings();
             statistics = new Label { style = { whiteSpace = WhiteSpace.Normal } };
             validation = new Label { style = { whiteSpace = WhiteSpace.Normal } };
             rootVisualElement.Add(statistics);
             rootVisualElement.Add(validation);
+            layoutDiagnostics = new Label { style = { whiteSpace = WhiteSpace.Normal } };
+            rootVisualElement.Add(layoutDiagnostics);
             var scroll = new ScrollView(ScrollViewMode.VerticalAndHorizontal) { style = { flexGrow = 1 } };
             grid = new VisualElement();
             scroll.Add(grid);
@@ -70,6 +76,7 @@ namespace Tidebound.EditorTools
             bar.Add(new Button(Save) { text = "Save" });
             bar.Add(new Button(SaveAs) { text = "Save As" });
             bar.Add(new Button(ValidateCurrent) { text = "Validate + Analyze" });
+            bar.Add(new Button(DiagnoseCurrentLayout) { text = "Local Layout Diagnostics" });
             rootVisualElement.Add(bar);
 
             var playBar = Row();
@@ -116,6 +123,52 @@ namespace Tidebound.EditorTools
             row.style.flexWrap = Wrap.Wrap;
             row.style.marginBottom = 6;
             return row;
+        }
+
+        private void BuildDiagnosticSettings()
+        {
+            var foldout = new Foldout { text = "Local diagnostics: 4x4 windows, minimum 4 ships, gap 1 (not acceptance thresholds)", value = false };
+            customDiagnosticArea = new Toggle("Custom area (otherwise full board)");
+            foldout.Add(customDiagnosticArea);
+            var row = Row();
+            diagnosticX = new IntegerField("X") { value = 4, style = { width = 100 } };
+            diagnosticY = new IntegerField("Y") { value = 5, style = { width = 100 } };
+            diagnosticWidth = new IntegerField("Width") { value = 6, style = { width = 100 } };
+            diagnosticHeight = new IntegerField("Height") { value = 8, style = { width = 100 } };
+            foreach (var field in new[] { diagnosticX, diagnosticY, diagnosticWidth, diagnosticHeight })
+            {
+                field.RegisterValueChangedCallback(_ => ClearLayoutDiagnostics());
+                row.Add(field);
+            }
+            customDiagnosticArea.RegisterValueChangedCallback(_ => ClearLayoutDiagnostics());
+            foldout.Add(row);
+            rootVisualElement.Add(foldout);
+        }
+
+        private void ClearLayoutDiagnostics()
+        {
+            if (layoutDiagnostics != null) layoutDiagnostics.text = string.Empty;
+        }
+
+        private void DiagnoseCurrentLayout()
+        {
+            ClearLayoutDiagnostics();
+            try
+            {
+                var data = ValidateData();
+                if (!data.IsValid)
+                {
+                    layoutDiagnostics.text = string.Join(Environment.NewLine, data.Issues.Select(x => x.ToString()));
+                    return;
+                }
+                var board = playRecorder?.CurrentBoard ?? CreateInitialBoard();
+                var options = customDiagnosticArea.value
+                    ? new LocalLayoutOptions(new GenerationArea(diagnosticX.value, diagnosticY.value,
+                        diagnosticWidth.value, diagnosticHeight.value)) : new LocalLayoutOptions();
+                layoutDiagnostics.text = (playRecorder == null ? "EDIT LAYOUT\n" : "CURRENT PLAYTEST STATE\n") +
+                                         LocalLayoutDiagnostics.Describe(board, options);
+            }
+            catch (Exception e) { layoutDiagnostics.text = e.Message; }
         }
 
         private void NewLevel()
@@ -171,6 +224,7 @@ namespace Tidebound.EditorTools
 
         private void RefreshGrid()
         {
+            ClearLayoutDiagnostics();
             if (grid == null || level == null) return;
             grid.Clear();
             var occupancy = Occupancy();
@@ -292,6 +346,7 @@ namespace Tidebound.EditorTools
 
         private void RefreshStatus()
         {
+            ClearLayoutDiagnostics();
             if (statistics == null || level == null) return;
             if (playRecorder != null)
             {

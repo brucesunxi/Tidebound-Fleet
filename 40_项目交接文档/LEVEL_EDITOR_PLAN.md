@@ -4,6 +4,8 @@
 日期：2026-09-19
 状态：旧原型工具保留；I1算法与两个样关导出入口已实现，I2／6A完整工具接线待实施，6B量产工具后移。当前顺序以[后续计划](PHASE5_PLUS_PLAN.md)为准。
 
+I2a已增加只读局部诊断：Level Studio的`Local Layout Diagnostics`按钮可分析编辑布局或当前试玩棋盘；可选自定义区域，默认完整棋盘。报告同向行列／跨空隙排列、4×4方向熵和覆盖率、最大空矩形、四分区占用率。`Tools > Tidebound > Export I1 Local Layout Audit`可导出实际样关报告；[验收及操作说明](验证记录/Phase5R_I2a_局部结构诊断/I2A_VALIDATION.md)。诊断不自动批准关卡，阈值待校准。
+
 ## 1. 工具定位
 
 Tidebound Level Studio 是原创关卡的生产和验证工具。它不负责把棋盘随机塞满，而是帮助策划构造、观察、求解和筛选阻挡依赖网络。
