@@ -10,6 +10,6 @@
 
 上一轮Phase 5R历史原型位于 `Config/LevelPrototypes/Phase5R`：12个80～110艘固定JSON、对应布局指纹证明和指标清单。`Runtime/Core/LevelDesign` 保存纯逻辑依赖图、生产门槛、搜索和证明；`Runtime/Unity/LevelDesign` 只负责从同一JSON生成灰盒预览。
 
-详细目录、模块职责、程序集依赖、数据流、状态语义和后续开发顺序见仓库根目录 `40_项目交接文档/ARCHITECTURE.md`。2026-09-19复跑现有自动化为119/119 EditMode、6/6 PlayMode；证据见 `40_项目交接文档/验证记录/Phase5R_基础复核_20260919/BASELINE_REVIEW.md`。
+详细目录、模块职责、程序集依赖、数据流、状态语义和后续开发顺序见仓库根目录 `40_项目交接文档/ARCHITECTURE.md`。2026-09-19 I1最终自动化为153/153 EditMode、6/6 PlayMode；证据见 `40_项目交接文档/验证记录/Phase5R_I1_反向生成与求解/I1_VALIDATION.md`。
 
-Fleet、Combat、Boss表现、UI和DebugTools仍为后续阶段。当前没有正式游戏场景、美术、攻击、Boss扣血、皮肤经济或结算；未迁移旧停车逻辑。旧12个样本均为PrototypeOnly；新LevelSolver、反向生成与7／80艘的10关尚未实现。BoardPrototypePreview直接操作棋盘快照，只是诊断预览；下一步必须接实际移动状态机与航道，再做人机验收。计划与源码借鉴见 `40_项目交接文档/PHASE5_PLUS_PLAN.md` 和 `SOURCE_REUSE_MATRIX.md`。
+Fleet、Combat、Boss表现、UI和DebugTools仍为后续阶段。当前没有正式游戏场景、美术、攻击、Boss扣血、皮肤经济或结算；未迁移旧停车逻辑。旧12个样本均为PrototypeOnly；I1的LevelSolver、反向生成及7／80艘两个样关已实现，位于 `Config/LevelPrototypes/Phase5R_Rebuild`；编辑器菜单 `Tools/Tidebound/Export I1 Algorithm Samples` 可复现。完整10关与手机灰盒仍待I2。BoardPrototypePreview直接操作棋盘快照，只是诊断预览；下一步必须接实际移动状态机与航道，再做人机验收。计划与源码借鉴见 `40_项目交接文档/PHASE5_PLUS_PLAN.md` 和 `SOURCE_REUSE_MATRIX.md`。

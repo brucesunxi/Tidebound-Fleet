@@ -27,40 +27,13 @@ namespace Tidebound.LevelDesign
         {
             if (initialBoard == null) throw new ArgumentNullException(nameof(initialBoard));
             if (maxVisitedStates <= 0) throw new ArgumentOutOfRangeException(nameof(maxVisitedStates));
-            if (initialBoard.ShipCount == 0)
-                return new BoardSearchResult(BoardSearchStatus.Solved, 1, Array.Empty<string>());
-
-            var queue = new Queue<SearchNode>();
-            var visited = new HashSet<string>(StringComparer.Ordinal);
-            queue.Enqueue(new SearchNode(initialBoard, new List<string>()));
-            visited.Add(BoardStateFingerprint.Compute(initialBoard));
-
-            while (queue.Count > 0)
-            {
-                var current = queue.Dequeue();
-                foreach (var ship in current.Board.Ships.OrderBy(x => x.Id, StringComparer.Ordinal))
-                {
-                    var path = current.Board.QueryForwardPath(ship.Id);
-                    if (path.IsBlocked && path.TravelDistance == 0) continue;
-                    var nextBoard = current.Board.ApplyPathResult(path);
-                    var nextSteps = new List<string>(current.Steps) { ship.Id };
-                    if (nextBoard.ShipCount == 0)
-                        return new BoardSearchResult(BoardSearchStatus.Solved, visited.Count, nextSteps);
-                    var fingerprint = BoardStateFingerprint.Compute(nextBoard);
-                    if (!visited.Add(fingerprint)) continue;
-                    if (visited.Count >= maxVisitedStates)
-                        return new BoardSearchResult(BoardSearchStatus.LimitReached, visited.Count, null);
-                    queue.Enqueue(new SearchNode(nextBoard, nextSteps));
-                }
-            }
-            return new BoardSearchResult(BoardSearchStatus.Deadlocked, visited.Count, null);
-        }
-
-        private sealed class SearchNode
-        {
-            public BoardModel Board { get; }
-            public List<string> Steps { get; }
-            public SearchNode(BoardModel board, List<string> steps) { Board = board; Steps = steps; }
+            var result = LevelSolver.Solve(initialBoard,
+                new LevelSolverOptions(maxVisitedStates: maxVisitedStates, useExitPeeling: false));
+            var status = result.Status == LevelSolverStatus.Solved ? BoardSearchStatus.Solved :
+                result.Status == LevelSolverStatus.Deadlocked ? BoardSearchStatus.Deadlocked : BoardSearchStatus.LimitReached;
+            if (result.Status == LevelSolverStatus.Invalid)
+                throw new ArgumentException(result.Reason, nameof(initialBoard));
+            return new BoardSearchResult(status, result.VisitedStateCount, result.ShipIds.ToArray());
         }
     }
 }
