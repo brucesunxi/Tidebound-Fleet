@@ -81,7 +81,7 @@ namespace Tidebound.Collection
                 for(var i=0;i<count;i++)
                 {
                     var skin=SkinCatalog.Find(r.SkinIds[i]);var rarity=skin.Rarity;
-                    var required=red>=59 ? SkinRarity.Legendary : gold>=19 ? SkinRarity.Epic : count==10 && i==9 && !highInBatch ? SkinRarity.Rare : SkinRarity.Common;
+                    var required=CollectionDrawEngine.Required(gold,red,count==10 && i==9 && !highInBatch);
                     if(rarity<required || (required==SkinRarity.Common && duplicates>=4 && rarity<=SkinRarity.Rare && owned.Contains(skin.Id) &&
                         SkinCatalog.All.Any(s=>!s.IsDefault && s.Rarity<=SkinRarity.Rare && !owned.Contains(s.Id))))throw new ArgumentException("Collection result breaks protection rules.");
                     highInBatch|=rarity>=SkinRarity.Rare;draws=checked(draws+1);

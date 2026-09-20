@@ -138,6 +138,7 @@ namespace Tidebound.Tests
             var store=Won(2);var g=Create(store);
             try
             {
+                g.SaveService.Collect(Guid.NewGuid().ToString("N"),"FirstBlue");
                 var id=g.Session.SessionId;var allow=false;var calls=0;
                 g.BeforeNextLevel=result=>{calls++;Assert.That(result.IsCollectionCheckpoint,Is.True);Assert.That(g.Session.SessionId,Is.EqualTo(id));return allow;};
                 g.ContinueFromResult();g.SelectLevel(2);Assert.That(g.Session.SessionId,Is.EqualTo(id));Assert.That(calls,Is.EqualTo(1));

@@ -49,7 +49,7 @@ namespace Tidebound.Unity.Boss
             for(var i=0;i<seats.Count;i++)
             {
                 Set(seats[i],new Rect(4+i*(seatWidth+4),0,seatWidth,20));
-                var group=i<combat.Fleet.StandardGroups.Count ? combat.Fleet.StandardGroups[i] : null;
+                var group=combat.Fleet.StandardGroups.FirstOrDefault(g=>g.SlotIndex==i);
                 counts[i].text=group==null ? "-" : "F"+(i+1)+" x"+group.ArrivedCount;
                 seats[i].GetComponent<Image>().color=group!=null && group.ArrivedCount>0 ? new Color(.18f,.52f,.65f) : new Color(.10f,.21f,.28f);
             }

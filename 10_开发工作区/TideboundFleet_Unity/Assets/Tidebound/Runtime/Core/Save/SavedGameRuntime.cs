@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Tidebound.Board;
+using Tidebound.Collection;
 using Tidebound.Boss;
 using Tidebound.Config;
 using Tidebound.Core;
@@ -31,12 +32,12 @@ namespace Tidebound.Save
         public bool PresentationPause { get; set; }
         public long ChangeVersion { get; private set; }
         public SavedGameRuntime(GameSession session,int levelNumber,LaneTransitTiming laneTiming=null,CombatTiming combatTiming=null,
-            string seed=null,IReadOnlyDictionary<string,int> caps=null)
+            string seed=null,IReadOnlyDictionary<string,int> caps=null,IReadOnlyList<string> equipmentSlots=null)
         {
             laneTiming=laneTiming ?? new LaneTransitTiming();combatTiming=combatTiming ?? new CombatTiming();
-            Session=session;Movement=new ShipMovementSystem(session);Transit=new TransitSystem(session,laneTiming);Combat=new FleetCombatSystem(session,Transit,combatTiming);
+            Session=session;Movement=new ShipMovementSystem(session);Transit=new TransitSystem(session,laneTiming);Combat=new FleetCombatSystem(session,Transit,combatTiming,equipmentSlots);
             origin=new AttemptSaveData{AttemptId=session.SessionId,LevelId=session.LevelId,BossId=session.Boss.BossId,LevelNumber=levelNumber,Width=session.Width,Height=session.Height,
-                LayoutFingerprint=LevelStateIdentity.Fingerprint(session.InitialBoard),RewardSeed=seed ?? Guid.NewGuid().ToString("N"),
+                LayoutFingerprint=LevelStateIdentity.Fingerprint(session.InitialBoard),RewardSeed=seed ?? Guid.NewGuid().ToString("N"),EquipmentSlots=equipmentSlots?.ToArray(),
                 LaneDuration=laneTiming.LaneDuration,EntranceInterval=laneTiming.EntranceInterval,FleetEntryDuration=laneTiming.FleetEntryDuration,
                 LaunchInterval=combatTiming.LaunchInterval,FlightDuration=combatTiming.FlightDuration,
                 Ships=session.Ships.Select(s=>new SavedShip{Id=s.Id,TypeId=s.TypeId,SkinId=s.SkinId,X=s.Position.X,Y=s.Position.Y,Direction=s.Direction,Length=s.Length,Damage=s.Damage,
@@ -55,6 +56,17 @@ namespace Tidebound.Save
         }
         public static SavedGameRuntime Create(LevelData level,int number,LaneTransitTiming lane=null,CombatTiming combat=null) =>
             new SavedGameRuntime(LevelSessionFactory.Create(level,new[]{new ShipDefinition(FoundationLimits.BaseShipTypeId,10)},new[]{new BossDefinition(level.BossId)}),number,lane,combat);
+        public static SavedGameRuntime CreateCollected(LevelData level,int number,CollectionData profile,long ordinal,LaneTransitTiming lane=null,CombatTiming combat=null)
+        {
+            using(var original=LevelSessionFactory.Create(level,new[]{new ShipDefinition(FoundationLimits.BaseShipTypeId,10)},new[]{new BossDefinition(level.BossId)}))
+            {
+                var ships=CollectionShipAllocator.Assign(original.Ships.ToArray(),profile,ordinal);
+                var session=new GameSession(level.LevelId,level.Width,level.Height,ships,new BossRuntimeData(level.BossId,ships.Length*10));
+                var slots=profile.Equipment.ToArray();if(slots.All(s=>s==null))slots[0]=FoundationLimits.DefaultStandardSkinId;
+                var caps=SkinCatalog.All.ToDictionary(s=>s.Id,s=>CollectionDrawEngine.CoinCap(s.Rarity));
+                return new SavedGameRuntime(session,number,lane,combat,null,caps,slots);
+            }
+        }
         public AttemptSaveData Capture()
         {
             var saved=origin.Copy();saved.Board=Session.Board.Ships.Select(SavedPlacement.From).ToArray();saved.Departures=departures.Select(x=>x.Copy()).ToArray();
@@ -84,6 +96,12 @@ namespace Tidebound.Save
                 x.Length<2 || x.Length>3 || x.Damage!=10 || !Enum.IsDefined(typeof(ShipDirection),x.Direction)) || s.Ships.Select(x=>x.Id).Distinct().Count()!=s.Ships.Length)
                 throw new ArgumentException("Invalid saved ship identity.");
             if(s.Ships.Where(x=>x.Length==2).GroupBy(x=>x.SkinId).Any(g=>g.Select(x=>x.CoinCap).Distinct().Count()!=1))throw new ArgumentException("Inconsistent skin rewards.");
+            if(s.EquipmentSlots!=null)
+            {
+                CollectionData.ValidateSlots(s.EquipmentSlots,SkinCatalog.All.Select(x=>x.Id).ToArray());
+                if(s.Ships.Any(x=>x.Length==2 && (!s.EquipmentSlots.Contains(x.SkinId) || x.CoinCap!=CollectionDrawEngine.CoinCap(SkinCatalog.Find(x.SkinId).Rarity)) ||
+                    x.Length==3 && (x.SkinId!=FoundationLimits.DefaultLongSkinId || x.CoinCap!=1)))throw new ArgumentException("Saved equipment identity mismatch.");
+            }
             var initial=new BoardModel(s.Width,s.Height,s.Ships.Select(x=>x.Runtime()));
             if(LevelStateIdentity.Fingerprint(initial)!=s.LayoutFingerprint || s.Ships.Any(x=>x.Coins!=BattleCoinRules.Calculate(s.RewardSeed,x,s.Ships)))throw new ArgumentException("Saved layout or reward changed.");
             var ids=s.Ships.Select(x=>x.Id).ToArray();
@@ -108,7 +126,7 @@ namespace Tidebound.Save
             var session=new GameSession(s.LevelId,s.Width,s.Height,s.Ships.Select(x=>x.Runtime()).ToArray(),new BossRuntimeData(s.BossId,s.Ships.Length*10),s.AttemptId);
             session.ToolUses=s.ToolUses;
             var caps=s.Ships.Where(x=>x.Length==2).GroupBy(x=>x.SkinId).ToDictionary(g=>g.Key,g=>g.First().CoinCap);
-            var game=new SavedGameRuntime(session,s.LevelNumber,new LaneTransitTiming(s.LaneDuration,s.EntranceInterval,s.FleetEntryDuration),new CombatTiming(s.LaunchInterval,s.FlightDuration),s.RewardSeed,caps);
+            var game=new SavedGameRuntime(session,s.LevelNumber,new LaneTransitTiming(s.LaneDuration,s.EntranceInterval,s.FleetEntryDuration),new CombatTiming(s.LaunchInterval,s.FlightDuration),s.RewardSeed,caps,s.EquipmentSlots);
             try
             {
                 foreach(var p in s.Board){var ship=session.GetShip(p.Id);ship.Position=new GridPosition(p.X,p.Y);ship.Direction=p.Direction;}

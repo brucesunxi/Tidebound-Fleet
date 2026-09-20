@@ -52,7 +52,7 @@ namespace Tidebound.Unity.LevelDesign
                 UnityEngine.Input.anyKey || UnityEngine.Input.mouseScrollDelta.sqrMagnitude > 0;
             inputSinceTick = false;
             var eligible = IsEntryReady && !IsEntrySaveBlocked && !backgrounded && session.State == GameState.Playing && !IsBusy &&
-                world.PendingMoveId == null && demo == null && !IsMenuOpen && !IsAcquisitionOpen && !IsDeadlockOpen &&
+                world.PendingMoveId == null && demo == null && !IsCollectionOpen && !IsMenuOpen && !IsAcquisitionOpen && !IsDeadlockOpen &&
                 tools.Selection == ShipTool.None && session.Board.ShipCount > 0;
             assistance.Advance(session.Board, seconds, eligible, activity, autoHintsEnabled);
             if (eligible && transit.ActiveCount == 0 && combat.PendingCount == 0 && combat.FaultReason == null &&

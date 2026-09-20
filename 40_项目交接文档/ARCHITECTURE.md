@@ -372,3 +372,12 @@ y=0   1  1  .  2
 - `PlayerSaveFileStore`仍使用player-save-v2.json、原Envelope与替换备份机制。v4必须明确保存收藏关键字段；JSON读取禁用日期推断，避免时间字符串精度被自动转换。损坏、未知版本及迁移失败保留原文件、关闭账户写入。
 - `PlayerSaveService.SetEquipment`复用Commit，固定5槽且仅已拥有、唯一标准皮肤。请求ID在购买／收藏／装备间唯一；旧请求重放只确认历史成功，不回滚新装备。移动事务与未提交胜利期间返回Busy，实际皮肤分配仍由后续C2在创建新attempt前接入。
 - `CanClaimFirstBlue`由最高通关≥2与未领取回执计算，旧玩家同样保留资格。本轮不自动发放；E2b结果恢复仍读取原胜利凭证。验证见[I5-C1记录](验证记录/I5C1_收藏存档/I5C1_VALIDATION.md)。
+
+## I5-C2：收藏交易、灰盒与开局身份（2026-09-20）
+
+- `CollectionDrawEngine`用档案seed＋规则版本＋已提交普通抽数＋抽取种类派生固定随机流，不使用请求ID或时间作为随机种子。重复点击返回原回执；写盘失败没有结果展示，重新打开／换请求ID仍得同一候选结果。十连按起始U一次锁定9倍单价，批内逐抽更新拥有、券与三种计数。
+- `PlayerSaveService.Collect`把金币扣减、收藏／券／保底、回执与活动attempt一次Commit。普通抽取和兑换先要求处理免费蓝皮；首抽是独立赠送，不推进普通保底。兑换不推进抽数或保底。规则保留CollectionBaselineV1，不启用长期候选价格和首通封顶。
+- `CollectionShipAllocator`按标准船ID排序，对平衡袋做固定洗牌。E<K时用历史已结算attempt数量轮换选取装备，重开候选按即将写入的结算多加1；同一份新局候选失败重试复用E2a。长船永远固定，空池回退默认。
+- `AttemptSaveData.EquipmentSlots`是v4向后兼容的可空扩展：旧档缺失／null沿用历史推断顺序，新局保存5位槽和已分配每船身份、奖励上限与奖励种子。恢复不再读取实时收藏。FleetRoster和战斗HUD按真实槽号处理空位；保持每船10伤害、每船一次攻击及旧BattleCoinsV1公式。
+- `CollectionPanel`含分页、品质／来源筛选、拥有／锁定／装备状态、独立交易确认与保存后结果、满槽替换选择。`CollectionShipPreview`用独立29层、192×192 RenderTexture复用V1网格，方向／炮击只演示，不调用战斗或经济。资源随页面销毁。
+- `PortraitPuzzleGraybox.Collection`接管临时暂停和输入；关闭后恢复原先暂停归属。菜单和结算都有收藏入口，第2关结果的下一关先处理待领蓝皮。可在当前10关结束后继续操作收藏。验证详见[I5-C2记录](验证记录/I5C2_收藏闭环/I5C2_VALIDATION.md)。

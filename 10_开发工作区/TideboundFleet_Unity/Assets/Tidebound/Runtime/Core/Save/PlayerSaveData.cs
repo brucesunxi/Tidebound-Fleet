@@ -35,13 +35,15 @@ namespace Tidebound.Save
         public SavedPlacement[] Board=Array.Empty<SavedPlacement>();
         public SavedDeparture[] Departures=Array.Empty<SavedDeparture>();
         public string[] HitIds=Array.Empty<string>();
+        // Null retains the historical inferred roster; new collection attempts save all five positions.
+        public string[] EquipmentSlots;
         public string PendingMoveId;
         public bool Paused,Victory;
         public double Elapsed,LaneDuration=1.2,EntranceInterval=.15,FleetEntryDuration=.15,LaunchInterval=.2,FlightDuration=.25;
         public AttemptSaveData Copy()
         {
             var copy=(AttemptSaveData)MemberwiseClone();copy.Ships=Ships.Select(x=>x.Copy()).ToArray();copy.Board=Board.Select(x=>x.Copy()).ToArray();
-            copy.Departures=Departures.Select(x=>x.Copy()).ToArray();copy.HitIds=HitIds.ToArray();return copy;
+            copy.Departures=Departures.Select(x=>x.Copy()).ToArray();copy.HitIds=HitIds.ToArray();copy.EquipmentSlots=EquipmentSlots?.ToArray();return copy;
         }
         public int PendingCoins => Ships.Where(s=>HitIds.Contains(s.Id,StringComparer.Ordinal)).Sum(s=>s.Coins);
     }

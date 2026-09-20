@@ -30,11 +30,11 @@ namespace Tidebound.Fleet
             var used=ships.Where(s=>s.Length==2).Select(s=>s.SkinId).Distinct(StringComparer.Ordinal).ToArray();
             var order=equippedOrder?.ToArray() ?? used.OrderBy(s=>s==FoundationLimits.DefaultStandardSkinId ? 0 : 1)
                 .ThenBy(s=>s,StringComparer.Ordinal).ToArray();
-            if(order.Length>5 || order.Any(string.IsNullOrWhiteSpace) || order.Distinct(StringComparer.Ordinal).Count()!=order.Length ||
+            if(order.Length>5 || order.Any(s=>s!=null && string.IsNullOrWhiteSpace(s)) || order.Where(s=>s!=null).Distinct(StringComparer.Ordinal).Count()!=order.Count(s=>s!=null) ||
                 used.Any(s=>!order.Contains(s,StringComparer.Ordinal)))
                 throw new ArgumentException("Fleet requires at most five distinct standard skins in equipment order.");
             var groups=new List<FleetGroup>();
-            foreach(var skin in order) { var g=new FleetGroup(skin,groups.Count);groups.Add(g);bySkin.Add(skin,g); }
+            for(var i=0;i<order.Length;i++) { var skin=order[i];if(skin==null)continue;var g=new FleetGroup(skin,i);groups.Add(g);bySkin.Add(skin,g); }
             StandardGroups=groups.AsReadOnly();
         }
         internal FleetGroup GroupFor(ShipRuntimeData ship) => ship.Length==3 ? Support : bySkin[ship.SkinId];
