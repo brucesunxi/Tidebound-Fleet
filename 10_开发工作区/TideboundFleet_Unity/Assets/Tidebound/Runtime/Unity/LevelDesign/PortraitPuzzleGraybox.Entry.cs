@@ -13,7 +13,7 @@ namespace Tidebound.Unity.LevelDesign
         private SavedGameRuntime pendingEntry;
         private bool pendingRestart;
         private RectTransform entryErrorPanel;
-        private CanvasGroup[] entryBodies;
+        private ShipPrototypeAppearance[] entryBodies;
         public bool IsEntryReady => entry == null || entry.IsReady;
         public LevelEntryPhase EntryPhase => entry?.Phase ?? LevelEntryPhase.Ready;
         public bool IsResumingEntry => entry?.IsResume == true;
@@ -41,11 +41,7 @@ namespace Tidebound.Unity.LevelDesign
             entry = new LevelEntrySequence(); entry.Begin(resume, reducedEntryMotion, !animateEntry || (campaign && IsCleared));
             input.CancelSelection(); NotifyUserActivity();
             entryBodies = session.Board.Ships.OrderByDescending(s => s.Position.Y).ThenBy(s => s.Position.X).ThenBy(s => s.Id)
-                .Select(s => shipViews[s.Id].transform.Find("Body").gameObject).Select(go =>
-                {
-                    // Unity missing components may be fake-null objects; do not use CLR null coalescing.
-                    var group = go.GetComponent<CanvasGroup>(); return group != null ? group : go.AddComponent<CanvasGroup>();
-                }).ToArray();
+                .Select(s => shipViews[s.Id].GetComponentInChildren<ShipPrototypeAppearance>(true)).ToArray();
             PaintEntry(); UpdateLabels();
         }
         private void PaintEntry()
@@ -54,8 +50,8 @@ namespace Tidebound.Unity.LevelDesign
             for (var i = 0; i < entryBodies.Length; i++)
             {
                 var body = entryBodies[i]; if (body == null) continue;
-                var a = entry.Alpha(i, entryBodies.Length); body.alpha = a;
-                body.transform.localScale = Vector3.one * (entry.IsResume || entry.ReducedMotion ? 1 : .9f + .1f * a);
+                var a = entry.Alpha(i, entryBodies.Length);
+                body.SetEntry(a, entry.IsResume || entry.ReducedMotion ? 1 : .9f + .1f * a);
             }
         }
         private bool TickEntry(float seconds)

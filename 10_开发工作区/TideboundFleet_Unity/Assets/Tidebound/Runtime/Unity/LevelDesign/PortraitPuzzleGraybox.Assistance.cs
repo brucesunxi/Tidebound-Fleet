@@ -70,12 +70,12 @@ namespace Tidebound.Unity.LevelDesign
             hintPhase += seconds;
             var strength = reducedHintMotion ? 1 : .65f + .35f * Mathf.Sin(hintPhase / .7f * Mathf.PI * 2);
             var body = shipViews[id].transform.Find("Body");
-            body.GetComponent<Image>().color = Color.Lerp(BodyColor(ship.Length), new Color(.98f, .78f, .22f), strength);
+            body.GetComponent<ShipPrototypeAppearance>().SetHint(strength);
         }
         private void ClearAutoHighlight()
         {
             if (paintedHint != null && shipViews.TryGetValue(paintedHint, out var view) && view != null && session != null)
-                view.transform.Find("Body").GetComponent<Image>().color = BodyColor(session.GetShip(paintedHint).Length);
+                view.GetComponentInChildren<ShipPrototypeAppearance>(true).SetHint(0);
             paintedHint = null; hintPhase = 0;
         }
         private void OpenDeadlock()

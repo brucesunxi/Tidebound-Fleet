@@ -58,6 +58,10 @@ namespace Tidebound.Unity.LevelDesign
         private readonly List<string> exited = new List<string>();
         private readonly List<string> entered = new List<string>();
         private GameObject presentation;
+        private bool useVolumeShips = true;
+        public bool UsesVolumeShips => useVolumeShips;
+        public void SetShipPrototypeMode(bool volume)
+        {useVolumeShips=volume;foreach(var view in shipViews.Values)view.GetComponentInChildren<ShipPrototypeAppearance>(true).SetMode(volume);}
         private Camera boardCamera;
         private GridWorldMapper mapper;
         private BoardGridInputRouter input;
@@ -340,7 +344,7 @@ namespace Tidebound.Unity.LevelDesign
             var result = SolveCurrent();
             if (result?.Status != LevelSolverStatus.Solved || result.ShipIds.Count == 0) return;
             ResetBodyColors();
-            shipViews[result.ShipIds[0]].transform.Find("Body").GetComponent<Image>().color = new Color(.95f,.72f,.25f);
+            shipViews[result.ShipIds[0]].GetComponentInChildren<ShipPrototypeAppearance>(true).SetHint(1);
             notice = "Try the highlighted ship."; UpdateLabels();
         }
 
@@ -404,13 +408,19 @@ namespace Tidebound.Unity.LevelDesign
             boardCamera = cameraObject.GetComponent<Camera>(); boardCamera.orthographic = true;
             boardCamera.clearFlags = CameraClearFlags.SolidColor; boardCamera.backgroundColor = new Color(.035f,.09f,.13f);
             boardCamera.cullingMask = 1 << 30; boardCamera.nearClipPlane = .1f; boardCamera.farClipPlane = 50;
+            var resources=presentation.AddComponent<ShipPrototypeResources>();resources.Initialize();
             var canvasRect = Rect("BoardCanvas", presentation.transform);
             var canvas = canvasRect.gameObject.AddComponent<Canvas>(); canvas.renderMode = RenderMode.WorldSpace;
             canvas.worldCamera = boardCamera; canvasRect.sizeDelta = new Vector2(session.Width,session.Height);
             canvasRect.position = Vector3.zero; canvasRect.localScale = Vector3.one;
             canvasRect.gameObject.AddComponent<GraphicRaycaster>();
             lanePanel = Panel("Lane", canvasRect, new Rect(-.5f,-.5f,session.Width+1,session.Height+1), new Color(.09f,.29f,.36f));
-            var grid = Panel("GridInput", canvasRect, new Rect(0,0,session.Width,session.Height), new Color(.055f,.15f,.21f));
+            lanePanel.GetComponent<Image>().color=Color.clear;
+            var thickness=PortraitBoardLayout.LaneWidthInCells;
+            resources.AddSurface(canvasRect,new Rect(-thickness,-thickness,session.Width+2*thickness,session.Height+2*thickness),new Color(.09f,.29f,.36f));
+            var grid = Panel("GridInput", canvasRect, new Rect(0,0,session.Width,session.Height), Color.clear);
+            resources.AddSurface(grid,new Rect(0,0,session.Width,session.Height),new Color(.055f,.15f,.21f));
+            grid.Find("SeaSurface").localPosition+=Vector3.back*.01f;
             grid.GetComponent<Image>().raycastTarget = true;
             input = grid.gameObject.AddComponent<BoardGridInputRouter>();
             var origin = new GameObject("GridOrigin"); origin.transform.SetParent(presentation.transform); origin.transform.position = new Vector3(.5f,.5f,0);
@@ -422,8 +432,11 @@ namespace Tidebound.Unity.LevelDesign
                 root.position = mapper.TailToWorld(ship.Position);
                 root.rotation = Rotation(ship.Direction);
                 var body = Panel("Body", root, new Rect(-.38f,-.43f,.76f,ship.Length-.14f), BodyColor(ship.Length));
+                body.pivot=Vector2.one*.5f;body.anchoredPosition+=body.sizeDelta*.5f;
                 var arrow = Rect("Direction", body); Place(arrow,new Rect(.09f,ship.Length-1.00f,.58f,.7f));
                 var graphic = arrow.gameObject.AddComponent<GrayboxArrowGraphic>(); graphic.color = Color.white; graphic.raycastTarget = false;
+                var slot=ship.Length==3 ? -1 : world.Combat.Fleet.StandardGroups.Single(g=>g.SkinId==ship.SkinId).SlotIndex;
+                body.gameObject.AddComponent<ShipPrototypeAppearance>().Initialize(resources,ship.Length,slot,useVolumeShips);
                 var view = root.gameObject.AddComponent<ShipMovementView>(); view.ConfigureShipId(ship.Id);
                 root.gameObject.AddComponent<PlanarShipLaneView>().Configure(ship.Id, Vector3.up * ((ship.Length - 1) * .5f)); shipViews.Add(ship.Id,view);
                 root.gameObject.SetActive(ship.State!=ShipState.InFleet);
@@ -552,7 +565,7 @@ namespace Tidebound.Unity.LevelDesign
         private void ResetBodyColors()
         {
             foreach (var ship in session.Ships)
-                shipViews[ship.Id].transform.Find("Body").GetComponent<Image>().color = BodyColor(ship.Length);
+                shipViews[ship.Id].GetComponentInChildren<ShipPrototypeAppearance>(true).SetHint(0);
         }
         private static Color BodyColor(int length) => length==3 ? new Color(.40f,.57f,.67f) : new Color(.18f,.52f,.65f);
         private static Quaternion Rotation(ShipDirection direction) => Quaternion.Euler(0,0,

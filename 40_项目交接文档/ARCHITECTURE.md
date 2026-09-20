@@ -352,3 +352,13 @@ y=0   1  1  .  2
 - ContinueFromResult检查结果可读、存在已发布下一关与防重入；通过原SelectLevel／CommitEntry保存下一局。直接切关无法绕过结果流程；创建失败保留旧结果凭证和单一待提交候选，复用E2a RetryEntry。
 - `BeforeNextLevel`在新runtime创建之前调用；I5-C可在第2关返回false以处理首抽／装备，再由显式继续恢复流程。资格、领取、装备与去重须由I5-C持久服务实现，本轮不假发首抽奖励。
 - 账号异常练习通关提供无奖励的重新练习入口；模块Review模式仍独立，不冒充campaign结果。验证见[E2b记录](验证记录/E2b_结算与章节目标/E2B_VALIDATION.md)，真机与性能尚未验收。
+
+
+## V1：3D船体表现适配（2026-09-20）
+
+- `ShipPrototypeMesh`生成有厚度的标准／长船原型，局内坐标仍为XY，负Z为视觉高度。`ShipPrototypeResources`按表现实例共享Mesh、5种标准材质、长船固定材质和阴影，OnDestroy释放运行时资源；无外部美术依赖。
+- `ShipPrototypeAppearance`包装原Body的CanvasGroup及MeshRenderer，统一入口SetEntry、SetHint、SetMode。E2a对齐最终格位后按原序列显现；E1及旧手动Solver提示只改表现。模型与阴影在alpha=0时隐藏，缩放围绕视觉中心。
+- GridWorldMapper、BoardGridInputRouter、ShipMovementView和PlanarShipLaneView继续负责原坐标、输入和航道时序；Mesh／Collider不参与Grid判定。同一根节点随入航道当帧转向并缩放0.8倍，入舰后整体隐藏。
+- 正交相机保持正俯视。底面改用平色Mesh以支持深度，透明Grid UI面保留输入；世界法线明暗和软椭圆阴影用于低成本体积表达，未修改渲染管线配置或引入实时阴影。
+- 占位材质按现有FleetRoster的SlotIndex映射，长船独立固定。当前内容只含默认标准皮肤；五色四向捕获为显示样本，不改存档或皮肤身份。I5-C未来应传入实际装备／attempt身份，而非根据颜色推断经济。
+- `SetShipPrototypeMode`保留开发平面参考，不重建玩法。截图入口`TIDEBOUND_CAPTURE_VOLUME_ONLY`覆盖12种画面；验证工程已补齐正式URP 14.0.11依赖与配置，356项EditMode和48项PlayMode通过，见[V1验证](验证记录/V1_3D船体可读性/V1_VALIDATION.md)。真人触控／设备性能仍待验收。

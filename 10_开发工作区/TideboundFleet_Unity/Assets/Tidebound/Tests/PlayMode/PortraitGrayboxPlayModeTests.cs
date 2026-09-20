@@ -221,12 +221,12 @@ namespace Tidebound.Tests
         }
 
         [UnityTest]
-        public IEnumerator EveryShipHasAnActiveDirectionMesh()
+        public IEnumerator FlatReferenceRetainsEveryShipDirectionMesh()
         {
             var game=Create();
             try
             {
-                game.SelectLevel(9); yield return null; Canvas.ForceUpdateCanvases();
+                game.SelectLevel(9); game.SetShipPrototypeMode(false); yield return null; Canvas.ForceUpdateCanvases();
                 var arrows=game.GetComponentsInChildren<GrayboxArrowGraphic>();
                 Assert.That(arrows.Length,Is.EqualTo(80));
                 foreach(var arrow in arrows)
