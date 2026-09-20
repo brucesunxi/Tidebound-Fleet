@@ -12,6 +12,11 @@ namespace Tidebound.Unity.LevelDesign
         private readonly Material[] palette = new Material[5];
         private Mesh standard, longShip, quad;
         private Material support, shadow, surface;
+        private Mesh toyStandard,toyBlue,toyLong;
+        private Material toyMaterial,toyBlueMaterial,toyLongMaterial;
+        private bool toyStudy;
+        private readonly List<HullBinding> hulls=new List<HullBinding>();
+        private struct HullBinding { public MeshRenderer Renderer;public int Length,Slot; }
         private static readonly Color[] SlotColors = {
             new Color(.22f,.68f,.78f), new Color(.90f,.48f,.32f), new Color(.55f,.73f,.38f),
             new Color(.67f,.49f,.79f), new Color(.94f,.73f,.27f) };
@@ -30,9 +35,28 @@ namespace Tidebound.Unity.LevelDesign
         private T Own<T>(T value) where T:UnityEngine.Object {owned.Add(value);return value;}
         private Material Material(Shader shader,Color color,string label)
         {var value=Own(new Material(shader){name=label,enableInstancing=true});value.SetColor("_Color",color);return value;}
-        public Mesh Hull(int length)=>length==3 ? longShip : standard;
-        public Material HullMaterial(int length,int slot)=>length==3 ? support : palette[Mathf.Clamp(slot,0,4)];
-        public MeshRenderer AddHull(Transform parent,int length,int slot)=>Renderer("Volume",parent,Hull(length),HullMaterial(length,slot));
+        public Mesh Hull(int length)=>toyStudy ? (length==3 ? toyLong : toyStandard) : length==3 ? longShip : standard;
+        private Mesh HullForSlot(int length,int slot)=>toyStudy && length!=3 && slot==1 ? toyBlue : Hull(length);
+        public Material HullMaterial(int length,int slot)=>toyStudy ? (length==3 ? toyLongMaterial : slot==1 ? toyBlueMaterial : toyMaterial) : length==3 ? support : palette[Mathf.Clamp(slot,0,4)];
+        public MeshRenderer AddHull(Transform parent,int length,int slot)
+        {
+            var renderer=Renderer("Volume",parent,HullForSlot(length,slot),HullMaterial(length,slot));
+            hulls.Add(new HullBinding{Renderer=renderer,Length=length,Slot=slot});return renderer;
+        }
+        /// <summary>Developer visual comparison; does not select skins or change the save. Off by default.</summary>
+        public void SetToyStudy(bool enabled)
+        {
+            if(enabled && toyStandard==null)
+            {
+                toyStandard=Own(ShipPrototypeMesh.BuildToy(2));toyBlue=Own(ShipPrototypeMesh.BuildToy(2,true));toyLong=Own(ShipPrototypeMesh.BuildToy(3));
+                toyMaterial=Material(surface.shader,new Color(.10f,.49f,.61f),"ToyStudy_Default");
+                toyBlueMaterial=Material(surface.shader,new Color(.09f,.29f,.60f),"ToyStudy_Blue");
+                toyLongMaterial=Material(surface.shader,new Color(.37f,.47f,.51f),"ToyStudy_FixedLong");
+            }
+            toyStudy=enabled;
+            foreach(var h in hulls)if(h.Renderer!=null)
+            {h.Renderer.GetComponent<MeshFilter>().sharedMesh=HullForSlot(h.Length,h.Slot);h.Renderer.sharedMaterial=HullMaterial(h.Length,h.Slot);}
+        }
         public MeshRenderer AddShadow(Transform parent,int length)
         {
             var r=Renderer("ContactShadow",parent,quad,shadow);

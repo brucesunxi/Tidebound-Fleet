@@ -33,6 +33,40 @@ namespace Tidebound.Tests
         private static void Call(PortraitPuzzleGraybox g,string method,params object[] args)=>typeof(PortraitPuzzleGraybox).GetMethod(method,BindingFlags.Instance|BindingFlags.NonPublic).Invoke(g,args);
         private static ShipPrototypeAppearance[] Views(PortraitPuzzleGraybox g)=>g.GetComponentsInChildren<ShipPrototypeAppearance>(true);
         [UnityTest]
+        public IEnumerator ToyStudyIsReversibleSharedAndPreservesBoardIdentityAndHintState()
+        {
+            var g=Create();
+            try
+            {
+                g.SelectLevel(9);yield return null;g.TogglePause();var id=g.Session.SessionId;
+                var positions=g.Session.Board.Ships.Select(s=>s.Position).ToArray();
+                var skins=g.Session.Ships.Select(s=>s.SkinId).ToArray();var uses=g.Tools.UsesLeft;
+                var resources=g.GetComponentInChildren<ShipPrototypeResources>();var first=Views(g).First();
+                var original=first.HullRenderer.GetComponent<MeshFilter>().sharedMesh;first.SetHint(.7f);
+                resources.SetToyStudy(true);var candidate=first.HullRenderer.GetComponent<MeshFilter>().sharedMesh;
+                Assert.That(candidate,Is.Not.SameAs(original));Assert.That(first.HintStrength,Is.EqualTo(.7f));
+                resources.SetToyStudy(true);Assert.That(first.HullRenderer.GetComponent<MeshFilter>().sharedMesh,Is.SameAs(candidate));
+                var sample=new GameObject("BlueStudySample");sample.transform.SetParent(g.transform,false);
+                var a=resources.AddHull(sample.transform,2,1);var b=resources.AddHull(sample.transform,2,1);
+                Assert.That(a.sharedMaterial,Is.SameAs(b.sharedMaterial));
+                Assert.That(a.GetComponent<MeshFilter>().sharedMesh,Is.SameAs(b.GetComponent<MeshFilter>().sharedMesh));
+                foreach(var mesh in new[]{resources.Hull(2),resources.Hull(3),a.GetComponent<MeshFilter>().sharedMesh})
+                {
+                    var length=mesh==resources.Hull(3)?3:2;
+                    foreach(var v in mesh.vertices){Assert.That(Mathf.Abs(v.x),Is.LessThan(.5f));Assert.That(Mathf.Abs(v.y),Is.LessThan(length*.5f));}
+                    Assert.That(mesh.triangles.Length/3,Is.LessThan(250));
+                    var vertices=mesh.vertices;var triangles=mesh.triangles;
+                    Assert.That(Enumerable.Range(0,vertices.Length).Any(i=>mesh.colors[i]==new Color(.08f,.40f,.51f,0) && mesh.normals[i].y>.99f),Is.True,"Fore window must face outward, not be backface-culled.");
+                    for(var i=0;i<triangles.Length;i+=3)
+                        Assert.That(Vector3.Cross(vertices[triangles[i+1]]-vertices[triangles[i]],vertices[triangles[i+2]]-vertices[triangles[i]]).sqrMagnitude,Is.GreaterThan(1e-10f));
+                }
+                resources.SetToyStudy(false);Assert.That(first.HullRenderer.GetComponent<MeshFilter>().sharedMesh,Is.SameAs(original));
+                Assert.That(g.Session.SessionId,Is.EqualTo(id));Assert.That(g.Session.Board.Ships.Select(s=>s.Position),Is.EqualTo(positions));
+                Assert.That(g.Session.Ships.Select(s=>s.SkinId),Is.EqualTo(skins));Assert.That(g.Tools.UsesLeft,Is.EqualTo(uses));
+            }
+            finally{UnityEngine.Object.Destroy(g.gameObject);}yield return null;
+        }
+        [UnityTest]
         public IEnumerator DenseBoardUsesSharedVolumeMeshesAndKeepsIdentityWhenComparingFlat()
         {
             var g=Create();
@@ -67,7 +101,7 @@ namespace Tidebound.Tests
             var g=Create();
             try
             {
-                g.SelectLevel(9);yield return null;g.TogglePause();
+                g.SelectLevel(9);yield return null;g.TogglePause();g.GetComponentInChildren<ShipPrototypeResources>().SetToyStudy(true);
                 foreach(var size in new[]{new Vector2(360,640),new Vector2(390,844),new Vector2(430,932)})
                 {
                     var factor=Mathf.Min(Screen.width/(size.x+10),Screen.height/(size.y+22))*.95f;
@@ -100,7 +134,7 @@ namespace Tidebound.Tests
             var g=Create();
             try
             {
-                g.SelectLevel(9);yield return null;g.TogglePause();
+                g.SelectLevel(9);yield return null;g.TogglePause();g.GetComponentInChildren<ShipPrototypeResources>().SetToyStudy(true);
                 var provider=new PortraitLanePathProvider(g.Session.Width,g.Session.Height);
                 foreach(var length in new[]{2,3})
                 {
@@ -153,6 +187,7 @@ namespace Tidebound.Tests
             var g=Create();
             try
             {
+                g.GetComponentInChildren<ShipPrototypeResources>().SetToyStudy(true);
                 var old=Views(g).First().HullRenderer;var mesh=old.GetComponent<MeshFilter>().sharedMesh;var material=old.sharedMaterial;
                 g.SelectLevel(1);yield return null;yield return null;
                 Assert.That(mesh==null,Is.True);Assert.That(material==null,Is.True);
