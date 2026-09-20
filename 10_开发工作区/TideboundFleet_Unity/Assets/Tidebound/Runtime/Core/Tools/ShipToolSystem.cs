@@ -9,7 +9,7 @@ using Tidebound.Ship;
 namespace Tidebound.Tools
 {
     public enum ShipTool { None, Rescue, Shuffle, Reverse }
-    public enum ToolUseStatus { Selected, Cancelled, Applied, Disabled, Busy, Paused, Terminal, Empty, NoUses, InvalidTarget, Unproven, StorageUnavailable }
+    public enum ToolUseStatus { Selected, Cancelled, Applied, Disabled, Busy, Paused, Terminal, Empty, NoUses, InvalidTarget, Unproven, StorageUnavailable, UseLimitReached }
     public sealed class ShipToolSystem : IDisposable
     {
         private readonly GameSession session;
@@ -20,6 +20,8 @@ namespace Tidebound.Tools
         private readonly Random random;
         private bool applying;
         private bool disposed;
+        public const int MaxUsesPerAttempt=5;
+        public int UsesLeft => Math.Max(0,MaxUsesPerAttempt-session.ToolUses);
         public bool Enabled { get; }
         public ShipTool Selection { get; private set; }
         public IReadOnlyList<string> LastAffectedIds { get; private set; } = Array.Empty<string>();
@@ -39,6 +41,7 @@ namespace Tidebound.Tools
             if(session.State!=GameState.Playing)return ToolUseStatus.Terminal;
             if(applying || movement.IsBusy)return ToolUseStatus.Busy;
             if(session.Board.ShipCount==0)return ToolUseStatus.Empty;
+            if(UsesLeft==0)return ToolUseStatus.UseLimitReached;
             if(!inventory.IsAvailable)return ToolUseStatus.StorageUnavailable;
             if(Remaining(tool)<=0)return ToolUseStatus.NoUses;
             return null;
@@ -58,7 +61,7 @@ namespace Tidebound.Tools
             var candidate=session.Board.WithPlacements(session.Board.Ships.Select(s=>s.Id==shipId ?
                 s.WithPlacement(ship.OccupiedCells[ship.Length-1],RemainingFleetShuffler.Opposite(ship.Direction)) : s));
             if(!inventory.TrySpend(ShipTool.Reverse,new ToolMutation(candidate)))return ToolUseStatus.StorageUnavailable;
-            Commit(candidate);LastAffectedIds=new[]{shipId};CancelSelection();return ToolUseStatus.Applied;
+            session.ToolUses++;Commit(candidate);LastAffectedIds=new[]{shipId};CancelSelection();return ToolUseStatus.Applied;
         }
         public ToolUseStatus Rescue()
         {
@@ -68,7 +71,7 @@ namespace Tidebound.Tools
             if(targets.Length==0)return ToolUseStatus.InvalidTarget;
             var next=session.Board;foreach(var id in targets)next=next.WithoutShip(id);
             if(!inventory.TrySpend(ShipTool.Rescue,new ToolMutation(next,movement.PlanRescue(targets))))return ToolUseStatus.StorageUnavailable;
-            CancelSelection();LastAffectedIds=targets;applying=true;
+            session.ToolUses++;CancelSelection();LastAffectedIds=targets;applying=true;
             try { movement.RescueDirectlyToLane(targets); }
             finally { applying=false; }
             return ToolUseStatus.Applied;
@@ -80,7 +83,7 @@ namespace Tidebound.Tools
             var candidate=RemainingFleetShuffler.Propose(before,random.Next(),solverOptions,shuffleAttempts);
             if(candidate==null)return ToolUseStatus.Unproven;
             if(!inventory.TrySpend(ShipTool.Shuffle,new ToolMutation(candidate)))return ToolUseStatus.StorageUnavailable;
-            LastAffectedIds=before.Ships.Where(s=>!candidate.GetShip(s.Id).Position.Equals(s.Position) || candidate.GetShip(s.Id).Direction!=s.Direction).Select(s=>s.Id).ToArray();
+            session.ToolUses++;LastAffectedIds=before.Ships.Where(s=>!candidate.GetShip(s.Id).Position.Equals(s.Position) || candidate.GetShip(s.Id).Direction!=s.Direction).Select(s=>s.Id).ToArray();
             Commit(candidate);return ToolUseStatus.Applied;
         }
         // Exposed outline of an irregular fleet: first/last occupied cells in each row and column.

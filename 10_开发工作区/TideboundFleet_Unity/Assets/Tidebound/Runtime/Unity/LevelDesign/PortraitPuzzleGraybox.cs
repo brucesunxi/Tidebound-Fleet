@@ -46,7 +46,8 @@ namespace Tidebound.Unity.LevelDesign
         private BoardProgressMonitor progress;
         private RectTransform menuPanel, acquisitionPanel;
         private bool acquisitionPauseOwned;
-        private Text acquisitionTitle;
+        private CoinShopPanel shopPanel;
+        public CoinShopPanel ShopPanel => shopPanel;
         private bool menuPauseOwned;
         private Button rescueButton,shuffleButton,reverseButton;
         private FleetCombatSystem combat;
@@ -228,7 +229,7 @@ namespace Tidebound.Unity.LevelDesign
 
         public void TogglePause()
         {
-            if (movement == null) return;
+            if (movement == null || IsAcquisitionOpen) return;
             input.CancelSelection();tools.CancelSelection();
             if(IsPaused) {if(!SaveCheckpoint(true))return;movement.Resume();} else movement.Pause();
             SaveCheckpoint(true);
@@ -238,25 +239,29 @@ namespace Tidebound.Unity.LevelDesign
         public void SelectTool(ShipTool tool)
         {
             if(demo!=null || IsMenuOpen || IsAcquisitionOpen)return;
+            if(tools.Enabled && tools.UsesLeft==0){notice="Tool limit reached. Restart for a new attempt.";UpdateLabels();return;}
             if(tools.Enabled && session.State==GameState.Playing && !IsBusy && toolInventory.IsAvailable && tools.Remaining(tool)==0)
             { ShowAcquisition(tool);return; }
             input.CancelSelection();
             ApplyToolResult(tool==ShipTool.Rescue ? tools.Rescue() : tool==ShipTool.Shuffle ? tools.Shuffle() : tools.Select(tool));
         }
+        public void OpenShop() => ShowAcquisition(ShipTool.None);
         private void ShowAcquisition(ShipTool tool)
         {
+            if(!tools.Enabled || IsBusy || demo!=null || IsAcquisitionOpen || (session.State!=GameState.Playing && !IsPaused))return;
             input.CancelSelection();tools.CancelSelection();
-            acquisitionTitle.text="Get "+(tool==ShipTool.Rescue ? "Rescue" : tool==ShipTool.Shuffle ? "Shuffle" : "Reverse");
-            acquisitionPauseOwned=session.State==GameState.Playing;
-            if(acquisitionPauseOwned)movement.Pause();
-            acquisitionPanel.gameObject.SetActive(true);UpdateLabels();
+            // Transfer ownership of a menu-owned pause; an existing user pause remains owned by the user.
+            acquisitionPauseOwned=session.State==GameState.Playing || (IsMenuOpen && menuPauseOwned);
+            if(IsMenuOpen){menuPanel.gameObject.SetActive(false);menuPauseOwned=false;}
+            if(session.State==GameState.Playing)movement.Pause();
+            SaveCheckpoint(true);shopPanel.Open(tool);UpdateLabels();
         }
         public void CloseAcquisition()
         {
             if(acquisitionPanel==null)return;
             acquisitionPanel.gameObject.SetActive(false);
-            if(acquisitionPauseOwned && IsPaused)movement.Resume();
-            acquisitionPauseOwned=false;UpdateLabels();
+            if(acquisitionPauseOwned && IsPaused && SaveCheckpoint(true))movement.Resume();
+            acquisitionPauseOwned=false;SaveCheckpoint(true);UpdateLabels();
         }
         public void CancelTool() { tools.CancelSelection();notice="Tool cancelled.";UpdateLabels(); }
         private void ApplyToolResult(ToolUseStatus result)
@@ -272,13 +277,14 @@ namespace Tidebound.Unity.LevelDesign
             }
             notice=result==ToolUseStatus.Selected ? "Tap a ship. Tap the tool again to cancel." :
                 result==ToolUseStatus.Applied ? "Tool used. Stock saved." :
-                result==ToolUseStatus.NoUses ? "No stock. Level gifts; ad / shop coming soon." :
+                result==ToolUseStatus.NoUses ? "No stock. Open the tool shop to buy more." :
                 result==ToolUseStatus.StorageUnavailable ? "Cannot save inventory. No tool used." :
                 result==ToolUseStatus.Unproven ? "No proven safe result. No use consumed." : "Tool: "+result;
             SaveCheckpoint();progress.Refresh();UpdateLabels();
         }
         public void ToggleMenu()
         {
+            if(IsAcquisitionOpen)return;
             if(IsMenuOpen) { CloseMenu();return; }
             input.CancelSelection();tools.CancelSelection();
             menuPauseOwned=session.State==GameState.Playing;
@@ -448,6 +454,7 @@ namespace Tidebound.Unity.LevelDesign
             Button("Auto",menuPanel,"Auto / Stop",()=>{CloseMenu();ToggleAuto();});
             Button("Next",menuPanel,"Next",()=>{CloseMenu();SelectLevel((LevelIndex+1)%catalog.Count);});
             Button("Continue",menuPanel,"Continue",CloseMenu);
+            Button("Shop",menuPanel,"Tool shop",OpenShop);
             if(saveService!=null)
             {
                 topPanel.Find("Next").gameObject.SetActive(false);
@@ -456,12 +463,8 @@ namespace Tidebound.Unity.LevelDesign
             menuPanel.gameObject.SetActive(false);
             acquisitionPanel=Panel("ToolAcquisition",canvasRect,new Rect(),new Color(.025f,.055f,.08f,.97f));
             acquisitionPanel.GetComponent<Image>().raycastTarget=true;
-            acquisitionTitle=Label("Title",acquisitionPanel,"Get tools",20);
-            Label("Availability",acquisitionPanel,"Not available in this build.\nLevel gifts remain available.",14);
-            Button("Ad",acquisitionPanel,"Watch ad",null).interactable=false;
-            Button("Coins",acquisitionPanel,"Buy with coins",null).interactable=false;
-            Button("GooglePlay",acquisitionPanel,"Google Play pack",null).interactable=false;
-            Button("Close",acquisitionPanel,"Continue",CloseAcquisition);
+            shopPanel=acquisitionPanel.gameObject.AddComponent<CoinShopPanel>();
+            shopPanel.Initialize(saveService,toolInventory,CoinShopCatalogReader.LoadDefault(),font,CloseAcquisition,()=>tools.UsesLeft);
             acquisitionPanel.gameObject.SetActive(false);
             if (FindObjectOfType<EventSystem>() == null)
             {
@@ -486,13 +489,10 @@ namespace Tidebound.Unity.LevelDesign
             var toolNames=new[]{"Rescue","Shuffle","Reverse"};
             for(var i=0;i<3;i++)Place((RectTransform)toolsPanel.Find(toolNames[i]),new Rect(8+i*(buttonWidth+8),4,buttonWidth,Mathf.Max(48,Layout.Tools.height-40)));
             Place(menuPanel,Layout.Safe);Place(acquisitionPanel,Layout.Safe);
-            var acquireY=Layout.Safe.height/2;
-            Place(acquisitionTitle.rectTransform,new Rect(16,acquireY+108,w-32,36));
-            Place((RectTransform)acquisitionPanel.Find("Availability"),new Rect(16,acquireY+56,w-32,44));
-            var sources=new[]{"Ad","Coins","GooglePlay","Close"};
-            for(var i=0;i<sources.Length;i++)Place((RectTransform)acquisitionPanel.Find(sources[i]),new Rect(32,acquireY-i*56,w-64,48));
+            shopPanel.Layout(Layout.Safe);
             var menuWidth=(w-40)/2;var menuY=Layout.Safe.height/2-84;
             Place((RectTransform)menuPanel.Find("MenuTitle"),new Rect(8,menuY+176,w-16,32));
+            Place((RectTransform)menuPanel.Find("Shop"),new Rect(16,menuY-56,w-32,48));
             var menuNames=new[]{"Previous","Next","Hint","Auto","Restart","Continue"};
             for(var i=0;i<6;i++)Place((RectTransform)menuPanel.Find(menuNames[i]),new Rect(16+(i%2)*(menuWidth+8),menuY+(2-i/2)*56,menuWidth,48));
         }
@@ -503,6 +503,7 @@ namespace Tidebound.Unity.LevelDesign
             title.text = "LEVEL " + (LevelIndex+1);
             wallet.text=saveService==null ? "Review mode - rewards are not saved" : !saveService.IsAvailable ? "Practice - save unavailable" :
                 "Coins: "+saveService.Coins+"   |   Pending: "+(saveService.CurrentAttemptSettled ? 0 : world.PendingCoins);
+            if(tools.Enabled)wallet.text+="   |   Tools: "+tools.UsesLeft+"/"+ShipToolSystem.MaxUsesPerAttempt;
             var deadlocked=!IsBusy && world.PendingMoveId==null && progress.Refresh()==BoardProgressStatus.NoMoves;
             var restartLabel=saveService?.IsAvailable==true && deadlocked ? (saveService.RestartReward>0 ? "Collect "+saveService.RestartReward+" & restart" : "Restart (0 coins)") : "Restart";
             if(saveService?.IsAvailable==true && IsCleared)restartLabel=saveService.CurrentLevel<=catalog.Count ? "Next level" : "Complete";
@@ -511,6 +512,8 @@ namespace Tidebound.Unity.LevelDesign
                 var button=parent.Find("Restart").GetComponent<Button>();button.GetComponentInChildren<Text>(true).text=restartLabel;
                 button.interactable=!(saveService?.IsAvailable==true && IsCleared && saveService.CurrentLevel>catalog.Count);
             }
+            menuPanel.Find("Shop").GetComponent<Button>().interactable=tools.Enabled && !IsBusy && demo==null && (session.State==GameState.Playing || IsPaused);
+            if(IsAcquisitionOpen)shopPanel.Present();
             combatView.Present();
             status.text = IsCleared ? "VICTORY - all ships fired." : combat.FaultReason!=null ? "Combat error: "+combat.FaultReason : IsPaused ? "Paused" :
                 tools.Selection!=ShipTool.None ? notice : !IsBusy && progress.NeedsRescue ? "No solution. Use a tool or Menu > Restart." : notice;
@@ -528,7 +531,7 @@ namespace Tidebound.Unity.LevelDesign
             {
                 var selected=tools.Selection==toolKinds[i];
                 buttons[i].GetComponentInChildren<Text>(true).text=selected ? "Cancel" : labels[i]+" ("+tools.Remaining(toolKinds[i])+")";
-                buttons[i].interactable=tools.Enabled && session.State==GameState.Playing && !IsBusy && demo==null && session.Board.ShipCount>0;
+                buttons[i].interactable=tools.Enabled && tools.UsesLeft>0 && session.State==GameState.Playing && !IsBusy && demo==null && session.Board.ShipCount>0;
             }
         }
 
@@ -569,7 +572,7 @@ namespace Tidebound.Unity.LevelDesign
         private void ClearSession()
         {
             demo=null; input?.CancelSelection(); movement?.Dispose(); movement=null;
-            tools?.Dispose();tools=null;progress=null;menuPanel=null;menuPauseOwned=false;acquisitionPanel=null;acquisitionTitle=null;acquisitionPauseOwned=false;
+            tools?.Dispose();tools=null;progress=null;menuPanel=null;menuPauseOwned=false;acquisitionPanel=null;shopPanel=null;acquisitionPauseOwned=false;
             combat=null; combatView=null;
             lane?.Dispose(); lane=null; transit=null;
             foreach (var subscription in subscriptions) subscription.Dispose(); subscriptions.Clear();

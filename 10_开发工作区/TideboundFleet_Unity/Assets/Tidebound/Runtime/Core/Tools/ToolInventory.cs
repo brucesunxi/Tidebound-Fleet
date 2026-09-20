@@ -51,11 +51,13 @@ namespace Tidebound.Tools
             try { data=this.store.Load() ?? new ToolInventoryData();data.Validate(); }
             catch(Exception e) { data=new ToolInventoryData();IsAvailable=false;LastError=e.GetType().Name; }
         }
+        // The profile is authoritative after a transaction that updates stock outside this facade.
+        internal void AcceptCommitted(ToolInventoryData value) {value.Validate();data=value.Copy();LastError=null;}
         public int Count(ShipTool tool) => tool==ShipTool.Rescue ? data.Rescue : tool==ShipTool.Shuffle ? data.Shuffle : tool==ShipTool.Reverse ? data.Reverse : 0;
         // Called only by a trusted milestone / confirmed reward / verified purchase adapter, never by an ad-open button.
         public bool Grant(string receipt,int rescue,int shuffle,int reverse)
         {
-            if(string.IsNullOrWhiteSpace(receipt) || rescue<0 || shuffle<0 || reverse<0 || (rescue==0 && shuffle==0 && reverse==0))throw new ArgumentException("Invalid inventory grant.");
+            if(string.IsNullOrWhiteSpace(receipt) || receipt.StartsWith("coin:",StringComparison.Ordinal) || rescue<0 || shuffle<0 || reverse<0 || (rescue==0 && shuffle==0 && reverse==0))throw new ArgumentException("Invalid inventory grant.");
             if(!IsAvailable || data.Receipts.Contains(receipt,StringComparer.Ordinal))return false;
             var next=data.Copy();
             next.Rescue=checked(next.Rescue+rescue);next.Shuffle=checked(next.Shuffle+shuffle);next.Reverse=checked(next.Reverse+reverse);

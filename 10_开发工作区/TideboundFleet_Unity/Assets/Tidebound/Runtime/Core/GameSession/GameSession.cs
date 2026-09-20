@@ -21,6 +21,7 @@ namespace Tidebound.Core
         public BoardModel Board { get; internal set; }
         public BoardModel InitialBoard { get; }
         public GameState State { get; internal set; } = GameState.Prepare;
+        public int ToolUses { get; internal set; }
         public string EndReason { get; private set; }
         public IEventBus Events { get; } = new SessionEventBus();
 

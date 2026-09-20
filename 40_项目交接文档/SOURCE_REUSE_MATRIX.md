@@ -71,3 +71,6 @@
 
 
 I5-A落实S10：继续借鉴原项目的存取入口，正式实现为强类型v2档案、旧库存一次迁移、事务式工具效果和attempt结算记录；不复用直接修改金币或全局清档。复用本项目现有Movement／Transit／Combat时间轴恢复，未复制购买源码代码，也未引入新依赖。金币商店、S09收藏交互尚未实现。
+
+
+I5-B落实S10／S11：原创消费账本与两步购买反馈，未导入旧支付代码。排名新增只读参考R `RankPanel.js` 的changeMode／refreshPanel／selfRankItem，借鉴世界／好友切换、关数得分与自身位置固定；平台getRankInfo/getSubRank不是可复用后台，不迁移自动插屏。排行榜规则与工程分期见[综合方案](ECONOMY_RETENTION_PLAN.md)。

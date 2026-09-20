@@ -79,6 +79,10 @@ namespace Tidebound.EditorTools
 
         private static System.Collections.IEnumerator CaptureFrames(PortraitPuzzleGraybox game)
         {
+            if(Environment.GetEnvironmentVariable("TIDEBOUND_CAPTURE_SHOP_ONLY")=="1")
+            {
+                yield return CaptureShopFrames(game);stage=3;SessionState.SetInt(Key+".Stage",3);EditorApplication.ExitPlaymode();yield break;
+            }
             game.EnableReviewMode();
             // Screen dimensions must be read from the player loop, not EditorApplication.update.
             yield return null;
@@ -155,6 +159,33 @@ namespace Tidebound.EditorTools
             yield return SaveFrame("Save_Victory_390x844.png");
             game.Restart();yield return null;yield return SaveFrame("Save_Level2_390x844.png");
             stage=3; SessionState.SetInt(Key+".Stage",3); EditorApplication.ExitPlaymode();
+        }
+
+        private static System.Collections.IEnumerator CaptureShopFrames(PortraitPuzzleGraybox game)
+        {
+            // Explicitly seeded review account; never grants funds to the actual player's save.
+            var store=new MemoryPlayerSaveStore();
+            var data=new PlayerSaveData{CurrentLevel=3,HighestClearedLevel=2,Coins=307,Settlements=new[]{
+                new SettlementRecord{AttemptId=Guid.NewGuid().ToString("N"),LevelId="Review1",LevelNumber=1,Kind="Victory",Day="2026-09-20",EconomyVersion=BattleCoinRules.Version,BattleCoins=7,FirstClearCoins=100},
+                new SettlementRecord{AttemptId=Guid.NewGuid().ToString("N"),LevelId="Review2",LevelNumber=2,Kind="Victory",Day="2026-09-20",EconomyVersion=BattleCoinRules.Version,BattleCoins=80,FirstClearCoins=120}}};
+            store.Save(data);game.EnableReviewMode(new PlayerSaveService(store));yield return null;game.OpenShop();
+            foreach(var size in Sizes.Take(3))
+            {
+                SetGameViewSize(size);var expires=Time.realtimeSinceStartup+10;
+                while((Screen.width!=size.x || Screen.height!=size.y) && Time.realtimeSinceStartup<expires)yield return null;
+                if(Screen.width!=size.x || Screen.height!=size.y)throw new TimeoutException("Shop viewport did not settle.");
+                yield return SaveFrame($"Shop_{size.x}x{size.y}.png");
+            }
+            SetGameViewSize(new Vector2Int(390,844));yield return null;yield return null;
+            game.ShopPanel.SelectProduct("tools_bundle_1");yield return SaveFrame("Shop_Insufficient_390x844.png");
+            game.ShopPanel.SelectProduct("shuffle_1");yield return SaveFrame("Shop_Confirm_390x844.png");
+            game.ShopPanel.ConfirmPurchase();game.ShopPanel.ConfirmPurchase();yield return SaveFrame("Shop_Purchased_390x844.png");
+            game.CloseAcquisition();game.SaveService.Inventory.Grant("review-budget",0,0,4);
+            var id=game.Session.Board.Ships.First().Id;
+            for(var i=0;i<ShipToolSystem.MaxUsesPerAttempt;i++){game.SelectTool(ShipTool.Reverse);game.ClickShip(id);}
+            game.OpenShop();yield return SaveFrame("Shop_UseLimit_390x844.png");
+            game.EnableReviewMode(new PlayerSaveService(store));yield return null;game.OpenShop();
+            yield return SaveFrame("Shop_Restored_390x844.png");
         }
 
         private static System.Collections.IEnumerator SaveFrame(string filename)

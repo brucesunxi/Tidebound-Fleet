@@ -56,12 +56,12 @@ namespace Tidebound.Save
         public AttemptSaveData Capture()
         {
             var saved=origin.Copy();saved.Board=Session.Board.Ships.Select(SavedPlacement.From).ToArray();saved.Departures=departures.Select(x=>x.Copy()).ToArray();
-            saved.Elapsed=Transit.ElapsedTime;saved.PendingMoveId=PendingMoveId;saved.Paused=Session.State==GameState.Paused;saved.Victory=Session.State==GameState.Victory;
+            saved.ToolUses=Session.ToolUses;saved.Elapsed=Transit.ElapsedTime;saved.PendingMoveId=PendingMoveId;saved.Paused=Session.State==GameState.Paused;saved.Victory=Session.State==GameState.Victory;
             saved.HitIds=Combat.Attacks.Where(t=>t.Stage==AttackStage.Hit).Select(t=>t.Ship.ShipId).ToArray();return saved;
         }
         public AttemptSaveData ProjectTool(ToolMutation mutation)
         {
-            var saved=Capture();saved.Board=mutation.BoardAfter.Ships.Select(SavedPlacement.From).ToArray();
+            var saved=Capture();saved.ToolUses++;saved.Board=mutation.BoardAfter.Ships.Select(SavedPlacement.From).ToArray();
             if(mutation.RescuePaths!=null)
             {
                 var next=saved.Departures.ToList();
@@ -74,7 +74,7 @@ namespace Tidebound.Save
         public static void Validate(AttemptSaveData s)
         {
             if(s==null || !Guid.TryParseExact(s.AttemptId,"N",out _) || string.IsNullOrWhiteSpace(s.LevelId) || string.IsNullOrWhiteSpace(s.BossId) || string.IsNullOrWhiteSpace(s.RewardSeed) ||
-                s.EconomyVersion!=BattleCoinRules.Version || s.LevelNumber<1 || s.LevelNumber>10000 || s.Width<1 || s.Height<1 ||
+                s.ToolUses<0 || s.ToolUses>ShipToolSystem.MaxUsesPerAttempt || s.EconomyVersion!=BattleCoinRules.Version || s.LevelNumber<1 || s.LevelNumber>10000 || s.Width<1 || s.Height<1 ||
                 s.Width>FoundationLimits.MaxTechnicalBoardWidth || s.Height>FoundationLimits.MaxTechnicalBoardHeight ||
                 s.Ships==null || s.Ships.Length<1 || s.Ships.Length>FoundationLimits.MaxTechnicalShipCount || s.Board==null || s.Departures==null || s.HitIds==null ||
                 double.IsNaN(s.Elapsed) || double.IsInfinity(s.Elapsed) || s.Elapsed<0)throw new ArgumentException("Invalid attempt checkpoint.");
@@ -104,6 +104,7 @@ namespace Tidebound.Save
         {
             Validate(s);
             var session=new GameSession(s.LevelId,s.Width,s.Height,s.Ships.Select(x=>x.Runtime()).ToArray(),new BossRuntimeData(s.BossId,s.Ships.Length*10),s.AttemptId);
+            session.ToolUses=s.ToolUses;
             var caps=s.Ships.Where(x=>x.Length==2).GroupBy(x=>x.SkinId).ToDictionary(g=>g.Key,g=>g.First().CoinCap);
             var game=new SavedGameRuntime(session,s.LevelNumber,new LaneTransitTiming(s.LaneDuration,s.EntranceInterval,s.FleetEntryDuration),new CombatTiming(s.LaunchInterval,s.FlightDuration),s.RewardSeed,caps);
             try

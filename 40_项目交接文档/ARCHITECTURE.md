@@ -309,3 +309,14 @@ y=0   1  1  .  2
 - 首次读取v2为空时迁移旧`tool-inventory-v1.json`库存及里程碑回执；v2一旦存在，不再重导旧档。Editor保存在项目Library/Tidebound，设备保存在persistentDataPath，均不提交Git。未增加新SDK或修改平台构建配置。
 - `PortraitPuzzleGraybox`默认进入持久推进模式；胜利1.2秒后进入下一关，最后一关完成停在已保存完成态；隐藏旧关选择。`EnableReviewMode`及截图工具使用独立内存档，审查选关不改账户。
 - 当前只包含默认船金币、库存及尝试状态；皮肤／装备／抽卡、金币购买、真实广告与Google支付留给后续迭代。移动端文件替换、后台回调和性能仍需真机验证。
+
+
+## I5-B：金币购买与每局道具额度
+
+- `CoinShopCatalog`为可信不可变商品配置，Unity从`Resources/CoinToolShop.json`读取；调用只提交商品ID和唯一请求ID，价格／数量不从按钮参数接收。
+- 档案v3新增`Purchases`，`Coins=已结算收入-金币购买支出`。每个购买记录含历史商品、配置版本、价格、数量、等级，且必须与库存`coin:`回执一一对应；历史记录不按新价格重算。
+- `BuyWithCoins`一起保存钱包、库存、购买记录和attempt；失败不提交，成功后同步`ToolInventory`缓存，防止后续赠送／使用把刚买的库存覆盖。相同请求／商品重复调用返回AlreadyPurchased，相同请求改商品返回RequestConflict。
+- v2读取校验后原地升级v3，沿用原文件名`player-save-v2.json`以便自动找到旧档；失败不覆盖旧档。版本以文件内Version为准。
+- `GameSession.ToolUses`及`AttemptSaveData.ToolUses`记录成功使用次数，三种来源无关地共享5次上限；`ProjectTool`将计次与扣数／效果一起提交。读档恢复计数，普通购买不增加使用次数。
+- `CoinShopPanel`独立负责商品列表／确认／余额与库存反馈；灰盒Menu与空库存共用入口。面板继承菜单或自身的暂停所有权，关闭后只恢复自己暂停的游戏；已由玩家暂停的局仍暂停。
+- 已开放长期经济／排名设计，但本轮不修改BattleCoinsV1首通公式、不接抽取、广告、支付或真实排行榜服务。

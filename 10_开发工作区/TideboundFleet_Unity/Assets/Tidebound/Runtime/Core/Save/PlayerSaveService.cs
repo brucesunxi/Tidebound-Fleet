@@ -38,6 +38,8 @@ namespace Tidebound.Save
                 }
                 data.Validate();
                 if(data.Attempt!=null)using(var verified=SavedGameRuntime.Restore(data.Attempt)){}
+                // Upgrade in place, retaining the existing filename and the previous file as backup.
+                if(data.Version==2){var upgraded=data.Copy();upgraded.Version=3;upgraded.Revision=checked(data.Revision+1);upgraded.Validate();store.Save(upgraded.Copy());data=upgraded;}
             }
             catch(Exception e){data=new PlayerSaveData();IsAvailable=false;LastError=e.GetType().Name;}
             Inventory=new ToolInventory(this);
@@ -53,6 +55,32 @@ namespace Tidebound.Save
                 next.Attempt=mutation==null ? Runtime.Capture() : Runtime.ProjectTool(mutation);
             else if(mutation!=null)throw new InvalidOperationException("No current attempt for a tool effect.");
             if(!Commit(next))throw new IOException("Inventory checkpoint was not committed.");
+        }
+        public CoinPurchaseStatus BuyWithCoins(string requestId,string productId,CoinShopCatalog catalog)
+        {
+            if(!IsAvailable || !Inventory.IsAvailable)return CoinPurchaseStatus.StorageUnavailable;
+            if(!Guid.TryParseExact(requestId,"N",out _))return CoinPurchaseStatus.InvalidRequest;
+            var prior=data.Purchases.SingleOrDefault(p=>p.RequestId==requestId);
+            if(prior!=null)return prior.ProductId==productId ? CoinPurchaseStatus.AlreadyPurchased : CoinPurchaseStatus.RequestConflict;
+            var product=catalog?.Find(productId);
+            if(product==null)return CoinPurchaseStatus.InvalidProduct;
+            if(data.CurrentLevel<catalog.UnlockLevel)return CoinPurchaseStatus.Locked;
+            if(Runtime!=null && (data.Attempt?.AttemptId!=Runtime.Session.SessionId || Runtime.Movement.IsBusy || Runtime.PendingMoveId!=null ||
+                (Runtime.Session.State!=GameState.Playing && Runtime.Session.State!=GameState.Paused)))return CoinPurchaseStatus.Busy;
+            if(data.Coins<product.Price)return CoinPurchaseStatus.InsufficientCoins;
+            var next=data.Copy();
+            try
+            {
+                next.Tools.Rescue=checked(next.Tools.Rescue+product.Rescue);next.Tools.Shuffle=checked(next.Tools.Shuffle+product.Shuffle);next.Tools.Reverse=checked(next.Tools.Reverse+product.Reverse);
+            }
+            catch(OverflowException){return CoinPurchaseStatus.InventoryLimit;}
+            var receipt=new CoinPurchaseRecord{RequestId=requestId,ProductId=product.Id,CatalogVersion=catalog.Version,Price=product.Price,
+                Rescue=product.Rescue,Shuffle=product.Shuffle,Reverse=product.Reverse,AtLevel=data.CurrentLevel};
+            next.Coins-=receipt.Price;next.Purchases=next.Purchases.Concat(new[]{receipt}).ToArray();
+            next.Tools.Receipts=next.Tools.Receipts.Concat(new[]{receipt.InventoryReceipt}).ToArray();
+            if(Runtime!=null)next.Attempt=Runtime.Capture();
+            if(!Commit(next))return CoinPurchaseStatus.StorageUnavailable;
+            Inventory.AcceptCommitted(data.Tools);return CoinPurchaseStatus.Purchased;
         }
         public void Suspend(string reason) {IsAvailable=false;LastError=reason;}
         public bool Start(SavedGameRuntime runtime)
