@@ -27,6 +27,8 @@ namespace Tidebound.Save
         public int LevelNumber => origin.LevelNumber;
         public int PendingCoins => origin.Ships.Where(s=>Combat.Attacks.Any(t=>t.Ship.ShipId==s.Id && t.Stage==AttackStage.Hit)).Sum(s=>s.Coins);
         public string PendingMoveId { get; set; }
+        // Presentation-owned modal pause must not strand a restored game behind a missing modal.
+        public bool PresentationPause { get; set; }
         public long ChangeVersion { get; private set; }
         public SavedGameRuntime(GameSession session,int levelNumber,LaneTransitTiming laneTiming=null,CombatTiming combatTiming=null,
             string seed=null,IReadOnlyDictionary<string,int> caps=null)
@@ -56,7 +58,7 @@ namespace Tidebound.Save
         public AttemptSaveData Capture()
         {
             var saved=origin.Copy();saved.Board=Session.Board.Ships.Select(SavedPlacement.From).ToArray();saved.Departures=departures.Select(x=>x.Copy()).ToArray();
-            saved.ToolUses=Session.ToolUses;saved.Elapsed=Transit.ElapsedTime;saved.PendingMoveId=PendingMoveId;saved.Paused=Session.State==GameState.Paused;saved.Victory=Session.State==GameState.Victory;
+            saved.ToolUses=Session.ToolUses;saved.Elapsed=Transit.ElapsedTime;saved.PendingMoveId=PendingMoveId;saved.Paused=Session.State==GameState.Paused && !PresentationPause;saved.Victory=Session.State==GameState.Victory;
             saved.HitIds=Combat.Attacks.Where(t=>t.Stage==AttackStage.Hit).Select(t=>t.Ship.ShipId).ToArray();return saved;
         }
         public AttemptSaveData ProjectTool(ToolMutation mutation)

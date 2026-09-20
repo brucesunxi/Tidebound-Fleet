@@ -320,3 +320,13 @@ y=0   1  1  .  2
 - `GameSession.ToolUses`及`AttemptSaveData.ToolUses`记录成功使用次数，三种来源无关地共享5次上限；`ProjectTool`将计次与扣数／效果一起提交。读档恢复计数，普通购买不增加使用次数。
 - `CoinShopPanel`独立负责商品列表／确认／余额与库存反馈；灰盒Menu与空库存共用入口。面板继承菜单或自身的暂停所有权，关闭后只恢复自己暂停的游戏；已由玩家暂停的局仍暂停。
 - 已开放长期经济／排名设计，但本轮不修改BattleCoinsV1首通公式、不接抽取、广告、支付或真实排行榜服务。
+
+
+## E1：自动帮助与完全死局弹窗（2026-09-20）
+
+- `Core/Tools/BoardAssistance`只读取不可变Board快照；缓存首个`QueryForwardPath.CanExit`候选和所有船零位移状态，不调用Solver、不改变船位置。新快照重置计时与弹窗去重，空盘面不判死局。
+- `PortraitPuzzleGraybox.Assistance`统一处理5秒无操作、1.4秒单次高亮、输入／暂停／后台／工具选择／弹层屏障。默认提示开启，可在Menu关闭或选静态高亮；偏好使用PlayerPrefs，与账号经济存档分离。没有输入的同一轮空闲仅提示一次，新操作重新计时。
+- `BoardGridInputRouter`增加可选活动回调与指针按住状态，空白点击、按住也算操作；UI回调和后台／焦点变化同步清除高亮。所有候选来自Grid，不读取视图尺寸。
+- `DeadlockPanel`在所有船无法移动、无未完成移动意图、航道和待攻击归零后显示。关闭后相同Board实例不重复弹，重新载入仍可能提示一次。库存不足复用CoinShopPanel，5次用满禁用本局道具，购买只补下局库存；重开沿用既有原子结算事务。
+- `SavedGameRuntime.PresentationPause`仅为运行时弹层暂停来源；Capture不将其写成用户主动暂停，避免重进卡在不可恢复的临时弹层状态。死局弹窗转商店交接暂停所有权，手动暂停继续按原行为保存；没有修改v3存档结构、历史账本、道具效果或经济参数。
+- [E1验证](验证记录/E1_自动帮助与死局弹窗/E1_VALIDATION.md)：338/338 EditMode、27/27 PlayMode。后续E2a将Ready屏障接入此协调器；本轮仍沿用原进关与胜利自动推进流程。

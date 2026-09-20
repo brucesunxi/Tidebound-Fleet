@@ -25,7 +25,7 @@ using UnityEngine.UI;
 namespace Tidebound.Unity.LevelDesign
 {
     /// <summary>Standalone 5R playable candidate scene. All actions use the production model/controllers.</summary>
-    public sealed class PortraitPuzzleGraybox : MonoBehaviour
+    public sealed partial class PortraitPuzzleGraybox : MonoBehaviour
     {
         [SerializeField] private TextAsset manifest;
         [SerializeField] private TextAsset[] layouts;
@@ -101,6 +101,8 @@ namespace Tidebound.Unity.LevelDesign
         private void Start()
         {
             if (initialized || manifest == null) return;
+            autoHintsEnabled = PlayerPrefs.GetInt("Tidebound.AutoHints", 1) != 0;
+            reducedHintMotion = PlayerPrefs.GetInt("Tidebound.ReducedHintMotion", 0) != 0;
             try
             {
                 var saveRoot=Application.persistentDataPath;
@@ -189,7 +191,7 @@ namespace Tidebound.Unity.LevelDesign
             entered.AddRange(combat.Attacks.Select(t=>t.Ship.ShipId));
             subscriptions.Add(session.Events.Subscribe<ShipExitBoardEvent>(e => exited.Add(e.Ship.ShipId)));
             subscriptions.Add(session.Events.Subscribe<ShipEnterFleetEvent>(e => entered.Add(e.Ship.ShipId)));
-            input.Configure(() => session?.Board, ClickShip);
+            input.Configure(() => session?.Board, ClickShip, NotifyUserActivity);
             foreach(var view in shipViews.Values){view.BindClickHandler(ClickShip);view.SetPaused(IsPaused);}
             lane.PresentActiveTransits();
             notice = saveService!=null && !saveService.IsAvailable ? "Save unavailable. Practice only; account locked." : "Tap a ship to move forward.";
@@ -215,6 +217,7 @@ namespace Tidebound.Unity.LevelDesign
 
         public void ClickShip(string id)
         {
+            NotifyUserActivity();
             if (session == null || IsPaused || IsBusy || demo != null) return;
             if(tools.Selection!=ShipTool.None)
             {
@@ -229,7 +232,8 @@ namespace Tidebound.Unity.LevelDesign
 
         public void TogglePause()
         {
-            if (movement == null || IsAcquisitionOpen) return;
+            NotifyUserActivity();
+            if (movement == null || IsAcquisitionOpen || IsDeadlockOpen) return;
             input.CancelSelection();tools.CancelSelection();
             if(IsPaused) {if(!SaveCheckpoint(true))return;movement.Resume();} else movement.Pause();
             SaveCheckpoint(true);
@@ -238,7 +242,8 @@ namespace Tidebound.Unity.LevelDesign
 
         public void SelectTool(ShipTool tool)
         {
-            if(demo!=null || IsMenuOpen || IsAcquisitionOpen)return;
+            NotifyUserActivity();
+            if(demo!=null || IsMenuOpen || IsAcquisitionOpen || IsDeadlockOpen || IsPaused)return;
             if(tools.Enabled && tools.UsesLeft==0){notice="Tool limit reached. Restart for a new attempt.";UpdateLabels();return;}
             if(tools.Enabled && session.State==GameState.Playing && !IsBusy && toolInventory.IsAvailable && tools.Remaining(tool)==0)
             { ShowAcquisition(tool);return; }
@@ -248,7 +253,8 @@ namespace Tidebound.Unity.LevelDesign
         public void OpenShop() => ShowAcquisition(ShipTool.None);
         private void ShowAcquisition(ShipTool tool)
         {
-            if(!tools.Enabled || IsBusy || demo!=null || IsAcquisitionOpen || (session.State!=GameState.Playing && !IsPaused))return;
+            NotifyUserActivity();
+            if(!tools.Enabled || IsBusy || demo!=null || IsAcquisitionOpen || IsDeadlockOpen || (session.State!=GameState.Playing && !IsPaused))return;
             input.CancelSelection();tools.CancelSelection();
             // Transfer ownership of a menu-owned pause; an existing user pause remains owned by the user.
             acquisitionPauseOwned=session.State==GameState.Playing || (IsMenuOpen && menuPauseOwned);
@@ -261,9 +267,9 @@ namespace Tidebound.Unity.LevelDesign
             if(acquisitionPanel==null)return;
             acquisitionPanel.gameObject.SetActive(false);
             if(acquisitionPauseOwned && IsPaused && SaveCheckpoint(true))movement.Resume();
-            acquisitionPauseOwned=false;SaveCheckpoint(true);UpdateLabels();
+            acquisitionPauseOwned=false;world.PresentationPause=false;NotifyUserActivity();SaveCheckpoint(true);UpdateLabels();
         }
-        public void CancelTool() { tools.CancelSelection();notice="Tool cancelled.";UpdateLabels(); }
+        public void CancelTool() { NotifyUserActivity();tools.CancelSelection();notice="Tool cancelled.";UpdateLabels(); }
         private void ApplyToolResult(ToolUseStatus result)
         {
             if(result==ToolUseStatus.Applied)
@@ -284,7 +290,8 @@ namespace Tidebound.Unity.LevelDesign
         }
         public void ToggleMenu()
         {
-            if(IsAcquisitionOpen)return;
+            NotifyUserActivity();
+            if(IsAcquisitionOpen || IsDeadlockOpen)return;
             if(IsMenuOpen) { CloseMenu();return; }
             input.CancelSelection();tools.CancelSelection();
             menuPauseOwned=session.State==GameState.Playing;
@@ -293,6 +300,7 @@ namespace Tidebound.Unity.LevelDesign
         }
         public void CloseMenu()
         {
+            NotifyUserActivity();
             if(menuPanel==null)return;
             menuPanel.gameObject.SetActive(false);
             if(menuPauseOwned && IsPaused)movement.Resume();
@@ -312,6 +320,8 @@ namespace Tidebound.Unity.LevelDesign
 
         public void ToggleAuto()
         {
+            NotifyUserActivity();
+            if(IsDeadlockOpen || IsAcquisitionOpen)return;
             input.CancelSelection();tools.CancelSelection();
             if (demo != null) { demo = null; notice = "Demo stopped after the current move."; UpdateLabels(); return; }
             if (IsPaused || IsBusy) return;
@@ -323,6 +333,7 @@ namespace Tidebound.Unity.LevelDesign
 
         public void ShowHint()
         {
+            NotifyUserActivity();
             if (IsPaused || IsBusy || demo != null) return;
             tools.CancelSelection();
             var result = SolveCurrent();
@@ -357,6 +368,7 @@ namespace Tidebound.Unity.LevelDesign
                     if (!request.IsAccepted) { demo = null; notice = "Demo interrupted. Solve the current state again."; }
                 }
             }
+            TickAssistance(Time.unscaledDeltaTime);
             UpdateLabels();
         }
 
@@ -364,7 +376,7 @@ namespace Tidebound.Unity.LevelDesign
         {
             if (session == null || pixelsPerUnit <= 0 || float.IsNaN(pixelsPerUnit) || float.IsInfinity(pixelsPerUnit))
                 throw new ArgumentException("Invalid viewport.");
-            input.CancelSelection();
+            NotifyUserActivity();input.CancelSelection();
             var safe = new Rect(safePixels.position / pixelsPerUnit, safePixels.size / pixelsPerUnit);
             Layout = PortraitBoardLayout.Calculate(safe, session.Width, session.Height);
             overlay.scaleFactor = pixelsPerUnit;
@@ -466,6 +478,7 @@ namespace Tidebound.Unity.LevelDesign
             shopPanel=acquisitionPanel.gameObject.AddComponent<CoinShopPanel>();
             shopPanel.Initialize(saveService,toolInventory,CoinShopCatalogReader.LoadDefault(),font,CloseAcquisition,()=>tools.UsesLeft);
             acquisitionPanel.gameObject.SetActive(false);
+            BuildAssistance(canvasRect);
             if (FindObjectOfType<EventSystem>() == null)
             {
                 var events = new GameObject("GrayboxEventSystem",typeof(EventSystem),typeof(StandaloneInputModule));
@@ -489,10 +502,12 @@ namespace Tidebound.Unity.LevelDesign
             var toolNames=new[]{"Rescue","Shuffle","Reverse"};
             for(var i=0;i<3;i++)Place((RectTransform)toolsPanel.Find(toolNames[i]),new Rect(8+i*(buttonWidth+8),4,buttonWidth,Mathf.Max(48,Layout.Tools.height-40)));
             Place(menuPanel,Layout.Safe);Place(acquisitionPanel,Layout.Safe);
-            shopPanel.Layout(Layout.Safe);
+            shopPanel.Layout(Layout.Safe);deadlockView.Layout(Layout.Safe);
             var menuWidth=(w-40)/2;var menuY=Layout.Safe.height/2-84;
             Place((RectTransform)menuPanel.Find("MenuTitle"),new Rect(8,menuY+176,w-16,32));
             Place((RectTransform)menuPanel.Find("Shop"),new Rect(16,menuY-56,w-32,48));
+            Place((RectTransform)menuPanel.Find("AutoHints"),new Rect(16,menuY-112,w-32,48));
+            Place((RectTransform)menuPanel.Find("HintMotion"),new Rect(16,menuY-168,w-32,48));
             var menuNames=new[]{"Previous","Next","Hint","Auto","Restart","Continue"};
             for(var i=0;i<6;i++)Place((RectTransform)menuPanel.Find(menuNames[i]),new Rect(16+(i%2)*(menuWidth+8),menuY+(2-i/2)*56,menuWidth,48));
         }
@@ -562,7 +577,7 @@ namespace Tidebound.Unity.LevelDesign
         {
             var r=Panel(name,parent,new Rect(),new Color(.13f,.27f,.35f)); var image=r.GetComponent<Image>(); image.raycastTarget=true;
             var b=r.gameObject.AddComponent<Button>(); b.targetGraphic=image;
-            if (clicked!=null) b.onClick.AddListener(() => clicked());
+            if (clicked!=null) b.onClick.AddListener(() => { NotifyUserActivity(); clicked(); });
             var text=Label("Label",r,label,14); text.rectTransform.anchorMax=Vector2.one;
             text.rectTransform.offsetMin=Vector2.zero; text.rectTransform.offsetMax=Vector2.zero;
             return b;
@@ -571,6 +586,7 @@ namespace Tidebound.Unity.LevelDesign
 
         private void ClearSession()
         {
+            ClearAutoHighlight();assistance=null;deadlockPanel=null;deadlockView=null;deadlockPauseOwned=false;inputSinceTick=false;
             demo=null; input?.CancelSelection(); movement?.Dispose(); movement=null;
             tools?.Dispose();tools=null;progress=null;menuPanel=null;menuPauseOwned=false;acquisitionPanel=null;shopPanel=null;acquisitionPauseOwned=false;
             combat=null; combatView=null;
@@ -579,7 +595,8 @@ namespace Tidebound.Unity.LevelDesign
             world?.Dispose();world=null;session=null; shipViews.Clear(); exited.Clear(); entered.Clear();
             if (presentation!=null) { presentation.SetActive(false); Destroy(presentation); } presentation=null;
         }
-        private void OnApplicationPause(bool paused) {if(paused && world!=null){if(!IsPaused)movement.Pause();FlushSave();}}
+        private void OnApplicationPause(bool paused) {backgrounded=paused;NotifyUserActivity();if(paused && world!=null){if(!IsPaused)movement.Pause();FlushSave();}}
+        private void OnApplicationFocus(bool focused) {backgrounded=!focused;NotifyUserActivity();}
         private void OnApplicationQuit() => FlushSave();
         private void OnDestroy() {FlushSave();ClearSession();}
 

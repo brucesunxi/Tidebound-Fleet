@@ -16,7 +16,7 @@ namespace Tidebound.EditorTools
 {
     /// <summary>Development review capture using the real Game view. Unity 2022.3 editor-only reflection.</summary>
     [InitializeOnLoad]
-    public static class PortraitGrayboxCapture
+    public static partial class PortraitGrayboxCapture
     {
         private const string Key = "Tidebound.PortraitCapture";
         private static readonly Vector2Int[] Sizes = { new Vector2Int(360,640),new Vector2Int(390,844),new Vector2Int(430,932),new Vector2Int(390,844) };
@@ -79,6 +79,10 @@ namespace Tidebound.EditorTools
 
         private static System.Collections.IEnumerator CaptureFrames(PortraitPuzzleGraybox game)
         {
+            if(Environment.GetEnvironmentVariable("TIDEBOUND_CAPTURE_ASSISTANCE_ONLY")=="1")
+            {
+                yield return CaptureAssistanceFrames(game);stage=3;SessionState.SetInt(Key+".Stage",3);EditorApplication.ExitPlaymode();yield break;
+            }
             if(Environment.GetEnvironmentVariable("TIDEBOUND_CAPTURE_SHOP_ONLY")=="1")
             {
                 yield return CaptureShopFrames(game);stage=3;SessionState.SetInt(Key+".Stage",3);EditorApplication.ExitPlaymode();yield break;

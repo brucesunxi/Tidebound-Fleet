@@ -14,11 +14,14 @@ namespace Tidebound.Unity.Input
 
         private BoardGridSelection selection;
         private Action<string> submit;
+        private Action userActivity;
+        public bool IsPointerHeld => activePointer.HasValue;
         private int? activePointer;
 
-        public void Configure(Func<BoardModel> boardProvider, Action<string> submitMove)
+        public void Configure(Func<BoardModel> boardProvider, Action<string> submitMove, Action onUserActivity = null)
         {
             selection = new BoardGridSelection(boardProvider);
+            userActivity = onUserActivity;
             submit = submitMove ?? throw new ArgumentNullException(nameof(submitMove));
         }
 
@@ -30,6 +33,7 @@ namespace Tidebound.Unity.Input
         public void OnPointerDown(PointerEventData eventData)
         {
             if (eventData == null || eventData.button != PointerEventData.InputButton.Left || activePointer.HasValue) return;
+            userActivity?.Invoke();
             activePointer = eventData.pointerId;
             if (TryCell(eventData, out var cell)) selection?.PointerDown(cell);
             else selection?.Cancel();
@@ -38,6 +42,7 @@ namespace Tidebound.Unity.Input
         public void OnPointerUp(PointerEventData eventData)
         {
             if (eventData == null || eventData.button != PointerEventData.InputButton.Left || activePointer != eventData.pointerId) return;
+            userActivity?.Invoke();
             activePointer = null;
             if (TryCell(eventData, out var cell))
             {
