@@ -81,17 +81,7 @@ namespace Tidebound.Ship
         {
             if(session.State!=GameState.Playing || IsBusy || ids==null || ids.Length<1 || ids.Length>2 || ids.Distinct().Count()!=ids.Length)
                 throw new InvalidOperationException("Invalid rescue batch.");
-            var paths=ids.Select(id=>
-            {
-                var ship=session.Board.GetShip(id);
-                if(session.GetShip(id).State!=ShipState.Idle)throw new InvalidOperationException("Rescue needs idle ships.");
-                var distances=new[]{session.Height-ship.OccupiedCells.Min(c=>c.Y),session.Width-ship.OccupiedCells.Min(c=>c.X),
-                    ship.OccupiedCells.Max(c=>c.Y)+1,ship.OccupiedCells.Max(c=>c.X)+1};
-                var directions=new[]{ShipDirection.Up,ShipDirection.Right,ShipDirection.Down,ShipDirection.Left};
-                var i=Array.IndexOf(distances,distances.Min());var direction=directions[i];var step=GridFootprint.DirectionStep(direction);
-                var target=new GridPosition(ship.Position.X+step.X*distances[i],ship.Position.Y+step.Y*distances[i]);
-                return ForwardPathResult.Exit(id,ship.Position,direction,target,Array.Empty<GridPosition>(),distances[i]);
-            }).ToArray();
+            var paths=PlanRescue(ids);
             var next=session.Board;
             foreach(var path in paths)next=next.WithoutShip(path.ShipId);
             // Commit both before publishing either event; all observers see the same completed rescue.
@@ -108,6 +98,22 @@ namespace Tidebound.Ship
             }
             finally { rescuing=false; }
         }
+
+        internal ForwardPathResult[] PlanRescue(string[] ids)
+        {
+            return ids.Select(id=>
+            {
+                var ship=session.Board.GetShip(id);
+                if(session.GetShip(id).State!=ShipState.Idle)throw new InvalidOperationException("Rescue needs idle ships.");
+                var distances=new[]{session.Height-ship.OccupiedCells.Min(c=>c.Y),session.Width-ship.OccupiedCells.Min(c=>c.X),
+                    ship.OccupiedCells.Max(c=>c.Y)+1,ship.OccupiedCells.Max(c=>c.X)+1};
+                var directions=new[]{ShipDirection.Up,ShipDirection.Right,ShipDirection.Down,ShipDirection.Left};
+                var i=Array.IndexOf(distances,distances.Min());var direction=directions[i];var step=GridFootprint.DirectionStep(direction);
+                var target=new GridPosition(ship.Position.X+step.X*distances[i],ship.Position.Y+step.Y*distances[i]);
+                return ForwardPathResult.Exit(id,ship.Position,direction,target,Array.Empty<GridPosition>(),distances[i]);
+            }).ToArray();
+        }
+        internal void RestoreExitSequence(long value) { nextExitSequence=value; }
 
         public ShipMoveAdvanceStatus CompleteTravel(long operationId)
         {

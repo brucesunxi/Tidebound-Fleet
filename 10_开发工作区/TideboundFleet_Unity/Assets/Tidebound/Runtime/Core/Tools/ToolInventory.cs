@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Tidebound.Board;
 
 namespace Tidebound.Tools
 {
@@ -24,6 +25,13 @@ namespace Tidebound.Tools
         ToolInventoryData Load();
         void Save(ToolInventoryData data);
     }
+    public sealed class ToolMutation
+    {
+        public BoardModel BoardAfter { get; }
+        public ForwardPathResult[] RescuePaths { get; }
+        public ToolMutation(BoardModel boardAfter,ForwardPathResult[] rescuePaths=null) {BoardAfter=boardAfter;RescuePaths=rescuePaths;}
+    }
+    public interface IToolMutationStore { void SaveToolMutation(ToolInventoryData data,ToolMutation mutation); }
     public sealed class MemoryToolInventoryStore : IToolInventoryStore
     {
         private ToolInventoryData data;
@@ -53,12 +61,12 @@ namespace Tidebound.Tools
             next.Rescue=checked(next.Rescue+rescue);next.Shuffle=checked(next.Shuffle+shuffle);next.Reverse=checked(next.Reverse+reverse);
             next.Receipts=next.Receipts.Concat(new[]{receipt}).ToArray();return Commit(next);
         }
-        public bool TrySpend(ShipTool tool)
+        public bool TrySpend(ShipTool tool,ToolMutation mutation=null)
         {
             if(!IsAvailable || Count(tool)<=0)return false;
             var next=data.Copy();
             switch(tool) { case ShipTool.Rescue:next.Rescue--;break;case ShipTool.Shuffle:next.Shuffle--;break;case ShipTool.Reverse:next.Reverse--;break;default:return false; }
-            return Commit(next);
+            return Commit(next,mutation);
         }
         public void ReachLevel(int level,ToolGiftPolicy policy=null)
         {
@@ -74,9 +82,9 @@ namespace Tidebound.Tools
                 Grant(receipt,tool==0?1:0,tool==1?1:0,tool==2?1:0);
             }
         }
-        private bool Commit(ToolInventoryData next)
+        private bool Commit(ToolInventoryData next,ToolMutation mutation=null)
         {
-            try { next.Validate();store.Save(next.Copy());data=next;LastError=null;return true; }
+            try { next.Validate();if(mutation!=null && store is IToolMutationStore transaction)transaction.SaveToolMutation(next.Copy(),mutation);else store.Save(next.Copy());data=next;LastError=null;return true; }
             catch(Exception e) { LastError=e.GetType().Name;return false; }
         }
     }

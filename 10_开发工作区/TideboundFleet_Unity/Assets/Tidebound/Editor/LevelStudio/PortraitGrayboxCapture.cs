@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using Tidebound.Ship;
 using Tidebound.Tools;
+using Tidebound.Save;
 using Tidebound.Events;
 using Tidebound.Combat;
 using System.Reflection;
@@ -78,6 +79,7 @@ namespace Tidebound.EditorTools
 
         private static System.Collections.IEnumerator CaptureFrames(PortraitPuzzleGraybox game)
         {
+            game.EnableReviewMode();
             // Screen dimensions must be read from the player loop, not EditorApplication.update.
             yield return null;
             foreach(var size in Sizes)
@@ -138,6 +140,20 @@ namespace Tidebound.EditorTools
             while(game.Combat.Fleet.Support.ArrivedCount==0 && Time.realtimeSinceStartup<combatDeadline) yield return null;
             if(game.Combat.Fleet.Support.ArrivedCount==0) throw new TimeoutException("Long support did not arrive.");
             game.TogglePause();yield return SaveFrame("Combat_LongSupport_390x844.png");
+            var reviewStore=new MemoryPlayerSaveStore();
+            game.EnableReviewMode(new PlayerSaveService(reviewStore));yield return null;
+            var first=game.Session.Board.Ships.First(s=>game.Session.Board.QueryForwardPath(s.Id).CanExit);
+            game.ClickShip(first.Id);combatDeadline=Time.realtimeSinceStartup+10;
+            while(game.Combat.HitCount<1 && Time.realtimeSinceStartup<combatDeadline)yield return null;
+            if(game.Combat.HitCount!=1)throw new TimeoutException("Save review hit did not arrive.");
+            game.TogglePause();yield return SaveFrame("Save_Pending_390x844.png");
+            game.EnableReviewMode(new PlayerSaveService(reviewStore));yield return null;
+            yield return SaveFrame("Save_Restored_390x844.png");game.TogglePause();game.ToggleAuto();
+            combatDeadline=Time.realtimeSinceStartup+20;
+            while(!game.IsCleared && Time.realtimeSinceStartup<combatDeadline)yield return null;
+            if(!game.IsCleared)throw new TimeoutException("Save review did not win.");
+            yield return SaveFrame("Save_Victory_390x844.png");
+            game.Restart();yield return null;yield return SaveFrame("Save_Level2_390x844.png");
             stage=3; SessionState.SetInt(Key+".Stage",3); EditorApplication.ExitPlaymode();
         }
 

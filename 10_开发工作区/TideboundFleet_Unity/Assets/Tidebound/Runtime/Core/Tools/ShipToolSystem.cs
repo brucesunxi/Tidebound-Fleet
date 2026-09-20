@@ -57,7 +57,7 @@ namespace Tidebound.Tools
             if(!session.Board.TryGetShip(shipId,out var ship) || session.GetShip(shipId).State!=ShipState.Idle)return ToolUseStatus.InvalidTarget;
             var candidate=session.Board.WithPlacements(session.Board.Ships.Select(s=>s.Id==shipId ?
                 s.WithPlacement(ship.OccupiedCells[ship.Length-1],RemainingFleetShuffler.Opposite(ship.Direction)) : s));
-            if(!inventory.TrySpend(ShipTool.Reverse))return ToolUseStatus.StorageUnavailable;
+            if(!inventory.TrySpend(ShipTool.Reverse,new ToolMutation(candidate)))return ToolUseStatus.StorageUnavailable;
             Commit(candidate);LastAffectedIds=new[]{shipId};CancelSelection();return ToolUseStatus.Applied;
         }
         public ToolUseStatus Rescue()
@@ -66,7 +66,8 @@ namespace Tidebound.Tools
             var outer=PeripheralShips(session.Board).ToArray();RemainingFleetShuffler.Randomize(outer,random);
             var targets=outer.Take(2).ToArray();
             if(targets.Length==0)return ToolUseStatus.InvalidTarget;
-            if(!inventory.TrySpend(ShipTool.Rescue))return ToolUseStatus.StorageUnavailable;
+            var next=session.Board;foreach(var id in targets)next=next.WithoutShip(id);
+            if(!inventory.TrySpend(ShipTool.Rescue,new ToolMutation(next,movement.PlanRescue(targets))))return ToolUseStatus.StorageUnavailable;
             CancelSelection();LastAffectedIds=targets;applying=true;
             try { movement.RescueDirectlyToLane(targets); }
             finally { applying=false; }
@@ -78,7 +79,7 @@ namespace Tidebound.Tools
             CancelSelection();var before=session.Board;
             var candidate=RemainingFleetShuffler.Propose(before,random.Next(),solverOptions,shuffleAttempts);
             if(candidate==null)return ToolUseStatus.Unproven;
-            if(!inventory.TrySpend(ShipTool.Shuffle))return ToolUseStatus.StorageUnavailable;
+            if(!inventory.TrySpend(ShipTool.Shuffle,new ToolMutation(candidate)))return ToolUseStatus.StorageUnavailable;
             LastAffectedIds=before.Ships.Where(s=>!candidate.GetShip(s.Id).Position.Equals(s.Position) || candidate.GetShip(s.Id).Direction!=s.Direction).Select(s=>s.Id).ToArray();
             Commit(candidate);return ToolUseStatus.Applied;
         }

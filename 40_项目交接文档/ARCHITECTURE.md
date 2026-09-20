@@ -1,6 +1,6 @@
 # Tidebound Fleet — Unity 架构与关卡体系基础
 
-状态：Phase 8 I4道具、运行中死局与重开灰盒。日期：2026-09-20。用户授权跳过真机前置，完整G1／Android验收保留待办。
+状态：Phase 9 I5-A统一存档、恢复及金币结算灰盒。日期：2026-09-20。用户授权跳过真机前置，完整G1／Android验收保留待办。
 
 I2a增量：Core新增独立`LocalLayoutAnalyzer`，提供同向船列、局部方向窗口、最大空矩形和分区占用报告；Editor接只读诊断与审计导出。没有更改生成器、移动事务或v2布局。168/168 EditMode通过，见[I2a验收](验证记录/Phase5R_I2a_局部结构诊断/I2A_VALIDATION.md)；I2b进一步加入RecipeLevelGenerator、LevelRecipe、几何归一及候选JSON／manifest，十关217/217 EditMode通过，见[I2b验收](验证记录/Phase5R_I2b_十关候选/I2B_VALIDATION.md)；本轮筛选版本为暂定，未改Movement／Transit和v2布局结构。
 
@@ -296,3 +296,16 @@ y=0   1  1  .  2
 - Editor试玩库存位于项目Library/Tidebound，不进入Git；移动端位于Application.persistentDataPath。测试默认注入内存库存，不污染实际试玩。
 - 余额先保存后生效，避免正常重开／重载补满；目前尚无整局断点存档，极端退出若发生在扣库存到提交棋盘之间，不能保证恢复该次效果。I5应将库存消耗与可恢复的局面事务统一，真实付费前完成崩溃恢复验收。
 - `AttemptEndedEvent`保持终态互斥和会话隔离，无金币结算。取得道具的Ad／Coins／GooglePlay灰盒入口暂不可交易；未来接入已确认奖励／已验证订单，不能用打开界面或本地模拟回调当付款成功。
+
+
+## I5-A：统一档案与结算事务（2026-09-20）
+
+- `Core/Save/PlayerSaveData` v2为唯一玩家档案：进度、金币、道具与赠送回执、当前attempt、最大本地日期／重开次数、每attempt唯一结算记录。当前余额由结算记录校验；未来商店需要扩展扣款账本，不能直接改余额。
+- `SavedGameRuntime`复用原GameSession、Movement、Transit、Combat。保存初始船身份／收益、当前棋盘、离场序列与时间、已命中ID、暂停和未完成移动意图。恢复以现有航道FIFO／攻击逻辑重放，同一个sessionId与收益seed不变；不保存Transform或逐帧动画像素。
+- 普通移动先落盘PendingMoveId再开始动画；恢复时完成已受理移动，受阻仍停在最近阻挡前。每次逻辑变化写检查点，后台／暂停／退出额外强制保存时间轴。硬中断可能回到上个持久检查点的时间，但不会重复结算或重抽收益。
+- 道具通过`IToolMutationStore`把库存减少与操作后的棋盘／救援离场序列一次写入，成功后才发布运行时效果。救援两船共享一次库存扣减与一个文件事务。
+- `PlayerSaveService`以attemptId去重；胜利=已命中金币+首通固定奖励+推进下一关；死局部分结算+当日计数+新attempt同一事务。求解器的Unsolvable或LimitReached不能冒充“所有船无法移动”的结算条件。
+- `PlayerSaveFileStore`使用UTF-8 JSON、SHA-256完整性摘要、Flush(true)、同目录临时文件及替换备份。摘要用于损坏检测，不是防作弊或支付凭证。主文件损坏／仅剩备份时保留文件并关闭账户写入，仍可练习基础玩法；不静默回滚旧库存和奖励。
+- 首次读取v2为空时迁移旧`tool-inventory-v1.json`库存及里程碑回执；v2一旦存在，不再重导旧档。Editor保存在项目Library/Tidebound，设备保存在persistentDataPath，均不提交Git。未增加新SDK或修改平台构建配置。
+- `PortraitPuzzleGraybox`默认进入持久推进模式；胜利1.2秒后进入下一关，最后一关完成停在已保存完成态；隐藏旧关选择。`EnableReviewMode`及截图工具使用独立内存档，审查选关不改账户。
+- 当前只包含默认船金币、库存及尝试状态；皮肤／装备／抽卡、金币购买、真实广告与Google支付留给后续迭代。移动端文件替换、后台回调和性能仍需真机验证。

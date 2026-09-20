@@ -24,9 +24,9 @@ namespace Tidebound.Core
         public string EndReason { get; private set; }
         public IEventBus Events { get; } = new SessionEventBus();
 
-        internal GameSession(string levelId, int width, int height, ShipRuntimeData[] ships, BossRuntimeData boss)
+        internal GameSession(string levelId, int width, int height, ShipRuntimeData[] ships, BossRuntimeData boss, string sessionId=null)
         {
-            SessionId = Guid.NewGuid().ToString("N"); LevelId = levelId; Width = width; Height = height;
+            SessionId = sessionId ?? Guid.NewGuid().ToString("N"); LevelId = levelId; Width = width; Height = height;
             Ships = Array.AsReadOnly(ships); Boss = boss;
             Board = new BoardModel(width, height, ships);
             InitialBoard = Board;

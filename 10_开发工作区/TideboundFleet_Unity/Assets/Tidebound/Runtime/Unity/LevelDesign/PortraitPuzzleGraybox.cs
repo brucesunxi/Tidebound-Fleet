@@ -8,6 +8,7 @@ using Tidebound.Config;
 using Tidebound.Core;
 using Tidebound.Combat;
 using Tidebound.Tools;
+using Tidebound.Save;
 using Tidebound.Unity.Boss;
 using Tidebound.Events;
 using Tidebound.Lane;
@@ -30,6 +31,12 @@ namespace Tidebound.Unity.LevelDesign
         [SerializeField] private TextAsset[] layouts;
         [SerializeField] private TextAsset[] proofs;
         private CandidateLevelCatalog catalog;
+        private SavedGameRuntime world;
+        private PlayerSaveService saveService;
+        private bool campaign;
+        private float victoryWait;
+        private Text wallet;
+        public PlayerSaveService SaveService => saveService;
         private GameSession session;
         private ShipMovementController movement;
         private TransitSystem transit;
@@ -101,7 +108,8 @@ namespace Tidebound.Unity.LevelDesign
                 saveRoot=Path.GetFullPath(Path.Combine(Application.dataPath,"../Library/Tidebound"));
 #endif
                 Initialize(new CandidateLevelCatalog(manifest.text,layouts.Select(x=>x.text),proofs.Select(x=>x.text)),
-                    inventory:new ToolInventory(new ToolInventoryFileStore(Path.Combine(saveRoot,"tool-inventory-v1.json"))));
+                    saveService:new PlayerSaveService(new PlayerSaveFileStore(Path.Combine(saveRoot,"player-save-v2.json")),
+                        new ToolInventoryFileStore(Path.Combine(saveRoot,"tool-inventory-v1.json"))),campaign:true);
             }
             catch (Exception e) { Debug.LogError("Graybox candidate validation failed: " + e.Message); enabled = false; }
         }
@@ -109,46 +117,100 @@ namespace Tidebound.Unity.LevelDesign
         public void ConfigureAssets(TextAsset manifestAsset, TextAsset[] levelAssets, TextAsset[] proofAssets)
         { manifest = manifestAsset; layouts = levelAssets; proofs = proofAssets; }
 
-        public void Initialize(CandidateLevelCatalog source, ShipMovementTiming timing = null, LaneTransitTiming laneTiming = null, CombatTiming combatTiming = null, ToolInventory inventory = null)
+        public void Initialize(CandidateLevelCatalog source, ShipMovementTiming timing = null, LaneTransitTiming laneTiming = null, CombatTiming combatTiming = null, ToolInventory inventory = null,
+            PlayerSaveService saveService = null, bool campaign = false)
         {
+            FlushSave();ClearSession();
             catalog = source ?? throw new ArgumentNullException(nameof(source));
-            toolInventory=inventory ?? new ToolInventory();
+            this.saveService=saveService;this.campaign=campaign;
+            toolInventory=saveService?.Inventory ?? inventory ?? new ToolInventory();
             movementTiming = timing ?? new ShipMovementTiming();
             transitTiming = laneTiming ?? new LaneTransitTiming();
             this.combatTiming = combatTiming ?? new CombatTiming();
             font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            initialized = true; SelectLevel(0);
+            initialized = true;
+            var saved=saveService?.Snapshot.Attempt;
+            if(saveService?.IsAvailable==true && saved!=null)
+            {
+                try
+                {
+                    // Validate against the shipped catalog before attaching a persisted run.
+                    var index=saved.LevelNumber-1;
+                    using(var reference=SavedGameRuntime.Create(catalog.Load(index),saved.LevelNumber))
+                        if(reference.Capture().LayoutFingerprint!=saved.LayoutFingerprint)
+                            throw new InvalidOperationException("Saved level differs from the installed catalog.");
+                    var restored=SavedGameRuntime.Restore(saved);saveService.AttachRestored(restored);
+                    BindWorld(restored,index);saveService.Inventory.ReachLevel(saveService.CurrentLevel);
+                    SaveCheckpoint(true);
+                }
+                catch(Exception e){saveService.Suspend(e.GetType().Name);ClearSession();SelectLevel(0);}
+            }
+            else SelectLevel(saveService?.IsAvailable==true ? saveService.CurrentLevel-1 : 0);
         }
+
+        // Editor inspection is deliberately isolated from campaign progress and currency.
+        public void EnableReviewMode(PlayerSaveService reviewSave=null) => Initialize(catalog,saveService:reviewSave);
 
         public void SelectLevel(int index)
         {
             if (catalog == null) throw new InvalidOperationException("Load a validated catalog first.");
             if (index < 0 || index >= catalog.Count) throw new ArgumentOutOfRangeException(nameof(index));
-            progress?.EndForRestart();
-            ClearSession(); LevelIndex = index;
-            session = LevelSessionFactory.Create(catalog.Load(index),
-                new[] { new ShipDefinition(FoundationLimits.BaseShipTypeId, FoundationLimits.BaseShipDamage) },
-                new[] { new BossDefinition("TF_KRAKEN_01") });
+            if(saveService?.IsAvailable==true)
+            {
+                if(index!=saveService.CurrentLevel-1 || (world!=null && !IsCleared))return;
+                var next=SavedGameRuntime.Create(catalog.Load(index),index+1,transitTiming,combatTiming);
+                if(!saveService.Start(next))
+                {
+                    if(world==null){saveService.Suspend("StartWriteFailed");BindWorld(next,index);}
+                    else {next.Dispose();notice="Cannot save new attempt. Retry.";}
+                    return;
+                }
+                ClearSession();BindWorld(next,index);return;
+            }
+            progress?.EndForRestart();ClearSession();
+            BindWorld(SavedGameRuntime.Create(catalog.Load(index),index+1,transitTiming,combatTiming),index);
+        }
+
+        private void BindWorld(SavedGameRuntime runtime,int index)
+        {
+            world=runtime;LevelIndex=index;victoryWait=0;session=world.Session;
             presentation = new GameObject("PortraitPresentation"); presentation.transform.SetParent(transform, false);
             BuildBoard();
-            var system = new ShipMovementSystem(session);
-            movement = new ShipMovementController(system, mapper, shipViews.Values, movementTiming);
-            toolInventory.ReachLevel(index+1,toolGiftPolicy);
-            tools = new ShipToolSystem(session,system,toolInventory,index+1>=toolGiftPolicy.UnlockLevel);
-            progress = new BoardProgressMonitor(session,system);
-            transit = new TransitSystem(session, transitTiming);
-            combat = new FleetCombatSystem(session, transit, combatTiming);
+            movement = new ShipMovementController(world.Movement, mapper, shipViews.Values, movementTiming);
+            if(saveService==null)toolInventory.ReachLevel(index+1,toolGiftPolicy);
+            tools = new ShipToolSystem(session,world.Movement,toolInventory,index+1>=toolGiftPolicy.UnlockLevel);
+            progress = new BoardProgressMonitor(session,world.Movement);
+            transit=world.Transit;combat=world.Combat;
             BuildControls();
             lane = new LaneTransitController(transit, new PortraitLanePathProvider(session.Width, session.Height),
                 shipViews.Values.Select(v => (ILaneTransitView)v.GetComponent<PlanarShipLaneView>()));
+            exited.AddRange(world.Capture().Departures.Select(d=>d.Id));
+            entered.AddRange(combat.Attacks.Select(t=>t.Ship.ShipId));
             subscriptions.Add(session.Events.Subscribe<ShipExitBoardEvent>(e => exited.Add(e.Ship.ShipId)));
             subscriptions.Add(session.Events.Subscribe<ShipEnterFleetEvent>(e => entered.Add(e.Ship.ShipId)));
             input.Configure(() => session?.Board, ClickShip);
-            movement.StartPlaying(); notice = index==2 ? "Tools are limited. Restart does not refill." : "Tap a ship to move forward.";
+            foreach(var view in shipViews.Values){view.BindClickHandler(ClickShip);view.SetPaused(IsPaused);}
+            lane.PresentActiveTransits();
+            notice = saveService!=null && !saveService.IsAvailable ? "Save unavailable. Practice only; account locked." : "Tap a ship to move forward.";
             RefreshViewport(); UpdateLabels();
         }
 
-        public void Restart() => SelectLevel(LevelIndex);
+        public void Restart()
+        {
+            if(saveService?.IsAvailable!=true){SelectLevel(LevelIndex);return;}
+            if(IsCleared){if(saveService.CurrentLevel<=catalog.Count)SelectLevel(saveService.CurrentLevel-1);return;}
+            var next=SavedGameRuntime.Create(catalog.Load(LevelIndex),LevelIndex+1,transitTiming,combatTiming);
+            if(!saveService.Restart(next)){next.Dispose();notice="Cannot save restart. No coins or stock changed.";UpdateLabels();return;}
+            progress.EndForRestart();ClearSession();BindWorld(next,LevelIndex);
+        }
+
+        private bool SaveCheckpoint(bool force=false)
+        {
+            if(saveService==null || !saveService.IsAvailable || saveService.Runtime!=world)return true;
+            if(saveService.Checkpoint(force))return true;
+            demo=null;movement.Pause();notice="Save failed. Resume to retry.";return false;
+        }
+        private void FlushSave() {if(world!=null)SaveCheckpoint(true);}
 
         public void ClickShip(string id)
         {
@@ -157,6 +219,7 @@ namespace Tidebound.Unity.LevelDesign
             {
                 ApplyToolResult(tools.UseSelected(id));return;
             }
+            if(saveService?.IsAvailable==true && !saveService.PrepareMove(id)){notice="Cannot save move. Retry.";UpdateLabels();return;}
             var result = movement.RequestMove(id);
             if (result.IsAccepted) notice = result.Operation.WillExit ? "Clear path - sailing out." :
                 result.Operation.TravelDistance > 0 ? "Moves forward, then stops at the blocker." : "Blocked here. Clear the ship ahead.";
@@ -167,7 +230,8 @@ namespace Tidebound.Unity.LevelDesign
         {
             if (movement == null) return;
             input.CancelSelection();tools.CancelSelection();
-            if (IsPaused) movement.Resume(); else movement.Pause();
+            if(IsPaused) {if(!SaveCheckpoint(true))return;movement.Resume();} else movement.Pause();
+            SaveCheckpoint(true);
             UpdateLabels();
         }
 
@@ -211,7 +275,7 @@ namespace Tidebound.Unity.LevelDesign
                 result==ToolUseStatus.NoUses ? "No stock. Level gifts; ad / shop coming soon." :
                 result==ToolUseStatus.StorageUnavailable ? "Cannot save inventory. No tool used." :
                 result==ToolUseStatus.Unproven ? "No proven safe result. No use consumed." : "Tool: "+result;
-            progress.Refresh();UpdateLabels();
+            SaveCheckpoint();progress.Refresh();UpdateLabels();
         }
         public void ToggleMenu()
         {
@@ -269,13 +333,21 @@ namespace Tidebound.Unity.LevelDesign
             lane.Advance(Time.unscaledDeltaTime);
             combat.Advance();
             progress.Refresh();
+            var durable=SaveCheckpoint();
+            if(campaign && saveService?.IsAvailable==true && IsCleared && durable)
+            {
+                victoryWait+=Time.unscaledDeltaTime;
+                if(victoryWait>=1.2f && saveService.CurrentLevel<=catalog.Count){SelectLevel(saveService.CurrentLevel-1);return;}
+            }
             if (!IsPaused && demo != null && !IsBusy)
             {
                 elapsedSinceDemo += Time.unscaledDeltaTime;
                 if (demo.Count == 0) demo = null;
                 else if (elapsedSinceDemo >= .08f)
                 {
-                    var request = movement.RequestMove(demo.Dequeue()); elapsedSinceDemo = 0;
+                    var id=demo.Dequeue();
+                    if(saveService?.IsAvailable==true && !saveService.PrepareMove(id)){demo=null;notice="Cannot save move. Retry.";UpdateLabels();return;}
+                    var request = movement.RequestMove(id); elapsedSinceDemo = 0;
                     if (!request.IsAccepted) { demo = null; notice = "Demo interrupted. Solve the current state again."; }
                 }
             }
@@ -328,7 +400,7 @@ namespace Tidebound.Unity.LevelDesign
             var origin = new GameObject("GridOrigin"); origin.transform.SetParent(presentation.transform); origin.transform.position = new Vector3(.5f,.5f,0);
             mapper = origin.AddComponent<GridWorldMapper>(); mapper.Configure(origin.transform,1,Vector3.right,Vector3.up);
             input.ConfigureMapping(boardCamera,mapper);
-            foreach (var ship in session.Board.Ships)
+            foreach (var ship in session.Ships)
             {
                 var root = Rect("Ship_"+ship.Id, canvasRect); root.sizeDelta = Vector2.one;
                 root.position = mapper.TailToWorld(ship.Position);
@@ -338,6 +410,7 @@ namespace Tidebound.Unity.LevelDesign
                 var graphic = arrow.gameObject.AddComponent<GrayboxArrowGraphic>(); graphic.color = Color.white; graphic.raycastTarget = false;
                 var view = root.gameObject.AddComponent<ShipMovementView>(); view.ConfigureShipId(ship.Id);
                 root.gameObject.AddComponent<PlanarShipLaneView>().Configure(ship.Id, Vector3.up * ((ship.Length - 1) * .5f)); shipViews.Add(ship.Id,view);
+                root.gameObject.SetActive(ship.State!=ShipState.InFleet);
             }
             foreach (var child in canvasRect.GetComponentsInChildren<Transform>(true)) child.gameObject.layer = 30;
         }
@@ -353,6 +426,7 @@ namespace Tidebound.Unity.LevelDesign
             Button("Next",topPanel,">",() => SelectLevel((LevelIndex+1)%catalog.Count));
             pause = Button("Pause",topPanel,"Pause",TogglePause);
             title = Label("Title",topPanel,"",19);
+            wallet=Label("Wallet",topPanel,"",12);
             battlePanel = Panel("Battle",topPanel,new Rect(),new Color(.055f,.12f,.18f));
             combatView = battlePanel.gameObject.AddComponent<FleetCombatGrayboxView>();
             combatView.Initialize(session,combat,font);
@@ -374,6 +448,11 @@ namespace Tidebound.Unity.LevelDesign
             Button("Auto",menuPanel,"Auto / Stop",()=>{CloseMenu();ToggleAuto();});
             Button("Next",menuPanel,"Next",()=>{CloseMenu();SelectLevel((LevelIndex+1)%catalog.Count);});
             Button("Continue",menuPanel,"Continue",CloseMenu);
+            if(saveService!=null)
+            {
+                topPanel.Find("Next").gameObject.SetActive(false);
+                menuPanel.Find("Previous").gameObject.SetActive(false);menuPanel.Find("Next").gameObject.SetActive(false);
+            }
             menuPanel.gameObject.SetActive(false);
             acquisitionPanel=Panel("ToolAcquisition",canvasRect,new Rect(),new Color(.025f,.055f,.08f,.97f));
             acquisitionPanel.GetComponent<Image>().raycastTarget=true;
@@ -398,7 +477,8 @@ namespace Tidebound.Unity.LevelDesign
             Place((RectTransform)topPanel.Find("Next"),new Rect(w-116,h-48,48,48));
             Place((RectTransform)pause.transform,new Rect(w-64,h-48,64,48));
             Place(title.rectTransform,new Rect(52,h-48,w-172,48));
-            Place(battlePanel,new Rect(8,4,w-16,h-56));
+            Place(wallet.rectTransform,new Rect(8,h-70,w-16,20));
+            Place(battlePanel,new Rect(8,4,w-16,h-78));
             var buttonWidth = (w-32)/3;
             var names = new[] { "Restart", "Hint", "Auto" };
             Place(status.rectTransform,new Rect(8,Layout.Tools.height-32,w-16,32));
@@ -420,10 +500,23 @@ namespace Tidebound.Unity.LevelDesign
         private void UpdateLabels()
         {
             if (title == null || session == null) return;
-            title.text = "LEVEL " + (LevelIndex+1) + " / 10";
+            title.text = "LEVEL " + (LevelIndex+1);
+            wallet.text=saveService==null ? "Review mode - rewards are not saved" : !saveService.IsAvailable ? "Practice - save unavailable" :
+                "Coins: "+saveService.Coins+"   |   Pending: "+(saveService.CurrentAttemptSettled ? 0 : world.PendingCoins);
+            var deadlocked=!IsBusy && world.PendingMoveId==null && progress.Refresh()==BoardProgressStatus.NoMoves;
+            var restartLabel=saveService?.IsAvailable==true && deadlocked ? (saveService.RestartReward>0 ? "Collect "+saveService.RestartReward+" & restart" : "Restart (0 coins)") : "Restart";
+            if(saveService?.IsAvailable==true && IsCleared)restartLabel=saveService.CurrentLevel<=catalog.Count ? "Next level" : "Complete";
+            foreach(var parent in new[]{menuPanel,toolsPanel})
+            {
+                var button=parent.Find("Restart").GetComponent<Button>();button.GetComponentInChildren<Text>(true).text=restartLabel;
+                button.interactable=!(saveService?.IsAvailable==true && IsCleared && saveService.CurrentLevel>catalog.Count);
+            }
             combatView.Present();
             status.text = IsCleared ? "VICTORY - all ships fired." : combat.FaultReason!=null ? "Combat error: "+combat.FaultReason : IsPaused ? "Paused" :
                 tools.Selection!=ShipTool.None ? notice : !IsBusy && progress.NeedsRescue ? "No solution. Use a tool or Menu > Restart." : notice;
+            if(saveService?.LastError!=null && saveService.IsAvailable)status.text="Save failed. Resume / Restart to retry.";
+            else if(IsCleared && saveService!=null && saveService.CurrentLevel>catalog.Count)status.text="All available levels complete. Progress saved.";
+            else if(deadlocked && saveService?.IsAvailable==true)status.text="No moves. Restart reward: "+saveService.RestartReward+" coins. Tools available.";
             pause.interactable = session.State==GameState.Playing || IsPaused;
             pause.GetComponentInChildren<Text>(true).text = IsPaused ? "Resume" : "Pause";
             auto.GetComponentInChildren<Text>(true).text = demo != null ? "Stop" : "Auto";
@@ -477,13 +570,15 @@ namespace Tidebound.Unity.LevelDesign
         {
             demo=null; input?.CancelSelection(); movement?.Dispose(); movement=null;
             tools?.Dispose();tools=null;progress=null;menuPanel=null;menuPauseOwned=false;acquisitionPanel=null;acquisitionTitle=null;acquisitionPauseOwned=false;
-            combat?.Dispose(); combat=null; combatView=null;
-            lane?.Dispose(); lane=null; transit?.Dispose(); transit=null;
+            combat=null; combatView=null;
+            lane?.Dispose(); lane=null; transit=null;
             foreach (var subscription in subscriptions) subscription.Dispose(); subscriptions.Clear();
-            session?.Dispose(); session=null; shipViews.Clear(); exited.Clear(); entered.Clear();
+            world?.Dispose();world=null;session=null; shipViews.Clear(); exited.Clear(); entered.Clear();
             if (presentation!=null) { presentation.SetActive(false); Destroy(presentation); } presentation=null;
         }
-        private void OnDestroy() => ClearSession();
+        private void OnApplicationPause(bool paused) {if(paused && world!=null){if(!IsPaused)movement.Pause();FlushSave();}}
+        private void OnApplicationQuit() => FlushSave();
+        private void OnDestroy() {FlushSave();ClearSession();}
 
     }
 }
