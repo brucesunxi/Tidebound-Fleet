@@ -1,8 +1,10 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Tidebound.Save;
 
 namespace Tidebound.Unity.LevelDesign
@@ -20,7 +22,17 @@ namespace Tidebound.Unity.LevelDesign
             if(!File.Exists(path)){if(File.Exists(path+".bak"))throw new InvalidDataException("Main save is missing; preserve backup for recovery.");return null;}
             var envelope=JsonConvert.DeserializeObject<Envelope>(File.ReadAllText(path));
             if(envelope==null || envelope.EnvelopeVersion!=1 || envelope.Payload==null || Digest(envelope.Payload)!=envelope.Digest)throw new InvalidDataException("Invalid player save envelope.");
-            var data=JsonConvert.DeserializeObject<PlayerSaveData>(envelope.Payload);if(data==null)throw new InvalidDataException("Missing player save.");data.Validate();return data;
+            JObject json;
+            // Preserve receipt timestamp strings exactly; JObject defaults may coerce them to Date tokens.
+            using(var reader=new JsonTextReader(new StringReader(envelope.Payload)){DateParseHandling=DateParseHandling.None})json=JObject.Load(reader);
+            if(json["Version"]?.Type!=JTokenType.Integer)throw new InvalidDataException("Missing save version.");
+            if((int)json["Version"]==PlayerSaveData.CurrentVersion)
+            {
+                var collection=json["Collection"] as JObject;
+                var required=new[]{"Version","CatalogVersion","RulesVersion","ProfileSeed","OwnedIds","Equipment","Tickets","TotalDraws","GoldDry","RedDry","DuplicateDry","FirstBlueClaimed","Receipts","EquipmentReceipts"};
+                if(collection==null || required.Any(k=>collection[k]==null || collection[k].Type==JTokenType.Null))throw new InvalidDataException("Incomplete collection profile.");
+            }
+            var data=json.ToObject<PlayerSaveData>();if(data==null)throw new InvalidDataException("Missing player save.");data.Validate();return data;
         }
         public void Save(PlayerSaveData data)
         {

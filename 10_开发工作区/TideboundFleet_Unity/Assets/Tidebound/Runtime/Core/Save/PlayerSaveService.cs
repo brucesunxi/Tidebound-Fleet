@@ -8,7 +8,7 @@ using Tidebound.Tools;
 namespace Tidebound.Save
 {
     /// <summary>One durable transaction owns progress, tool effects, stock and settlement. Never settles from a visual callback.</summary>
-    public sealed class PlayerSaveService : IToolInventoryStore,IToolMutationStore
+    public sealed partial class PlayerSaveService : IToolInventoryStore,IToolMutationStore
     {
         private readonly IPlayerSaveStore store;
         private readonly Func<DateTime> today;
@@ -39,7 +39,7 @@ namespace Tidebound.Save
                 data.Validate();
                 if(data.Attempt!=null)using(var verified=SavedGameRuntime.Restore(data.Attempt)){}
                 // Upgrade in place, retaining the existing filename and the previous file as backup.
-                if(data.Version==2){var upgraded=data.Copy();upgraded.Version=3;upgraded.Revision=checked(data.Revision+1);upgraded.Validate();store.Save(upgraded.Copy());data=upgraded;}
+                if(data.Version<PlayerSaveData.CurrentVersion){var upgraded=data.Copy();upgraded.Version=PlayerSaveData.CurrentVersion;upgraded.Revision=checked(data.Revision+1);upgraded.Validate();store.Save(upgraded.Copy());data=upgraded;}
             }
             catch(Exception e){data=new PlayerSaveData();IsAvailable=false;LastError=e.GetType().Name;}
             Inventory=new ToolInventory(this);
@@ -62,6 +62,7 @@ namespace Tidebound.Save
             if(!Guid.TryParseExact(requestId,"N",out _))return CoinPurchaseStatus.InvalidRequest;
             var prior=data.Purchases.SingleOrDefault(p=>p.RequestId==requestId);
             if(prior!=null)return prior.ProductId==productId ? CoinPurchaseStatus.AlreadyPurchased : CoinPurchaseStatus.RequestConflict;
+            if(data.Collection.Receipts.Any(r=>r.RequestId==requestId) || data.Collection.EquipmentReceipts.Any(r=>r.RequestId==requestId))return CoinPurchaseStatus.RequestConflict;
             var product=catalog?.Find(productId);
             if(product==null)return CoinPurchaseStatus.InvalidProduct;
             if(data.CurrentLevel<catalog.UnlockLevel)return CoinPurchaseStatus.Locked;

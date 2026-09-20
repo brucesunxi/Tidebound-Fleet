@@ -74,3 +74,5 @@ I5-A落实S10：继续借鉴原项目的存取入口，正式实现为强类型v
 
 
 I5-B落实S10／S11：原创消费账本与两步购买反馈，未导入旧支付代码。排名新增只读参考R `RankPanel.js` 的changeMode／refreshPanel／selfRankItem，借鉴世界／好友切换、关数得分与自身位置固定；平台getRankInfo/getSubRank不是可复用后台，不迁移自动插屏。排行榜规则与工程分期见[综合方案](ECONOMY_RETENTION_PLAN.md)。
+
+I5-C1落实S09／S10的数据基础：复核R图鉴列表和详情的拥有／使用状态，本项目新增原创16款目录、v4迁移、5槽装备及可校验回执；不复制其账户全局改值或自动插屏。图鉴界面与实际抽取仍待C2，验证见[I5-C1](验证记录/I5C1_收藏存档/I5C1_VALIDATION.md)。

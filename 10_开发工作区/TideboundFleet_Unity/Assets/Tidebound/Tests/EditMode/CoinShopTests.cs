@@ -139,7 +139,7 @@ namespace Tidebound.Tests
         {
             var data=Earned();data.Version=2;data.Tools.Rescue=2;data.Tools.Receipts=new[]{"legacy"};var store=new Store{Data=data,Fail=true};
             var blocked=new PlayerSaveService(store);Assert.That(blocked.IsAvailable,Is.False);Assert.That(store.Data.Version,Is.EqualTo(2));
-            store.Fail=false;var service=new PlayerSaveService(store);Assert.That(service.IsAvailable,Is.True);Assert.That(store.Data.Version,Is.EqualTo(3));
+            store.Fail=false;var service=new PlayerSaveService(store);Assert.That(service.IsAvailable,Is.True);Assert.That(store.Data.Version,Is.EqualTo(PlayerSaveData.CurrentVersion));
             Assert.That(service.Coins,Is.EqualTo(307));Assert.That(service.Inventory.Count(ShipTool.Rescue),Is.EqualTo(2));Assert.That(service.Snapshot.Purchases,Is.Empty);
             var revision=store.Data.Revision;service=new PlayerSaveService(store);Assert.That(store.Data.Revision,Is.EqualTo(revision));
         }
@@ -150,11 +150,11 @@ namespace Tidebound.Tests
             try
             {
                 Directory.CreateDirectory(folder);var data=Earned();data.Version=2;
-                var obj=Newtonsoft.Json.Linq.JObject.FromObject(data);obj.Remove("Purchases");var payload=obj.ToString(Formatting.None);string digest;
+                var obj=Newtonsoft.Json.Linq.JObject.FromObject(data);obj.Remove("Purchases");obj.Remove("Collection");var payload=obj.ToString(Formatting.None);string digest;
                 using(var sha=SHA256.Create())digest=Convert.ToBase64String(sha.ComputeHash(Encoding.UTF8.GetBytes(payload)));
                 var original=JsonConvert.SerializeObject(new{EnvelopeVersion=1,Payload=payload,Digest=digest});File.WriteAllText(path,original);
                 var store=new PlayerSaveFileStore(path);var service=new PlayerSaveService(store);Assert.That(service.IsAvailable,Is.True);
-                Assert.That(File.ReadAllText(path+".bak"),Is.EqualTo(original));Assert.That(service.Snapshot.Version,Is.EqualTo(3));
+                Assert.That(File.ReadAllText(path+".bak"),Is.EqualTo(original));Assert.That(service.Snapshot.Version,Is.EqualTo(PlayerSaveData.CurrentVersion));
                 var request=Id();Assert.That(service.BuyWithCoins(request,"rescue_1",Catalog()),Is.EqualTo(CoinPurchaseStatus.Purchased));
                 service=new PlayerSaveService(store);Assert.That(service.BuyWithCoins(request,"rescue_1",Catalog()),Is.EqualTo(CoinPurchaseStatus.AlreadyPurchased));
                 Assert.That(service.Coins,Is.EqualTo(57));Assert.That(service.Inventory.Count(ShipTool.Rescue),Is.EqualTo(1));

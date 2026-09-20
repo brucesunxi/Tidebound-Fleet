@@ -362,3 +362,13 @@ y=0   1  1  .  2
 - 正交相机保持正俯视。底面改用平色Mesh以支持深度，透明Grid UI面保留输入；世界法线明暗和软椭圆阴影用于低成本体积表达，未修改渲染管线配置或引入实时阴影。
 - 占位材质按现有FleetRoster的SlotIndex映射，长船独立固定。当前内容只含默认标准皮肤；五色四向捕获为显示样本，不改存档或皮肤身份。I5-C未来应传入实际装备／attempt身份，而非根据颜色推断经济。
 - `SetShipPrototypeMode`保留开发平面参考，不重建玩法。截图入口`TIDEBOUND_CAPTURE_VOLUME_ONLY`覆盖12种画面；验证工程已补齐正式URP 14.0.11依赖与配置，356项EditMode和48项PlayMode通过，见[V1验证](验证记录/V1_3D船体可读性/V1_VALIDATION.md)。真人触控／设备性能仍待验收。
+
+
+## I5-C1：收藏数据与v4统一存档（2026-09-20）
+
+- `Core/Collection/SkinCatalog`是版本化的16款目录，只有身份、品质、工作名与排序；长船不属于收藏。`CollectionRules`保留原基线供回执校验，未激活长期候选定价或改变BattleCoinsV1。
+- `CollectionData`持有五个可为空的固定槽、拥有集合、券／保底、档案seed和收藏／装备回执。校验通过重放凭证重建拥有、券余额、普通抽数及保护状态；本轮仅建立数据／校验，没有抽取或发放入口。新手FirstBlue暂按独立赠送记录，不计普通保底，与现有模拟口径一致。
+- `PlayerSaveData.CurrentVersion=4`，v2／v3验证后在原文件原子迁移一次；Copy深复制收藏。钱包等式新增收藏支出项，旧档为0。历史结算、订单价格与attempt完整保留，不重发道具或免费皮肤。
+- `PlayerSaveFileStore`仍使用player-save-v2.json、原Envelope与替换备份机制。v4必须明确保存收藏关键字段；JSON读取禁用日期推断，避免时间字符串精度被自动转换。损坏、未知版本及迁移失败保留原文件、关闭账户写入。
+- `PlayerSaveService.SetEquipment`复用Commit，固定5槽且仅已拥有、唯一标准皮肤。请求ID在购买／收藏／装备间唯一；旧请求重放只确认历史成功，不回滚新装备。移动事务与未提交胜利期间返回Busy，实际皮肤分配仍由后续C2在创建新attempt前接入。
+- `CanClaimFirstBlue`由最高通关≥2与未领取回执计算，旧玩家同样保留资格。本轮不自动发放；E2b结果恢复仍读取原胜利凭证。验证见[I5-C1记录](验证记录/I5C1_收藏存档/I5C1_VALIDATION.md)。
