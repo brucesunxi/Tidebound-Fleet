@@ -33,6 +33,7 @@ namespace Tidebound.Tests
         }
         [TestCase(1,10,1,1,10,true)][TestCase(9,10,1,9,10,true)][TestCase(10,10,1,10,10,false)]
         [TestCase(10,20,1,10,10,true)][TestCase(11,12,2,1,2,true)][TestCase(12,12,2,2,2,false)]
+        [TestCase(10,500,1,10,10,true)]
         public void ChapterTrackUsesInstalledContentAndActualCompletedLevel(int level,int published,int chapter,int completed,int size,bool next)
         {
             var result=VictoryResult.FromSaved(Cleared(level),published);

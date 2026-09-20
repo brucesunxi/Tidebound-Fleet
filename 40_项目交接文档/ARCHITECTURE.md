@@ -1,5 +1,7 @@
 # Tidebound Fleet — Unity 架构与关卡体系基础
 
+**最新交互修订（2026-09-20）：**完全死局改局内非模态文字与可用道具指引，取消自动弹窗；第10关按普通关卡结算，不自动返回主页。下一关由可用目录决定，暂未开放则留在结算提示；数百关目录与十关候选审计分离。见[流程修订与接入边界](设计分镜/20260920_V2制作准备/FLOW_REFINEMENT.md)。本轮已改可点击稿，Unity死局弹窗／正式导航待V2-C1接入。
+
 状态：Phase 9 I5-A统一存档、恢复及金币结算灰盒。日期：2026-09-20。用户授权跳过真机前置，完整G1／Android验收保留待办。
 
 I2a增量：Core新增独立`LocalLayoutAnalyzer`，提供同向船列、局部方向窗口、最大空矩形和分区占用报告；Editor接只读诊断与审计导出。没有更改生成器、移动事务或v2布局。168/168 EditMode通过，见[I2a验收](验证记录/Phase5R_I2a_局部结构诊断/I2A_VALIDATION.md)；I2b进一步加入RecipeLevelGenerator、LevelRecipe、几何归一及候选JSON／manifest，十关217/217 EditMode通过，见[I2b验收](验证记录/Phase5R_I2b_十关候选/I2B_VALIDATION.md)；本轮筛选版本为暂定，未改Movement／Transit和v2布局结构。
