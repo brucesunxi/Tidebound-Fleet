@@ -341,3 +341,14 @@ y=0   1  1  .  2
 - 正式Start启用animateEntry，旧模块审查入口可省略演出，新的E2a PlayMode测试显式开启。Entry motion偏好保存在PlayerPrefs，不修改v3经济档。
 - 已清盘但胜利凭证保存失败时，SelectLevel拒绝进入，Restart只重试原结算。E2b之前保留原1.2秒自动推进；结果页、真实章节目标及已结算未继续的界面恢复尚待接入。
 - 证据与边界见[E2a验证](验证记录/E2a_进关与恢复/E2A_VALIDATION.md)。未改变收益版本、道具规则、原存档格式或移动平台配置，未完成真机验收。
+
+
+## E2b：胜利结果与手动继续（2026-09-20）
+
+- `Core/Save/VictoryResult`只投影经过验证的当前胜利Attempt与匹配SettlementRecord，包含已保存金额、已发布关卡范围、10关章节段及前后进度；不写档、不重算历史收益、不发奖励。未结算胜利不能生成已入账结果。
+- `PortraitPuzzleGraybox.Result`由现有Combat.IsVictorious驱动。正式campaign移除1.2秒自动跳关；Checkpoint成功后才绑定结果，失败只显示重试并停止每帧保存。结果期退出／后台不重复写已稳定的凭证或暗中重试失败交易。
+- `VictoryResultPanel`提供奖励、章节条、下一关、返回航程概览与减弱动效。0.6秒Boss区淡出、0.18秒面板可读、0.55秒进度条仅影响展示；下一关无需等待全部动效。概览是结果的内存视图，不新增正式首页或持久导航字段。
+- 已保存Victory恢复时跳过E2a入场和重复结果演出，直接读凭证；旧v3格式即可表达“已赢但尚未继续”。下一attempt可靠提交后覆盖当前Attempt，恢复转为E2a同局短路径。没有新账本、迁移版本或奖励回执类型。
+- ContinueFromResult检查结果可读、存在已发布下一关与防重入；通过原SelectLevel／CommitEntry保存下一局。直接切关无法绕过结果流程；创建失败保留旧结果凭证和单一待提交候选，复用E2a RetryEntry。
+- `BeforeNextLevel`在新runtime创建之前调用；I5-C可在第2关返回false以处理首抽／装备，再由显式继续恢复流程。资格、领取、装备与去重须由I5-C持久服务实现，本轮不假发首抽奖励。
+- 账号异常练习通关提供无奖励的重新练习入口；模块Review模式仍独立，不冒充campaign结果。验证见[E2b记录](验证记录/E2b_结算与章节目标/E2B_VALIDATION.md)，真机与性能尚未验收。

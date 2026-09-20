@@ -38,7 +38,7 @@ namespace Tidebound.Unity.LevelDesign
         }
         private void BeginEntry(bool resume)
         {
-            entry = new LevelEntrySequence(); entry.Begin(resume, reducedEntryMotion, !animateEntry);
+            entry = new LevelEntrySequence(); entry.Begin(resume, reducedEntryMotion, !animateEntry || (campaign && IsCleared));
             input.CancelSelection(); NotifyUserActivity();
             entryBodies = session.Board.Ships.OrderByDescending(s => s.Position.Y).ThenBy(s => s.Position.X).ThenBy(s => s.Id)
                 .Select(s => shipViews[s.Id].transform.Find("Body").gameObject).Select(go =>

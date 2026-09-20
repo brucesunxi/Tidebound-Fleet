@@ -66,12 +66,13 @@ namespace Tidebound.Tests
             yield return null;
         }
         [UnityTest]
-        public IEnumerator CampaignAutomaticallyAdvancesAndCannotSelectOldLevelForFarming()
+        public IEnumerator CampaignWaitsForResultContinueAndCannotSelectOldLevelForFarming()
         {
             var store=new Store();var game=Create(store,true);
             try
             {
-                yield return null;game.ToggleAuto();yield return Until(()=>game.LevelIndex==1,15);
+                yield return null;game.ToggleAuto();yield return Until(()=>game.IsResultReadable,15);
+                yield return new WaitForSecondsRealtime(1.3f);Assert.That(game.LevelIndex,Is.Zero);game.ContinueFromResult();yield return Until(()=>game.LevelIndex==1);
                 Assert.That(game.SaveService.Coins,Is.EqualTo(107));Assert.That(game.Session.Board.ShipCount,Is.EqualTo(80));
                 game.SelectLevel(0);Assert.That(game.LevelIndex,Is.EqualTo(1));
                 Assert.That(game.GetComponentsInChildren<UnityEngine.UI.Button>(true).Where(b=>b.name=="Next" || b.name=="Previous").All(b=>!b.gameObject.activeSelf),Is.True);

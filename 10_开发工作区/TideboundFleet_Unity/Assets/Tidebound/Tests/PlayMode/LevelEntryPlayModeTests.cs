@@ -169,7 +169,7 @@ namespace Tidebound.Tests
                 Assert.That(g.SaveService.Coins,Is.Zero);Assert.That(g.SaveService.CurrentAttemptSettled,Is.False);
                 store.FailVictory=false;g.Restart();
                 Assert.That(g.SaveService.Coins,Is.EqualTo(107));Assert.That(g.SaveService.CurrentAttemptSettled,Is.True);
-                yield return Until(()=>g.LevelIndex==1);var next=g.Session.SessionId;g.SelectLevel(1);g.Restart();
+                yield return Until(()=>g.IsResultReadable);g.ContinueFromResult();yield return Until(()=>g.LevelIndex==1);var next=g.Session.SessionId;g.SelectLevel(1);g.Restart();
                 Assert.That(g.Session.SessionId,Is.EqualTo(next));Assert.That(g.SaveService.DailyRestartCount,Is.Zero);
                 Assert.That(g.SaveService.Snapshot.Settlements.Length,Is.EqualTo(1));
             }
