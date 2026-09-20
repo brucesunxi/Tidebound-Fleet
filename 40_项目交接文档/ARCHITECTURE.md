@@ -381,3 +381,11 @@ y=0   1  1  .  2
 - `AttemptSaveData.EquipmentSlots`是v4向后兼容的可空扩展：旧档缺失／null沿用历史推断顺序，新局保存5位槽和已分配每船身份、奖励上限与奖励种子。恢复不再读取实时收藏。FleetRoster和战斗HUD按真实槽号处理空位；保持每船10伤害、每船一次攻击及旧BattleCoinsV1公式。
 - `CollectionPanel`含分页、品质／来源筛选、拥有／锁定／装备状态、独立交易确认与保存后结果、满槽替换选择。`CollectionShipPreview`用独立29层、192×192 RenderTexture复用V1网格，方向／炮击只演示，不调用战斗或经济。资源随页面销毁。
 - `PortraitPuzzleGraybox.Collection`接管临时暂停和输入；关闭后恢复原先暂停归属。菜单和结算都有收藏入口，第2关结果的下一关先处理待领蓝皮。可在当前10关结束后继续操作收藏。验证详见[I5-C2记录](验证记录/I5C2_收藏闭环/I5C2_VALIDATION.md)。
+
+## I5-C3：生产契约与离线校准（2026-09-20）
+
+- `Editor/LevelStudio/EconomyContractExport`从实际CollectionDrawEngine／CollectionData／BattleCoinRules／ToolGiftPolicy／商店／10关文件导出只读契约及520笔已验证事务；不读玩家存档。Editor程序集引用工程已有Newtonsoft.Json，无新增运行时包。
+- `Tools/Economy/production_contract.json`保存参数、合成事务与22个生产源文件／配置的SHA256。模型加载先验证文件未变，再逐笔对照Python镜像随机流与C#结果；变化需重新导出。hash用于漂移检测，不是反作弊或支付验证。
+- `simulate_economy.py`以生产固定池为基线，候选曲线／扩池仅存在离线模型。道具按类型计库存和组合包，抽取按完整批次锁价，兑换在批后；装备策略与玩家预算为外生假设，不修改游戏行为。每关校验金币／券／道具库存守恒。
+- 输出包含55方案和3／10／30／100／300关分位数、首次事件达成比例、支出／请求缺口／库存等。`test_economy.py`14项测试，`plot_report.py`可选Matplotlib生成可复核静态图；工具不进入玩家构建。
+- 本轮未改Runtime、存档schema、生产价格、收益公式或SDK。C3候选参数与采用版本边界见[I5-C3报告](验证记录/I5C3_经济校准/I5C3_VALIDATION.md)，不得直接修改旧SinglePrice／FirstClear使历史回执失效。
