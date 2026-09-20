@@ -51,7 +51,7 @@ namespace Tidebound.Unity.LevelDesign
                 UnityEngine.Input.GetMouseButton(0) || UnityEngine.Input.GetMouseButtonUp(0) ||
                 UnityEngine.Input.anyKey || UnityEngine.Input.mouseScrollDelta.sqrMagnitude > 0;
             inputSinceTick = false;
-            var eligible = !backgrounded && session.State == GameState.Playing && !IsBusy &&
+            var eligible = IsEntryReady && !IsEntrySaveBlocked && !backgrounded && session.State == GameState.Playing && !IsBusy &&
                 world.PendingMoveId == null && demo == null && !IsMenuOpen && !IsAcquisitionOpen && !IsDeadlockOpen &&
                 tools.Selection == ShipTool.None && session.Board.ShipCount > 0;
             assistance.Advance(session.Board, seconds, eligible, activity, autoHintsEnabled);

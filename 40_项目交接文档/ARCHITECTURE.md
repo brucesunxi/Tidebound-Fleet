@@ -330,3 +330,14 @@ y=0   1  1  .  2
 - `DeadlockPanel`在所有船无法移动、无未完成移动意图、航道和待攻击归零后显示。关闭后相同Board实例不重复弹，重新载入仍可能提示一次。库存不足复用CoinShopPanel，5次用满禁用本局道具，购买只补下局库存；重开沿用既有原子结算事务。
 - `SavedGameRuntime.PresentationPause`仅为运行时弹层暂停来源；Capture不将其写成用户主动暂停，避免重进卡在不可恢复的临时弹层状态。死局弹窗转商店交接暂停所有权，手动暂停继续按原行为保存；没有修改v3存档结构、历史账本、道具效果或经济参数。
 - [E1验证](验证记录/E1_自动帮助与死局弹窗/E1_VALIDATION.md)：338/338 EditMode、27/27 PlayMode。后续E2a将Ready屏障接入此协调器；本轮仍沿用原进关与胜利自动推进流程。
+
+
+## E2a：进入流程、保存屏障与恢复（2026-09-20）
+
+- `Core/LevelDesign/LevelEntrySequence`是无Unity依赖的展示时钟：WaitingForSave、Field、Ships、Ready；新局0.18秒场地＋0.48秒最多8组显现，同局恢复／减弱动效0.12秒统一淡入。7船与80船总时长相同，不用视图反推逻辑。
+- `PortraitPuzzleGraybox.Entry`复用候选目录、SavedGameRuntime和PlayerSaveService。先保存新attempt再允许Ready；待提交runtime只保留一个，失败面板重试相同身份，重开事务成功后才结束并销毁旧局。失败期间暂停旧局移动，临时暂停不污染持久用户暂停。
+- `BoardGridInputRouter`新增可选输入许可回调，按下和抬起均检查；进入开始／Ready清除选择，提前点击不排队。灰盒公开动作入口同样检查Ready，E1只在Ready后计时。场地映射与HUD在开始演出前已完成。
+- Body CanvasGroup和局部缩放负责最终格位的显现；船根节点、Grid、方向和阻挡始终不变。恢复时不回放整盘，也不推进航道／攻击；暂停／后台／菜单冻结时钟，退出后凭同一attempt走恢复短路径。
+- 正式Start启用animateEntry，旧模块审查入口可省略演出，新的E2a PlayMode测试显式开启。Entry motion偏好保存在PlayerPrefs，不修改v3经济档。
+- 已清盘但胜利凭证保存失败时，SelectLevel拒绝进入，Restart只重试原结算。E2b之前保留原1.2秒自动推进；结果页、真实章节目标及已结算未继续的界面恢复尚待接入。
+- 证据与边界见[E2a验证](验证记录/E2a_进关与恢复/E2A_VALIDATION.md)。未改变收益版本、道具规则、原存档格式或移动平台配置，未完成真机验收。

@@ -15,13 +15,14 @@ namespace Tidebound.Unity.Input
         private BoardGridSelection selection;
         private Action<string> submit;
         private Action userActivity;
+        private Func<bool> acceptsInput;
         public bool IsPointerHeld => activePointer.HasValue;
         private int? activePointer;
 
-        public void Configure(Func<BoardModel> boardProvider, Action<string> submitMove, Action onUserActivity = null)
+        public void Configure(Func<BoardModel> boardProvider, Action<string> submitMove, Action onUserActivity = null, Func<bool> acceptsInput = null)
         {
             selection = new BoardGridSelection(boardProvider);
-            userActivity = onUserActivity;
+            userActivity = onUserActivity;this.acceptsInput = acceptsInput;
             submit = submitMove ?? throw new ArgumentNullException(nameof(submitMove));
         }
 
@@ -34,6 +35,7 @@ namespace Tidebound.Unity.Input
         {
             if (eventData == null || eventData.button != PointerEventData.InputButton.Left || activePointer.HasValue) return;
             userActivity?.Invoke();
+            if (acceptsInput?.Invoke() == false) { CancelSelection(); return; }
             activePointer = eventData.pointerId;
             if (TryCell(eventData, out var cell)) selection?.PointerDown(cell);
             else selection?.Cancel();
@@ -44,6 +46,7 @@ namespace Tidebound.Unity.Input
             if (eventData == null || eventData.button != PointerEventData.InputButton.Left || activePointer != eventData.pointerId) return;
             userActivity?.Invoke();
             activePointer = null;
+            if (acceptsInput?.Invoke() == false) { CancelSelection(); return; }
             if (TryCell(eventData, out var cell))
             {
                 var shipId = selection?.PointerUp(cell);

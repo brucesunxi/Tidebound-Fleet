@@ -103,6 +103,7 @@ namespace Tidebound.Unity.LevelDesign
             if (initialized || manifest == null) return;
             autoHintsEnabled = PlayerPrefs.GetInt("Tidebound.AutoHints", 1) != 0;
             reducedHintMotion = PlayerPrefs.GetInt("Tidebound.ReducedHintMotion", 0) != 0;
+            reducedEntryMotion = PlayerPrefs.GetInt("Tidebound.ReducedEntryMotion", 0) != 0;
             try
             {
                 var saveRoot=Application.persistentDataPath;
@@ -112,7 +113,7 @@ namespace Tidebound.Unity.LevelDesign
 #endif
                 Initialize(new CandidateLevelCatalog(manifest.text,layouts.Select(x=>x.text),proofs.Select(x=>x.text)),
                     saveService:new PlayerSaveService(new PlayerSaveFileStore(Path.Combine(saveRoot,"player-save-v2.json")),
-                        new ToolInventoryFileStore(Path.Combine(saveRoot,"tool-inventory-v1.json"))),campaign:true);
+                        new ToolInventoryFileStore(Path.Combine(saveRoot,"tool-inventory-v1.json"))),campaign:true, animateEntry:true);
             }
             catch (Exception e) { Debug.LogError("Graybox candidate validation failed: " + e.Message); enabled = false; }
         }
@@ -121,11 +122,11 @@ namespace Tidebound.Unity.LevelDesign
         { manifest = manifestAsset; layouts = levelAssets; proofs = proofAssets; }
 
         public void Initialize(CandidateLevelCatalog source, ShipMovementTiming timing = null, LaneTransitTiming laneTiming = null, CombatTiming combatTiming = null, ToolInventory inventory = null,
-            PlayerSaveService saveService = null, bool campaign = false)
+            PlayerSaveService saveService = null, bool campaign = false, bool animateEntry = false)
         {
             FlushSave();ClearSession();
             catalog = source ?? throw new ArgumentNullException(nameof(source));
-            this.saveService=saveService;this.campaign=campaign;
+            this.saveService=saveService;this.campaign=campaign;this.animateEntry=animateEntry;
             toolInventory=saveService?.Inventory ?? inventory ?? new ToolInventory();
             movementTiming = timing ?? new ShipMovementTiming();
             transitTiming = laneTiming ?? new LaneTransitTiming();
@@ -144,7 +145,7 @@ namespace Tidebound.Unity.LevelDesign
                             throw new InvalidOperationException("Saved level differs from the installed catalog.");
                     var restored=SavedGameRuntime.Restore(saved);saveService.AttachRestored(restored);
                     BindWorld(restored,index);saveService.Inventory.ReachLevel(saveService.CurrentLevel);
-                    SaveCheckpoint(true);
+                    SaveCheckpoint(true);BeginEntry(true);
                 }
                 catch(Exception e){saveService.Suspend(e.GetType().Name);ClearSession();SelectLevel(0);}
             }
@@ -152,26 +153,21 @@ namespace Tidebound.Unity.LevelDesign
         }
 
         // Editor inspection is deliberately isolated from campaign progress and currency.
-        public void EnableReviewMode(PlayerSaveService reviewSave=null) => Initialize(catalog,saveService:reviewSave);
+        public void EnableReviewMode(PlayerSaveService reviewSave=null, bool animateEntry=false) => Initialize(catalog,saveService:reviewSave,animateEntry:animateEntry);
 
         public void SelectLevel(int index)
         {
+            if (entryRequestInFlight || !IsEntryReady || IsEntrySaveBlocked) return;
             if (catalog == null) throw new InvalidOperationException("Load a validated catalog first.");
             if (index < 0 || index >= catalog.Count) throw new ArgumentOutOfRangeException(nameof(index));
             if(saveService?.IsAvailable==true)
             {
+                if(world!=null && IsCleared && !saveService.CurrentAttemptSettled)return;
                 if(index!=saveService.CurrentLevel-1 || (world!=null && !IsCleared))return;
-                var next=SavedGameRuntime.Create(catalog.Load(index),index+1,transitTiming,combatTiming);
-                if(!saveService.Start(next))
-                {
-                    if(world==null){saveService.Suspend("StartWriteFailed");BindWorld(next,index);}
-                    else {next.Dispose();notice="Cannot save new attempt. Retry.";}
-                    return;
-                }
-                ClearSession();BindWorld(next,index);return;
+                CommitEntry(SavedGameRuntime.Create(catalog.Load(index),index+1,transitTiming,combatTiming),index,false);return;
             }
             progress?.EndForRestart();ClearSession();
-            BindWorld(SavedGameRuntime.Create(catalog.Load(index),index+1,transitTiming,combatTiming),index);
+            BindWorld(SavedGameRuntime.Create(catalog.Load(index),index+1,transitTiming,combatTiming),index);BeginEntry(false);
         }
 
         private void BindWorld(SavedGameRuntime runtime,int index)
@@ -191,7 +187,7 @@ namespace Tidebound.Unity.LevelDesign
             entered.AddRange(combat.Attacks.Select(t=>t.Ship.ShipId));
             subscriptions.Add(session.Events.Subscribe<ShipExitBoardEvent>(e => exited.Add(e.Ship.ShipId)));
             subscriptions.Add(session.Events.Subscribe<ShipEnterFleetEvent>(e => entered.Add(e.Ship.ShipId)));
-            input.Configure(() => session?.Board, ClickShip, NotifyUserActivity);
+            input.Configure(() => session?.Board, ClickShip, NotifyUserActivity, () => IsEntryReady && !IsEntrySaveBlocked);
             foreach(var view in shipViews.Values){view.BindClickHandler(ClickShip);view.SetPaused(IsPaused);}
             lane.PresentActiveTransits();
             notice = saveService!=null && !saveService.IsAvailable ? "Save unavailable. Practice only; account locked." : "Tap a ship to move forward.";
@@ -200,15 +196,18 @@ namespace Tidebound.Unity.LevelDesign
 
         public void Restart()
         {
+            if (IsEntrySaveBlocked) { RetryEntry(); return; }
+            if (entryRequestInFlight || !IsEntryReady) return;
             if(saveService?.IsAvailable!=true){SelectLevel(LevelIndex);return;}
+            if(IsCleared && !saveService.CurrentAttemptSettled){SaveCheckpoint(true);UpdateLabels();return;}
             if(IsCleared){if(saveService.CurrentLevel<=catalog.Count)SelectLevel(saveService.CurrentLevel-1);return;}
             var next=SavedGameRuntime.Create(catalog.Load(LevelIndex),LevelIndex+1,transitTiming,combatTiming);
-            if(!saveService.Restart(next)){next.Dispose();notice="Cannot save restart. No coins or stock changed.";UpdateLabels();return;}
-            progress.EndForRestart();ClearSession();BindWorld(next,LevelIndex);
+            CommitEntry(next,LevelIndex,true);
         }
 
         private bool SaveCheckpoint(bool force=false)
         {
+            if(IsEntrySaveBlocked)return false;
             if(saveService==null || !saveService.IsAvailable || saveService.Runtime!=world)return true;
             if(saveService.Checkpoint(force))return true;
             demo=null;movement.Pause();notice="Save failed. Resume to retry.";return false;
@@ -218,7 +217,7 @@ namespace Tidebound.Unity.LevelDesign
         public void ClickShip(string id)
         {
             NotifyUserActivity();
-            if (session == null || IsPaused || IsBusy || demo != null) return;
+            if (!IsEntryReady || IsEntrySaveBlocked || session == null || IsPaused || IsBusy || demo != null) return;
             if(tools.Selection!=ShipTool.None)
             {
                 ApplyToolResult(tools.UseSelected(id));return;
@@ -233,7 +232,7 @@ namespace Tidebound.Unity.LevelDesign
         public void TogglePause()
         {
             NotifyUserActivity();
-            if (movement == null || IsAcquisitionOpen || IsDeadlockOpen) return;
+            if (movement == null || IsEntrySaveBlocked || IsAcquisitionOpen || IsDeadlockOpen) return;
             input.CancelSelection();tools.CancelSelection();
             if(IsPaused) {if(!SaveCheckpoint(true))return;movement.Resume();} else movement.Pause();
             SaveCheckpoint(true);
@@ -243,7 +242,7 @@ namespace Tidebound.Unity.LevelDesign
         public void SelectTool(ShipTool tool)
         {
             NotifyUserActivity();
-            if(demo!=null || IsMenuOpen || IsAcquisitionOpen || IsDeadlockOpen || IsPaused)return;
+            if(!IsEntryReady || IsEntrySaveBlocked || demo!=null || IsMenuOpen || IsAcquisitionOpen || IsDeadlockOpen || IsPaused)return;
             if(tools.Enabled && tools.UsesLeft==0){notice="Tool limit reached. Restart for a new attempt.";UpdateLabels();return;}
             if(tools.Enabled && session.State==GameState.Playing && !IsBusy && toolInventory.IsAvailable && tools.Remaining(tool)==0)
             { ShowAcquisition(tool);return; }
@@ -254,7 +253,7 @@ namespace Tidebound.Unity.LevelDesign
         private void ShowAcquisition(ShipTool tool)
         {
             NotifyUserActivity();
-            if(!tools.Enabled || IsBusy || demo!=null || IsAcquisitionOpen || IsDeadlockOpen || (session.State!=GameState.Playing && !IsPaused))return;
+            if(!IsEntryReady || IsEntrySaveBlocked || !tools.Enabled || IsBusy || demo!=null || IsAcquisitionOpen || IsDeadlockOpen || (session.State!=GameState.Playing && !IsPaused))return;
             input.CancelSelection();tools.CancelSelection();
             // Transfer ownership of a menu-owned pause; an existing user pause remains owned by the user.
             acquisitionPauseOwned=session.State==GameState.Playing || (IsMenuOpen && menuPauseOwned);
@@ -291,7 +290,7 @@ namespace Tidebound.Unity.LevelDesign
         public void ToggleMenu()
         {
             NotifyUserActivity();
-            if(IsAcquisitionOpen || IsDeadlockOpen)return;
+            if(IsEntrySaveBlocked || IsAcquisitionOpen || IsDeadlockOpen)return;
             if(IsMenuOpen) { CloseMenu();return; }
             input.CancelSelection();tools.CancelSelection();
             menuPauseOwned=session.State==GameState.Playing;
@@ -321,7 +320,7 @@ namespace Tidebound.Unity.LevelDesign
         public void ToggleAuto()
         {
             NotifyUserActivity();
-            if(IsDeadlockOpen || IsAcquisitionOpen)return;
+            if(!IsEntryReady || IsEntrySaveBlocked || IsDeadlockOpen || IsAcquisitionOpen)return;
             input.CancelSelection();tools.CancelSelection();
             if (demo != null) { demo = null; notice = "Demo stopped after the current move."; UpdateLabels(); return; }
             if (IsPaused || IsBusy) return;
@@ -334,7 +333,7 @@ namespace Tidebound.Unity.LevelDesign
         public void ShowHint()
         {
             NotifyUserActivity();
-            if (IsPaused || IsBusy || demo != null) return;
+            if (!IsEntryReady || IsEntrySaveBlocked || IsPaused || IsBusy || demo != null) return;
             tools.CancelSelection();
             var result = SolveCurrent();
             if (result?.Status != LevelSolverStatus.Solved || result.ShipIds.Count == 0) return;
@@ -347,6 +346,7 @@ namespace Tidebound.Unity.LevelDesign
         {
             if (session == null) return;
             if (lastScreen != new Vector2Int(Screen.width, Screen.height) || lastSafe != Screen.safeArea) RefreshViewport();
+            if (TickEntry(Time.unscaledDeltaTime)) { UpdateLabels(); return; }
             lane.Advance(Time.unscaledDeltaTime);
             combat.Advance();
             progress.Refresh();
@@ -478,7 +478,7 @@ namespace Tidebound.Unity.LevelDesign
             shopPanel=acquisitionPanel.gameObject.AddComponent<CoinShopPanel>();
             shopPanel.Initialize(saveService,toolInventory,CoinShopCatalogReader.LoadDefault(),font,CloseAcquisition,()=>tools.UsesLeft);
             acquisitionPanel.gameObject.SetActive(false);
-            BuildAssistance(canvasRect);
+            BuildAssistance(canvasRect);BuildEntryControls(canvasRect);
             if (FindObjectOfType<EventSystem>() == null)
             {
                 var events = new GameObject("GrayboxEventSystem",typeof(EventSystem),typeof(StandaloneInputModule));
@@ -502,7 +502,7 @@ namespace Tidebound.Unity.LevelDesign
             var toolNames=new[]{"Rescue","Shuffle","Reverse"};
             for(var i=0;i<3;i++)Place((RectTransform)toolsPanel.Find(toolNames[i]),new Rect(8+i*(buttonWidth+8),4,buttonWidth,Mathf.Max(48,Layout.Tools.height-40)));
             Place(menuPanel,Layout.Safe);Place(acquisitionPanel,Layout.Safe);
-            shopPanel.Layout(Layout.Safe);deadlockView.Layout(Layout.Safe);
+            shopPanel.Layout(Layout.Safe);deadlockView.Layout(Layout.Safe);LayoutEntryControls();
             var menuWidth=(w-40)/2;var menuY=Layout.Safe.height/2-84;
             Place((RectTransform)menuPanel.Find("MenuTitle"),new Rect(8,menuY+176,w-16,32));
             Place((RectTransform)menuPanel.Find("Shop"),new Rect(16,menuY-56,w-32,48));
@@ -525,9 +525,9 @@ namespace Tidebound.Unity.LevelDesign
             foreach(var parent in new[]{menuPanel,toolsPanel})
             {
                 var button=parent.Find("Restart").GetComponent<Button>();button.GetComponentInChildren<Text>(true).text=restartLabel;
-                button.interactable=!(saveService?.IsAvailable==true && IsCleared && saveService.CurrentLevel>catalog.Count);
+                button.interactable=IsEntryReady && !IsEntrySaveBlocked && !(saveService?.IsAvailable==true && IsCleared && saveService.CurrentLevel>catalog.Count);
             }
-            menuPanel.Find("Shop").GetComponent<Button>().interactable=tools.Enabled && !IsBusy && demo==null && (session.State==GameState.Playing || IsPaused);
+            menuPanel.Find("Shop").GetComponent<Button>().interactable=IsEntryReady && !IsEntrySaveBlocked && tools.Enabled && !IsBusy && demo==null && (session.State==GameState.Playing || IsPaused);
             if(IsAcquisitionOpen)shopPanel.Present();
             combatView.Present();
             status.text = IsCleared ? "VICTORY - all ships fired." : combat.FaultReason!=null ? "Combat error: "+combat.FaultReason : IsPaused ? "Paused" :
@@ -535,19 +535,20 @@ namespace Tidebound.Unity.LevelDesign
             if(saveService?.LastError!=null && saveService.IsAvailable)status.text="Save failed. Resume / Restart to retry.";
             else if(IsCleared && saveService!=null && saveService.CurrentLevel>catalog.Count)status.text="All available levels complete. Progress saved.";
             else if(deadlocked && saveService?.IsAvailable==true)status.text="No moves. Restart reward: "+saveService.RestartReward+" coins. Tools available.";
-            pause.interactable = session.State==GameState.Playing || IsPaused;
+            pause.interactable = !IsEntrySaveBlocked && (session.State==GameState.Playing || IsPaused);
             pause.GetComponentInChildren<Text>(true).text = IsPaused ? "Resume" : "Pause";
             auto.GetComponentInChildren<Text>(true).text = demo != null ? "Stop" : "Auto";
-            auto.interactable = demo != null || (!IsPaused && !IsBusy && !IsCleared);
-            hint.interactable = session.State==GameState.Playing && !IsBusy && demo == null && session.Board.ShipCount>0;
+            auto.interactable = IsEntryReady && !IsEntrySaveBlocked && (demo != null || (!IsPaused && !IsBusy && !IsCleared));
+            hint.interactable = IsEntryReady && !IsEntrySaveBlocked && session.State==GameState.Playing && !IsBusy && demo == null && session.Board.ShipCount>0;
             var toolKinds=new[]{ShipTool.Rescue,ShipTool.Shuffle,ShipTool.Reverse};var buttons=new[]{rescueButton,shuffleButton,reverseButton};
             var labels=new[]{"Rescue 2","Shuffle 5","Reverse"};
             for(var i=0;i<3;i++)
             {
                 var selected=tools.Selection==toolKinds[i];
                 buttons[i].GetComponentInChildren<Text>(true).text=selected ? "Cancel" : labels[i]+" ("+tools.Remaining(toolKinds[i])+")";
-                buttons[i].interactable=tools.Enabled && tools.UsesLeft>0 && session.State==GameState.Playing && !IsBusy && demo==null && session.Board.ShipCount>0;
+                buttons[i].interactable=IsEntryReady && !IsEntrySaveBlocked && tools.Enabled && tools.UsesLeft>0 && session.State==GameState.Playing && !IsBusy && demo==null && session.Board.ShipCount>0;
             }
+            UpdateAssistanceLabels();UpdateEntryLabels();
         }
 
         private void ResetBodyColors()
@@ -586,7 +587,7 @@ namespace Tidebound.Unity.LevelDesign
 
         private void ClearSession()
         {
-            ClearAutoHighlight();assistance=null;deadlockPanel=null;deadlockView=null;deadlockPauseOwned=false;inputSinceTick=false;
+            ClearEntry();ClearAutoHighlight();assistance=null;deadlockPanel=null;deadlockView=null;deadlockPauseOwned=false;inputSinceTick=false;
             demo=null; input?.CancelSelection(); movement?.Dispose(); movement=null;
             tools?.Dispose();tools=null;progress=null;menuPanel=null;menuPauseOwned=false;acquisitionPanel=null;shopPanel=null;acquisitionPauseOwned=false;
             combat=null; combatView=null;
