@@ -11,10 +11,11 @@ namespace Tidebound.Unity.LevelDesign
         private Text title, subtitle, first, battle, total, chapter, target;
         private RectTransform flagship, track, fill;
         private Button next, back, retry, motion;
-        private bool overview;
+        private bool overview, homeNavigation;
         public bool IsOverview => overview;
-        public void Initialize(Font value,Action proceed,Action returnOrResult,Action retrySave,Action toggleMotion)
+        public void Initialize(Font value,Action proceed,Action returnOrResult,Action retrySave,Action toggleMotion,bool homeNavigation=false)
         {
+            this.homeNavigation=homeNavigation;
             font=value;title=Label("ResultTitle",28);subtitle=Label("ResultSubtitle",16);
             flagship=Rect("Flagship",transform);var hull=Box("Hull",flagship,new Color(.22f,.62f,.75f));
             Place(hull,new Rect(10,0,60,20));Place(Box("Deck",flagship,new Color(.7f,.88f,.91f)),new Rect(28,20,24,14));
@@ -33,13 +34,13 @@ namespace Tidebound.Unity.LevelDesign
             first.text="First clear     +"+value.FirstClearCoins; battle.text="Battle coins     +"+value.BattleCoins;
             total.text="Total     +"+value.TotalCoins;
             first.gameObject.SetActive(!overview);battle.gameObject.SetActive(!overview);total.gameObject.SetActive(!overview);
-            flagship.gameObject.SetActive(true);chapter.gameObject.SetActive(true);track.gameObject.SetActive(true);target.gameObject.SetActive(showOverview || progress>=value.Progress-.00001f);
+            flagship.gameObject.SetActive(true);chapter.gameObject.SetActive(!homeNavigation);track.gameObject.SetActive(!homeNavigation);target.gameObject.SetActive(showOverview || progress>=value.Progress-.00001f);
             chapter.text="Chapter "+value.ChapterNumber+"    "+value.ChapterCompleted+" / "+value.ChapterSize;
             target.text=value.HasNext ? "Next destination: Level "+value.NextLevel : "All available levels complete";
-            next.gameObject.SetActive(true);next.interactable=readable && value.HasNext;
-            next.GetComponentInChildren<Text>().text=value.HasNext ? "Next level" : "Content complete";
+            next.gameObject.SetActive(true);next.interactable=readable && (homeNavigation || value.HasNext);
+            next.GetComponentInChildren<Text>().text=homeNavigation || value.HasNext ? "Next level" : "Content complete";
             back.gameObject.SetActive(true);back.interactable=readable;
-            back.GetComponentInChildren<Text>().text=overview ? "View result" : "Return to voyage";
+            back.GetComponentInChildren<Text>().text=homeNavigation ? "Return home" : overview ? "View result" : "Return to voyage";
             retry.gameObject.SetActive(false);motion.gameObject.SetActive(true);
             motion.GetComponentInChildren<Text>().text="Motion: "+(reduced ? "Reduced" : "Full");
             Place(fill,new Rect(0,0,track.rect.width*Mathf.Clamp01(progress),12));
@@ -56,6 +57,7 @@ namespace Tidebound.Unity.LevelDesign
         {
             Pending(false);title.text="Practice complete";subtitle.text="Account unavailable - no rewards saved";
             next.gameObject.SetActive(true);next.interactable=true;next.GetComponentInChildren<Text>().text="Replay practice";
+            back.gameObject.SetActive(homeNavigation);back.interactable=true;back.GetComponentInChildren<Text>().text="Return home";
         }
         public void SetNotice(string value) => subtitle.text=value;
         public void Layout(Rect area)

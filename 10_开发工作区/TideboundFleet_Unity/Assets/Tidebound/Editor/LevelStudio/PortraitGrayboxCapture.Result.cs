@@ -20,7 +20,7 @@ namespace Tidebound.EditorTools
             public PlayerSaveData Load()=>Data?.Copy();
             public void Save(PlayerSaveData value){if(Fail)throw new IOException();Data=value.Copy();}
         }
-        private static CandidateLevelCatalog ResultCatalog(PortraitPuzzleGraybox game)=>(CandidateLevelCatalog)typeof(PortraitPuzzleGraybox).GetField("catalog",BindingFlags.Instance|BindingFlags.NonPublic).GetValue(game);
+        private static IPlayableLevelCatalog ResultCatalog(PortraitPuzzleGraybox game)=>(IPlayableLevelCatalog)typeof(PortraitPuzzleGraybox).GetField("catalog",BindingFlags.Instance|BindingFlags.NonPublic).GetValue(game);
         private static void CompleteResultModel(SavedGameRuntime game)
         {
             var proof=LevelSolver.Solve(game.Session.Board,new LevelSolverOptions(4000,400000,500));
@@ -29,7 +29,7 @@ namespace Tidebound.EditorTools
             {var op=game.Movement.TryBeginMove(id);if(op.Operation.Stage==ShipMoveStage.Traveling)game.Movement.CompleteTravel(op.Operation.OperationId);if(game.Movement.IsBusy)game.Movement.CompleteBlockedFeedback(op.Operation.OperationId);}
             game.Transit.Advance(100);game.Combat.Advance();
         }
-        private static ResultCaptureStore ResultStore(CandidateLevelCatalog catalog,int level,bool settled=true)
+        private static ResultCaptureStore ResultStore(IPlayableLevelCatalog catalog,int level,bool settled=true)
         {
             var store=new ResultCaptureStore{Data=new PlayerSaveData{CurrentLevel=level,HighestClearedLevel=level-1,
                 Coins=Enumerable.Range(1,level-1).Sum(n=>(long)(n==1?7:80)+BattleCoinRules.FirstClear(n)),
@@ -43,7 +43,7 @@ namespace Tidebound.EditorTools
             }
             return store;
         }
-        private static void BindResultCapture(PortraitPuzzleGraybox game,CandidateLevelCatalog catalog,ResultCaptureStore store)
+        private static void BindResultCapture(PortraitPuzzleGraybox game,IPlayableLevelCatalog catalog,ResultCaptureStore store)
         {game.Initialize(catalog,saveService:new PlayerSaveService(store),campaign:true,animateEntry:true);game.enabled=false;}
         private static System.Collections.IEnumerator SaveResultFrame(PortraitPuzzleGraybox game,string name)
         {yield return null;Canvas.ForceUpdateCanvases();game.BoardCamera.Render();yield return SaveFrame(name);}

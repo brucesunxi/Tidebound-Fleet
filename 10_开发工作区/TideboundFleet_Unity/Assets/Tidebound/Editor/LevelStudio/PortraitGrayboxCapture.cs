@@ -61,7 +61,8 @@ namespace Tidebound.EditorTools
                 }
                 if (!EditorApplication.isPlaying) return;
                 var game=UnityEngine.Object.FindObjectOfType<PortraitPuzzleGraybox>();
-                if (game==null || game.Session==null) return;
+                if (game==null) return;
+                if (game.Session==null && !game.IsHomeOpen) return;
                 if (stage==0)
                 {
                     stage=1;
@@ -79,6 +80,11 @@ namespace Tidebound.EditorTools
 
         private static System.Collections.IEnumerator CaptureFrames(PortraitPuzzleGraybox game)
         {
+            if(Environment.GetEnvironmentVariable("TIDEBOUND_CAPTURE_HOME_ONLY")=="1")
+            {
+                yield return CaptureHomeFrames(game);stage=3;SessionState.SetInt(Key+".Stage",3);EditorApplication.ExitPlaymode();yield break;
+            }
+            if(game.IsHomeOpen)game.EnableReviewMode();
             if(Environment.GetEnvironmentVariable("TIDEBOUND_CAPTURE_TOY_STUDY_ONLY")=="1")
             {
                 yield return CaptureToyStudyFrames(game);stage=3;SessionState.SetInt(Key+".Stage",3);EditorApplication.ExitPlaymode();yield break;

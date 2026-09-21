@@ -28,7 +28,7 @@ namespace Tidebound.Unity.LevelDesign
             resultPanel=Panel("VictoryResult",parent,new Rect(),new Color(.025f,.055f,.08f,.97f));
             resultPanel.GetComponent<Image>().raycastTarget=true;resultCanvas=resultPanel.gameObject.AddComponent<CanvasGroup>();
             resultView=resultPanel.gameObject.AddComponent<VictoryResultPanel>();
-            resultView.Initialize(font,ContinueFromResult,ToggleResultOverview,RetryResultSave,()=>SetReducedResultMotion(!reducedResultMotion,true));
+            resultView.Initialize(font,ContinueFromResult,()=>{if(homeNavigation)ReturnHome();else ToggleResultOverview();},RetryResultSave,()=>SetReducedResultMotion(!reducedResultMotion,true),homeNavigation);
             defeatedBoss=battlePanel.gameObject.AddComponent<CanvasGroup>();resultPanel.gameObject.SetActive(false);
         }
         public void SetReducedResultMotion(bool reduced,bool persist=false)
@@ -73,7 +73,7 @@ namespace Tidebound.Unity.LevelDesign
         private void PaintResult()
         {
             if(result==null || resultView==null || !IsResultOpen)return;
-            var collectionLink=resultPanel.Find("OpenCollection");if(collectionLink!=null)collectionLink.gameObject.SetActive(IsResultReadable && saveService?.IsAvailable==true && saveService.CurrentLevel>=3);
+            var collectionLink=resultPanel.Find("OpenCollection");if(collectionLink!=null)collectionLink.gameObject.SetActive(!homeNavigation && IsResultReadable && saveService?.IsAvailable==true && saveService.CurrentLevel>=3);
             defeatedBoss.alpha=1-Mathf.Clamp01(resultExitTime/.6f);
             resultCanvas.alpha=Mathf.Clamp01(resultRevealTime/.18f);
             var t=reducedResultMotion ? 1 : Mathf.Clamp01(resultRevealTime/.55f);
@@ -95,16 +95,19 @@ namespace Tidebound.Unity.LevelDesign
         {
             if(PracticeResult && IsResultOpen)
             {resultDispatch=true;try{SelectLevel(LevelIndex);}finally{resultDispatch=false;}return;}
-            if(IsCollectionOpen || !IsResultReadable || !result.HasNext || IsEntrySaveBlocked || continuingResult)return;
+            if(IsHomeOpen || IsCollectionOpen || !IsResultReadable || (!homeNavigation && !result.HasNext) || IsEntrySaveBlocked || continuingResult)return;
             continuingResult=true;
             try
             {
                 resultNotice=null;
-                if(saveService.CanClaimFirstBlue){OpenCollection();return;}
+                if(saveService.CanClaimFirstBlue){if(homeNavigation)ReturnHome();OpenCollection();return;}
+                if(!catalog.IsAvailable(result.NextLevel-1))
+                {resultNotice="The next level is not available yet. Your rewards are saved.";PaintResult();return;}
                 if(BeforeNextLevel!=null && !BeforeNextLevel(result))
                 {resultNotice="Complete your pending choice, then continue.";PaintResult();return;}
                 resultDispatch=true;SelectLevel(result.NextLevel-1);
             }
+            catch(Exception){resultNotice="Unable to load the next level. Your progress has been kept.";PaintResult();}
             finally{resultDispatch=false;continuingResult=false;}
         }
         private void ClearResult()

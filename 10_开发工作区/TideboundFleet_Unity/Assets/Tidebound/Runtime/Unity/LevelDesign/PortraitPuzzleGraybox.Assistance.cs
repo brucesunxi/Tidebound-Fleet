@@ -1,4 +1,5 @@
 using Tidebound.Core;
+using Tidebound.Board;
 using Tidebound.Tools;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,7 +11,9 @@ namespace Tidebound.Unity.LevelDesign
         private BoardAssistance assistance;
         private DeadlockPanel deadlockView;
         private RectTransform deadlockPanel;
-        private bool deadlockPauseOwned, backgrounded, inputSinceTick;
+        private bool backgrounded, inputSinceTick;
+        private float deadlockNoticeTime;
+        private BoardModel deadlockBoard;
         private string paintedHint;
         private float hintPhase;
         private bool autoHintsEnabled = true, reducedHintMotion;
@@ -35,24 +38,33 @@ namespace Tidebound.Unity.LevelDesign
         private void BuildAssistance(Transform parent)
         {
             assistance = new BoardAssistance();
-            deadlockPanel = Panel("DeadlockPrompt", parent, new Rect(), new Color(.025f, .055f, .08f, .86f));
-            deadlockPanel.GetComponent<Image>().raycastTarget = true;
+            deadlockPanel = Panel("DeadlockPrompt", parent, new Rect(), new Color(.025f, .055f, .08f, .68f));
+            deadlockPanel.GetComponent<Image>().raycastTarget = false;
             deadlockView = deadlockPanel.gameObject.AddComponent<DeadlockPanel>();
-            deadlockView.Initialize(font, UseDeadlockTool, OpenShopFromDeadlock, RestartFromDeadlock, CloseDeadlock);
+            deadlockView.Initialize(font);
             deadlockPanel.gameObject.SetActive(false);
             Button("AutoHints", menuPanel, "", () => SetAssistancePreferences(!autoHintsEnabled, reducedHintMotion, true));
             Button("HintMotion", menuPanel, "", () => SetAssistancePreferences(autoHintsEnabled, !reducedHintMotion, true));
         }
         private void TickAssistance(float seconds)
         {
-            if (assistance == null) return;
+            if (assistance == null || IsHomeOpen) return;
+            if (IsDeadlockOpen)
+            {
+                if (!ReferenceEquals(deadlockBoard, session.Board)) CloseDeadlock();
+                else if (!backgrounded && !IsPaused && !IsMenuOpen && !IsAcquisitionOpen && !IsCollectionOpen)
+                {
+                    deadlockNoticeTime += seconds;
+                    if (deadlockNoticeTime >= 4) CloseDeadlock();
+                }
+            }
             // Includes empty-board taps, held pointers, keyboard/controller submit and scrolling over HUD.
             var activity = inputSinceTick || input.IsPointerHeld || UnityEngine.Input.touchCount > 0 ||
                 UnityEngine.Input.GetMouseButton(0) || UnityEngine.Input.GetMouseButtonUp(0) ||
                 UnityEngine.Input.anyKey || UnityEngine.Input.mouseScrollDelta.sqrMagnitude > 0;
             inputSinceTick = false;
             var eligible = IsEntryReady && !IsEntrySaveBlocked && !backgrounded && session.State == GameState.Playing && !IsBusy &&
-                world.PendingMoveId == null && demo == null && !IsCollectionOpen && !IsMenuOpen && !IsAcquisitionOpen && !IsDeadlockOpen &&
+                world.PendingMoveId == null && demo == null && !IsCollectionOpen && !IsMenuOpen && !IsAcquisitionOpen &&
                 tools.Selection == ShipTool.None && session.Board.ShipCount > 0;
             assistance.Advance(session.Board, seconds, eligible, activity, autoHintsEnabled);
             if (eligible && transit.ActiveCount == 0 && combat.PendingCount == 0 && combat.FaultReason == null &&
@@ -80,18 +92,14 @@ namespace Tidebound.Unity.LevelDesign
         }
         private void OpenDeadlock()
         {
-            NotifyUserActivity(); input.CancelSelection();
-            deadlockPauseOwned = session.State == GameState.Playing;
-            if (deadlockPauseOwned) { world.PresentationPause = true; movement.Pause(); }
-            deadlockPanel.gameObject.SetActive(true); SaveCheckpoint(true); UpdateAssistanceLabels();
+            NotifyUserActivity(); deadlockBoard = session.Board; deadlockNoticeTime = 0;
+            deadlockPanel.gameObject.SetActive(true); UpdateAssistanceLabels();
         }
         public void CloseDeadlock()
         {
             if (!IsDeadlockOpen) return;
-            NotifyUserActivity(); deadlockPanel.gameObject.SetActive(false);
-            if (deadlockPauseOwned && IsPaused && SaveCheckpoint(true)) movement.Resume();
-            deadlockPauseOwned = false; world.PresentationPause = false;
-            SaveCheckpoint(true); UpdateLabels();
+            deadlockPanel.gameObject.SetActive(false); deadlockNoticeTime = 0;
+            UpdateToolCue(ShipTool.None); NotifyUserActivity();
         }
         public void UseDeadlockTool(ShipTool kind)
         {
@@ -102,10 +110,10 @@ namespace Tidebound.Unity.LevelDesign
         public void OpenShopFromDeadlock()
         {
             if (!IsDeadlockOpen || !tools.Enabled || saveService?.IsAvailable != true) return;
-            // Transfer the temporary pause without resuming a frame between the two modals.
-            acquisitionPauseOwned = deadlockPauseOwned;
-            deadlockPauseOwned = false; deadlockPanel.gameObject.SetActive(false);
-            NotifyUserActivity(); shopPanel.Open(); SaveCheckpoint(true); UpdateLabels();
+            CloseDeadlock();
+            if (homeNavigation) { ReturnHome(); OpenHomeShop(); return; }
+            world.PresentationPause = session.State == GameState.Playing;
+            ShowAcquisition(ShipTool.None);
         }
         public void RestartFromDeadlock()
         {
@@ -120,8 +128,24 @@ namespace Tidebound.Unity.LevelDesign
                 menuPanel.Find("HintMotion").GetComponentInChildren<Text>().text = "Hint motion: " + (reducedHintMotion ? "Reduced" : "Pulse");
             }
             if (IsDeadlockOpen)
-                deadlockView.Present(toolInventory, tools.Enabled, tools.UsesLeft, tools.Enabled && saveService?.IsAvailable == true,
-                    saveService?.IsAvailable == true, saveService?.IsAvailable == true ? saveService.RestartReward : 0);
+            {
+                deadlockView.Present(toolInventory, tools.Enabled, tools.UsesLeft);
+                deadlockView.SetVisibility(!IsPaused && !IsMenuOpen && !IsAcquisitionOpen && !IsCollectionOpen);
+                UpdateToolCue(deadlockView.RecommendedTool);
+            }
+            else UpdateToolCue(ShipTool.None);
+        }
+        private void UpdateToolCue(ShipTool recommended)
+        {
+            var kinds = new[] { ShipTool.Rescue, ShipTool.Shuffle, ShipTool.Reverse };
+            var buttons = new[] { rescueButton, shuffleButton, reverseButton };
+            for (var i = 0; i < buttons.Length; i++)
+            {
+                if (buttons[i] == null) continue;
+                var outline = buttons[i].GetComponent<Outline>();
+                if (outline == null) { outline = buttons[i].gameObject.AddComponent<Outline>(); outline.effectColor = new Color(1, .85f, .2f); outline.effectDistance = new Vector2(3, 3); }
+                outline.enabled = kinds[i] == recommended && !IsPaused && !IsMenuOpen && !IsAcquisitionOpen;
+            }
         }
     }
 }

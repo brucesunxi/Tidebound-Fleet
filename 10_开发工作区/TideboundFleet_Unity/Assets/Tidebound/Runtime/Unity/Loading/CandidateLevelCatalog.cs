@@ -10,10 +10,12 @@ using Tidebound.Ship;
 namespace Tidebound.Config
 {
     /// <summary>Strict development-only catalog. Candidate status never implies production approval.</summary>
-    public sealed class CandidateLevelCatalog
+    public sealed class CandidateLevelCatalog : IPlayableLevelCatalog
     {
         private readonly string[] layouts;
         public int Count => layouts.Length;
+        public string GetLevelId(int index) => Phase5RLevelRecipes.All[index].LevelId;
+        public bool IsAvailable(int index) => index >= 0 && index < Count;
         public LevelData Load(int index) => LevelJsonReader.Read(layouts[index]);
         public CandidateLevelCatalog(string manifestJson, IEnumerable<string> layoutJson, IEnumerable<string> proofJson)
         {

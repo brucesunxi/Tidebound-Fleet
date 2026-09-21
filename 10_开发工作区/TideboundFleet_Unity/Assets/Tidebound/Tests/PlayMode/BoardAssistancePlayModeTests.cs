@@ -88,8 +88,9 @@ namespace Tidebound.Tests
             {
                 Tick(g,10);Assert.That(g.AutoHintShipId,Is.Null);Assert.That(g.IsDeadlockOpen,Is.False);
                 g.ClickShip("A");yield return Until(()=>g.IsDeadlockOpen);
-                Assert.That(g.IsPaused,Is.True);Assert.That(g.Session.Board.ShipCount,Is.EqualTo(2));
-                g.TogglePause();Assert.That(g.IsPaused,Is.True);g.CloseDeadlock();Assert.That(g.IsPaused,Is.False);
+                Assert.That(g.IsPaused,Is.False);Assert.That(g.Session.Board.ShipCount,Is.EqualTo(2));
+                g.TogglePause();Assert.That(g.IsPaused,Is.True);Tick(g,10);Assert.That(g.IsDeadlockOpen,Is.True);
+                g.TogglePause();Tick(g,4.1f);Assert.That(g.IsDeadlockOpen,Is.False);Assert.That(g.IsPaused,Is.False);
                 Tick(g,10);Assert.That(g.IsDeadlockOpen,Is.False);
             }
             finally{UnityEngine.Object.Destroy(g.gameObject);}yield return null;
@@ -112,16 +113,17 @@ namespace Tidebound.Tests
             {
                 g.ClickShip("C");yield return Until(()=>!g.IsBusy);
                 Assert.That(g.IsDeadlockOpen,Is.False);Assert.That(g.Combat.HitCount,Is.Zero);
-                yield return Until(()=>g.IsDeadlockOpen);Assert.That(g.Combat.HitCount,Is.EqualTo(1));Assert.That(g.Combat.PendingCount,Is.Zero);
+                yield return Until(()=>g.IsDeadlockOpen);Assert.That(g.Combat.HitCount,Is.EqualTo(1));Assert.That(g.Combat.PendingCount,Is.Zero);Assert.That(g.IsPaused,Is.False);
                 foreach(var size in new[]{new Vector2(360,640),new Vector2(390,844),new Vector2(430,932)})
                 {
                     g.ApplyViewport(new Rect(5,11,size.x,size.y),1);Canvas.ForceUpdateCanvases();
-                    foreach(var button in g.DeadlockView.GetComponentsInChildren<Button>())
-                    {
-                        var r=(RectTransform)button.transform;Assert.That(r.rect.height,Is.GreaterThanOrEqualTo(48));
-                        Assert.That(r.anchoredPosition.x,Is.GreaterThanOrEqualTo(0));Assert.That(r.anchoredPosition.y,Is.GreaterThanOrEqualTo(0));
-                        Assert.That(r.anchoredPosition.x+r.rect.width,Is.LessThanOrEqualTo(size.x));Assert.That(r.anchoredPosition.y+r.rect.height,Is.LessThanOrEqualTo(size.y));
-                    }
+                    Assert.That(g.DeadlockView.GetComponentsInChildren<Button>(),Is.Empty);
+                    Assert.That(g.DeadlockView.GetComponent<CanvasGroup>().blocksRaycasts,Is.False);
+                    Assert.That(g.DeadlockView.GetComponentsInChildren<Graphic>().All(x=>!x.raycastTarget),Is.True);
+                    var rect=(RectTransform)g.DeadlockView.transform;
+                    Assert.That(rect.rect.height,Is.LessThan(80));
+                    Assert.That(rect.anchoredPosition.y,Is.GreaterThan(11));
+                    Assert.That(rect.anchoredPosition.y+rect.rect.height,Is.LessThan(11+size.y));
                 }
             }
             finally{UnityEngine.Object.Destroy(g.gameObject);}yield return null;
