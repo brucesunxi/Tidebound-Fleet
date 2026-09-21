@@ -20,7 +20,7 @@ namespace Tidebound.Unity.LevelDesign
         private RectTransform homeRoot, homeControls, homeSettings, homeCollectionRoot, homeShopRoot;
         private CollectionPanel homeCollection;
         private CoinShopPanel homeShop;
-        private Text homeWallet, homeNotice;
+        private Text homeWallet, homeNotice, homeLevel;
         private Button homeContinue;
         public bool IsHomeOpen => homeRoot != null && homeRoot.gameObject.activeSelf;
         public string HomeNotice => homeNotice?.text;
@@ -37,27 +37,43 @@ namespace Tidebound.Unity.LevelDesign
             backdrop.anchorMax=Vector2.one;backdrop.offsetMin=backdrop.offsetMax=Vector2.zero;backdrop.GetComponent<Image>().raycastTarget=true;
             homeBackdrop=HarborUI.Art("Harbor",homeRoot,"Harbor_Background_v1");HarborUI.Fill(homeBackdrop.rectTransform);
             homeControls=Rect("HomeControls",homeRoot);
-            HarborUI.Button("Settings",homeControls,"Settings",()=>{homeSettings.gameObject.SetActive(true);HarborUI.Focus(homeSettings.Find("LanguageAuto").GetComponent<Button>());});
-            var walletSurface=HarborUI.Surface("WalletSurface",homeControls,HarborUI.Cream);walletSurface.raycastTarget=false;
-            homeWallet=HarborUI.Label("Coins",homeControls,"",20);
-            HarborUI.Button("Collection",homeControls,"Collection",OpenCollection);
-            HarborUI.Button("SkinDraw",homeControls,"Skin Draw",OpenHomeDraw);
-            HarborUI.Button("Supplies",homeControls,"Supplies",OpenShop);
-            foreach(var label in new[]{"Daily Gift","Invite","Rankings"})HarborUI.Button(label,homeControls,label+"\nSoon",null).interactable=false;
+            var settings=HarborUI.RaisedButton("Settings",homeControls,"",()=>{homeSettings.gameObject.SetActive(true);HarborUI.Focus(homeSettings.Find("LanguageAuto").GetComponent<Button>());});
+            var gear=HarborUI.Rect("Gear",settings.transform.Find("Face")).gameObject.AddComponent<HarborEmblem>();gear.raycastTarget=false;
+            HarborUI.Place(gear.rectTransform,new Rect(12,12,28,28));
+            var walletSurface=HarborUI.Rect("WalletSurface",homeControls).gameObject.AddComponent<HarborReliefImage>();walletSurface.Depth=4;walletSurface.Radius=25;walletSurface.raycastTarget=false;
+            var coin=HarborUI.Rect("Coin",walletSurface.transform).gameObject.AddComponent<HarborEmblem>();coin.Coin=true;coin.raycastTarget=false;
+            HarborUI.Place(coin.rectTransform,new Rect(6,8,36,36));
+            homeWallet=HarborUI.Label("Coins",homeControls,"",22);homeWallet.fontStyle=FontStyle.Bold;
+            HarborUI.RaisedButton("Collection",homeControls,"Collection",OpenCollection);
+            HarborUI.RaisedButton("SkinDraw",homeControls,"Skin Draw",OpenHomeDraw);
+            HarborUI.RaisedButton("Supplies",homeControls,"Supplies",OpenShop);
+            foreach(var name in new[]{"Daily Gift","Invite","Rankings"})
+            {
+                HarborUI.RaisedButton(name,homeControls,name,null).interactable=false;
+                var badge=HarborUI.Rect(name+"Badge",homeControls).gameObject.AddComponent<HarborReliefImage>();badge.Depth=2;badge.Radius=12;badge.raycastTarget=false;
+                var soon=HarborUI.Label("Label",badge.transform,"Soon",12);soon.fontStyle=FontStyle.Bold;HarborUI.Fill(soon.rectTransform,2);
+            }
             var names=new[]{"Collection","SkinDraw","Supplies","Daily Gift","Invite","Rankings"};
             var icons=new[]{"Collection","SkinDraw","Supplies","DailyGift","Invite","Rankings"};
             for(var i=0;i<names.Length;i++)
             {
-                var button=homeControls.Find(names[i]);var icon=HarborUI.Art("Icon",button,"Icon_"+icons[i]+"_v1");
-                HarborUI.Place(icon.rectTransform,new Rect(10,36,56,56));
-                var label=button.GetComponentInChildren<Text>().rectTransform;label.anchorMin=label.anchorMax=label.pivot=Vector2.zero;
-                HarborUI.Place(label,new Rect(2,2,72,38));button.GetComponentInChildren<Text>().fontSize=12;
+                var button=homeControls.Find(names[i]);var face=button.Find("Face");var icon=HarborUI.Art("Icon",face,"Icon_"+icons[i]+"_v1");
+                HarborUI.Place(icon.rectTransform,new Rect(6,22,68,68));
+                button.GetComponent<HarborButtonRelief>().SetFloatingIcon(icon.rectTransform);
+                var label=button.GetComponentInChildren<Text>();label.rectTransform.anchorMin=label.rectTransform.anchorMax=label.rectTransform.pivot=Vector2.zero;
+                HarborUI.Place(label.rectTransform,new Rect(1,7,78,24));label.fontSize=14;
             }
             showcase=Rect("ShowcasePreview",homeControls).gameObject.AddComponent<CollectionShipPreview>();showcase.Initialize(true);
             showcase.AllowMotion=()=>!reducedEntryMotion && !homeSettings.gameObject.activeSelf && Application.isFocused;
-            homeContinue=HarborUI.Button("Continue",homeControls,"",ContinueFromHome,true);
-            homeContinue.GetComponentInChildren<Text>().fontSize=21;
-            homeContinue.GetComponentInChildren<Text>().rectTransform.offsetMin=new Vector2(6,3);homeContinue.GetComponentInChildren<Text>().rectTransform.offsetMax=new Vector2(-6,-3);
+            // Keep the side controls in front of the transparent preview at narrow aspect ratios.
+            showcase.transform.SetSiblingIndex(3);
+            homeContinue=HarborUI.RaisedButton("Continue",homeControls,"",ContinueFromHome,true);
+            var title=homeContinue.GetComponentInChildren<Text>();title.fontSize=30;
+            title.rectTransform.anchorMin=new Vector2(0,.36f);title.rectTransform.anchorMax=new Vector2(1,1);title.rectTransform.offsetMin=new Vector2(10,-3);title.rectTransform.offsetMax=new Vector2(-10,-7);
+            homeLevel=HarborUI.Label("Level",homeContinue.transform.Find("Face"),"",16);homeLevel.fontStyle=FontStyle.Bold;
+            homeLevel.rectTransform.anchorMin=Vector2.zero;homeLevel.rectTransform.anchorMax=new Vector2(1,.40f);homeLevel.rectTransform.offsetMin=new Vector2(10,12);homeLevel.rectTransform.offsetMax=new Vector2(-10,0);
+            foreach(var relief in homeControls.GetComponentsInChildren<HarborButtonRelief>())
+                relief.AllowMotion=()=>!reducedEntryMotion && !homeSettings.gameObject.activeSelf && Application.isFocused;
             homeNotice=HarborUI.Label("Notice",homeControls,"",14);
             homeSettings=HarborUI.Surface("HomeSettings",homeRoot,HarborUI.Cream).rectTransform;
             HarborUI.Label("Title",homeSettings,"Settings",26);
@@ -105,20 +121,22 @@ namespace Tidebound.Unity.LevelDesign
                 var u=Mathf.Min(1,screenAspect/textureAspect);var v=Mathf.Min(1,textureAspect/screenAspect);
                 homeBackdrop.uvRect=new Rect((1-u)/2,(1-v)/2,u,v);
             }
-            Place((RectTransform)homeControls.Find("Settings"),new Rect(12,h-64,82,48));
-            Place((RectTransform)homeControls.Find("WalletSurface"),new Rect(112,h-64,Mathf.Min(160,w-124),48));
-            Place(homeWallet.rectTransform,new Rect(112,h-64,Mathf.Min(160,w-124),48));
+            Place((RectTransform)homeControls.Find("Settings"),new Rect(15,h-79,52,52));
+            Place((RectTransform)homeControls.Find("WalletSurface"),new Rect(78,h-79,112,52));
+            Place(homeWallet.rectTransform,new Rect(120,h-73,64,40));
             var left=new[]{"Collection","SkinDraw","Supplies"};var right=new[]{"Daily Gift","Invite","Rankings"};
-            var y=Mathf.Min(h-180,h*.67f);
+            var continueY=h*.153f;
+            var y=Mathf.Max(h*.577f,continueY+316);const float step=102;
             for(var i=0;i<3;i++)
             {
-                Place((RectTransform)homeControls.Find(left[i]),new Rect(12,y-i*102,76,94));
-                Place((RectTransform)homeControls.Find(right[i]),new Rect(w-88,y-i*102,76,94));
+                Place((RectTransform)homeControls.Find(left[i]),new Rect(7,y-i*step,80,87));
+                Place((RectTransform)homeControls.Find(right[i]),new Rect(w-87,y-i*step,80,87));
+                Place((RectTransform)homeControls.Find(right[i]+"Badge"),new Rect(w-75,y-i*step-12,56,24));
             }
-            var size=Mathf.Min(250,w-142);
-            Place((RectTransform)homeControls.Find("ShowcasePreview"),new Rect((w-size)/2,h*.39f,size,size));
-            Place(homeNotice.rectTransform,new Rect(28,130,w-56,54));
-            Place((RectTransform)homeContinue.transform,new Rect(40,44,w-80,72));
+            var size=Mathf.Min(304,w-80);
+            Place((RectTransform)homeControls.Find("ShowcasePreview"),new Rect((w-size)/2,h*.325f,size,size));
+            Place(homeNotice.rectTransform,new Rect(28,continueY+91,w-56,46));
+            Place((RectTransform)homeContinue.transform,new Rect(61,continueY,w-122,94));
             Place(homeSettings,safe);
             Place((RectTransform)homeSettings.Find("Title"),new Rect(24,h-84,w-48,56));
             Place((RectTransform)homeSettings.Find("LanguageLabel"),new Rect(24,h-137,w-48,40));
@@ -129,11 +147,11 @@ namespace Tidebound.Unity.LevelDesign
         private void PresentHome()
         {
             if (!IsHomeOpen) return;
-            homeWallet.text = saveService?.IsAvailable == true ? "Coins: " + saveService.Coins : "Coins unavailable";
+            homeWallet.text = saveService?.IsAvailable == true ? saveService.Coins.ToString() : "—";
             var saved = saveService?.Snapshot.Attempt;
             homeContinue.GetComponentInChildren<Text>().text = saveService?.IsAvailable != true ? "Play practice" : saved != null ?
-                (saved.Victory ? "View result" : "Continue") + "\nLevel " + saved.LevelNumber :
-                "Start\nLevel " + (saveService?.CurrentLevel ?? 1);
+                (saved.Victory ? "View result" : "Continue") : "Start";
+            homeLevel.text="Level "+(saved?.LevelNumber ?? saveService?.CurrentLevel ?? 1);
             if(homeSettings.gameObject.activeSelf)
             {
                 homeSettings.Find("Hints").GetComponentInChildren<Text>().text="Auto hints: "+(autoHintsEnabled?"On":"Off");

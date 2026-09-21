@@ -35,6 +35,16 @@ namespace Tidebound.Unity.UI
             if(action!=null)b.onClick.AddListener(()=>action());
             var t=Label("Label",i.transform,text,16);Fill(t.rectTransform,6);return b;
         }
+        public static Button RaisedButton(string name,Transform parent,string text,Action action,bool primary=false)
+        {
+            var root=Rect(name,parent);var image=root.gameObject.AddComponent<HarborReliefImage>();image.Gold=primary;image.Radius=primary?36:22;image.Depth=primary?10:6;
+            if(primary)image.FaceTexture=Resources.Load<Texture2D>("TideboundUI/Home_GoldButton_Relief_v1");
+            var button=root.gameObject.AddComponent<Button>();button.targetGraphic=image;button.transition=Selectable.Transition.None;
+            button.navigation=new Navigation{mode=Navigation.Mode.Automatic};if(action!=null)button.onClick.AddListener(()=>action());
+            var content=Rect("Face",root);Fill(content);
+            var label=Label("Label",content,text,15);label.fontStyle=FontStyle.Bold;Fill(label.rectTransform,6);
+            var relief=root.gameObject.AddComponent<HarborButtonRelief>();relief.Content=content;return button;
+        }
         public static RawImage Art(string name,Transform parent,string asset)
         {
             var r=Rect(name,parent);var image=r.gameObject.AddComponent<RawImage>();image.texture=Resources.Load<Texture2D>("TideboundUI/"+asset);

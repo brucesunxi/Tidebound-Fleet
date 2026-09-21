@@ -103,5 +103,45 @@ namespace Tidebound.Tests
             }
             finally{UnityEngine.Object.Destroy(game.gameObject);}yield return null;
         }
+        [UnityTest]
+        public IEnumerator RaisedButtonsKeepHitTargetsAndNeverSpendOnPressOrCancel()
+        {
+            var store=Earned();var game=Create(store);
+            try
+            {
+                var root=game.transform.Find("HomeNavigation/HomeControls/Collection").GetComponent<RectTransform>();
+                var relief=root.GetComponent<HarborButtonRelief>();relief.AllowMotion=()=>true;
+                var corners=new Vector3[4];root.GetWorldCorners(corners);var before=(Vector3[])corners.Clone();
+                var writes=store.Writes;var coins=store.Data.Coins;
+                var pointer=new PointerEventData(EventSystem.current){button=PointerEventData.InputButton.Left};
+                ExecuteEvents.Execute(root.gameObject,pointer,ExecuteEvents.pointerDownHandler);
+                yield return new WaitForSecondsRealtime(.15f);
+                Assert.That(relief.PressAmount,Is.GreaterThan(.95f));root.GetWorldCorners(corners);Assert.That(corners,Is.EqualTo(before));
+                Assert.That(game.IsHomeOpen,Is.True);Assert.That(store.Data.Attempt,Is.Null);Assert.That(store.Writes,Is.EqualTo(writes));Assert.That(store.Data.Coins,Is.EqualTo(coins));
+                ExecuteEvents.Execute(root.gameObject,pointer,ExecuteEvents.pointerExitHandler);yield return new WaitForSecondsRealtime(.2f);
+                Assert.That(relief.PressAmount,Is.Zero);Assert.That(game.IsHomeOpen,Is.True);
+                // Disabled future features stay in full colour but cannot acquire a pressed state.
+                var future=game.transform.Find("HomeNavigation/HomeControls/Daily Gift");
+                ExecuteEvents.Execute(future.gameObject,pointer,ExecuteEvents.pointerDownHandler);yield return null;
+                Assert.That(future.GetComponent<HarborButtonRelief>().PressAmount,Is.Zero);
+            }
+            finally{UnityEngine.Object.Destroy(game.gameObject);}yield return null;
+        }
+        [UnityTest]
+        public IEnumerator ReducedMotionAndModalDisableResetButtonVisuals()
+        {
+            var game=Create(Earned());
+            try
+            {
+                var root=game.transform.Find("HomeNavigation/HomeControls/Collection");var relief=root.GetComponent<HarborButtonRelief>();
+                relief.AllowMotion=()=>false;yield return null;var icon=relief.FloatingIcon.anchoredPosition;
+                yield return new WaitForSecondsRealtime(.1f);Assert.That(relief.FloatingIcon.anchoredPosition,Is.EqualTo(icon));
+                var pointer=new PointerEventData(EventSystem.current){button=PointerEventData.InputButton.Left};
+                ExecuteEvents.Execute(root.gameObject,pointer,ExecuteEvents.pointerDownHandler);yield return null;Assert.That(relief.PressAmount,Is.EqualTo(1));
+                game.OpenCollection();Assert.That(root.gameObject.activeInHierarchy,Is.False);Assert.That(relief.PressAmount,Is.Zero);
+                game.CloseCollection();yield return null;Assert.That(relief.PressAmount,Is.Zero);Assert.That(relief.FloatingIcon.anchoredPosition,Is.EqualTo(icon));
+            }
+            finally{UnityEngine.Object.Destroy(game.gameObject);}yield return null;
+        }
     }
 }

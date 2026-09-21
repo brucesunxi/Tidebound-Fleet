@@ -5,6 +5,7 @@ using Tidebound.Unity.LevelDesign;
 using Tidebound.Unity.UI;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 namespace Tidebound.EditorTools
 {
@@ -34,6 +35,11 @@ namespace Tidebound.EditorTools
                 game.Initialize(catalog,saveService:service,campaign:true,useHomeNavigation:true);yield return null;yield return null;
                 var tag=locale+"_"+size.x+"x"+size.y;
                 yield return C2Frame("C2_Home_"+tag+".png");
+                var startButton=game.transform.Find("HomeNavigation/HomeControls/Continue").gameObject;
+                var pointer=new PointerEventData(EventSystem.current){button=PointerEventData.InputButton.Left};
+                ExecuteEvents.Execute(startButton,pointer,ExecuteEvents.pointerDownHandler);
+                yield return new WaitForSecondsRealtime(.15f);yield return C2Frame("C2_HomePressed_"+tag+".png");
+                ExecuteEvents.Execute(startButton,pointer,ExecuteEvents.pointerUpHandler);yield return new WaitForSecondsRealtime(.2f);
                 game.OpenCollection();yield return null;yield return C2Frame("C2_Collection_"+tag+".png");
                 game.CollectionView.OpenDraw();yield return null;yield return C2Frame("C2_Draw_"+tag+".png");
                 game.CollectionView.ShowOdds();yield return null;yield return C2Frame("C2_Odds_"+tag+".png");
