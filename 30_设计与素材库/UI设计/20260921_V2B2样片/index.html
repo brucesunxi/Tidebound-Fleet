@@ -1,0 +1,31 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Tidebound Fleet · B2 视觉样片</title><link rel="stylesheet" href="study.css"></head><body>
+<main class="phone" id="phone">
+ <div class="harbor" aria-hidden="true"></div>
+ <section class="screen home" id="home" aria-label="主页">
+  <header class="topbar"><button class="square" data-action="settings" aria-label="设置" data-icon="settings"></button><span class="wallet"><i data-icon="coin"></i>307</span><span class="wallet tickets"><i data-icon="ticket"></i>0</span></header>
+  <div class="side left"><button class="feature" data-action="collection"><i data-icon="book"></i><b>舰队图鉴</b></button><button class="feature violet" data-action="draw"><i data-icon="ticket"></i><b>皮肤抽奖</b></button><button class="feature" data-action="supply"><i data-icon="chest"></i><b>道具补给</b></button></div>
+  <div class="side right"><button class="feature future" data-action="future"><i data-icon="calendar"></i><b>每日奖励</b><small>后续开放</small></button><button class="feature future" data-action="future"><i data-icon="gift"></i><b>邀请有礼</b><small>后续开放</small></button><button class="feature future" data-action="future"><i data-icon="trophy"></i><b>排行榜</b><small>后续开放</small></button></div>
+  <div class="showcase"><div class="contact-shadow"></div><div class="ripples"><span></span><span></span></div><canvas id="home-boat" aria-label="可更换的三维展示船"></canvas></div>
+  <div class="ship-selector"><button data-action="previous" aria-label="上一款展示船">‹</button><div><b id="ship-name">海风旗舰</b><small>主页展示船</small></div><button data-action="nextship" aria-label="下一款展示船">›</button></div>
+  <button class="primary launch" data-action="play"><strong>继续挑战</strong><span>第 3 关</span></button>
+ </section>
+ <section class="screen game" id="game" aria-label="局内" hidden>
+  <header class="topbar"><button class="square" data-action="pause" aria-label="暂停">Ⅱ</button><span class="wallet"><i data-icon="coin"></i>307</span><b class="level-label">第 3 关</b></header>
+  <div class="boss"><span class="monster">〰</span><div><b>深海守卫</b><div class="hp"><span></span></div><small>800 / 800</small></div></div>
+  <div class="fleet-row"><i data-icon="anchor"></i><span>舰队集结区</span><i data-icon="anchor"></i></div>
+  <div class="board-frame"><canvas id="board" aria-label="第3关真实80艘船布局"></canvas></div>
+  <p class="deadlock" hidden>船只完全堵住了，试试道具吧</p>
+  <footer class="tools"><small>本次道具额度 <b>5 / 5</b></small><div><button data-action="tool"><i data-icon="rescue"></i><b>救援</b></button><button data-action="tool" id="shuffle"><i data-icon="shuffle"></i><b>洗牌</b></button><button data-action="tool"><i data-icon="flip"></i><b>反转</b></button></div></footer>
+ </section>
+ <section class="screen result" id="result" aria-label="结算" hidden>
+  <div class="victory"><small>第 <span id="completed-level">3</span> 关</small><h1>挑战成功</h1><p>乘风破浪，再进一步</p></div>
+  <div class="reward-coins"><i data-icon="coin"></i><strong>+180</strong><span>首通 100 · 战斗 80</span></div>
+  <div class="result-ship"><div class="contact-shadow"></div><canvas id="result-boat" aria-label="胜利展示船"></canvas></div>
+  <div class="reward-track"><div class="target-icon" data-icon="trail"></div><div class="target-copy"><small>下一份通关奖励</small><strong>晨光水纹</strong><span id="reward-distance">再过 2 关获得</span></div><div class="reward-progress"><span></span></div><div class="milestones"><b>✓ 起航</b><b>5关 · 拖尾</b><span>8关 · 展示船</span></div></div>
+  <div class="result-actions"><button class="secondary" data-action="home"><i data-icon="home"></i><span>主页</span></button><button class="primary" data-action="nextlevel"><strong>下一关</strong></button><button class="secondary" data-action="share"><i data-icon="share"></i><span>分享</span></button></div>
+ </section>
+ <div class="modal-backdrop" id="modal" hidden><section class="panel" role="dialog" aria-modal="true" aria-labelledby="modal-title"><header><h2 id="modal-title">舰队图鉴</h2><button data-action="close" aria-label="关闭">×</button></header><div id="modal-content"></div></section></div>
+ <div class="toast" id="toast" role="status" hidden></div>
+</main>
+<aside class="review"><div><b>B2 · 视觉样片</b><span>独立浏览器研究稿 · 不读写游戏存档</span></div><nav><button data-review="home">主页</button><button data-review="game">80船局内</button><button data-review="result">结算</button><button data-review="collection">四类图鉴</button><button data-review="ten">第10关边界</button><button data-review="deadlock">死局提示样式</button></nav><label>地区状态（仅评审模拟）<select id="region"><option value="unknown">未知</option><option value="china">中国地区</option><option value="other">其他地区</option></select></label><label><input id="motion" type="checkbox" checked>展示船轻摆</label><label><input id="waves" type="checkbox" checked>接触水纹</label><label><input id="next-available" type="checkbox">已配置下一关（流程示意）</label><p>5／8关奖励仅演示；主页船通过通关获取。局内为静态布局样片，交互规则继续以 Unity 为准。左右换船用于比较两款几何，不代表实际解锁。</p><a href="components.html">查看组件板 →</a></aside>
+<script src="level-layout.js"></script><script src="boat-renderer.js"></script><script src="study.js"></script></body></html>
