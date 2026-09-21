@@ -80,6 +80,10 @@ namespace Tidebound.EditorTools
 
         private static System.Collections.IEnumerator CaptureFrames(PortraitPuzzleGraybox game)
         {
+            if(Environment.GetEnvironmentVariable("TIDEBOUND_CAPTURE_C2_ONLY")=="1")
+            {
+                yield return CaptureC2Frames(game);stage=3;SessionState.SetInt(Key+".Stage",3);EditorApplication.ExitPlaymode();yield break;
+            }
             if(Environment.GetEnvironmentVariable("TIDEBOUND_CAPTURE_HOME_ONLY")=="1")
             {
                 yield return CaptureHomeFrames(game);stage=3;SessionState.SetInt(Key+".Stage",3);EditorApplication.ExitPlaymode();yield break;

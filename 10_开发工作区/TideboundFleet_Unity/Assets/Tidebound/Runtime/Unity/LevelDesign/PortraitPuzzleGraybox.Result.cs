@@ -2,6 +2,7 @@ using System;
 using Tidebound.Save;
 using UnityEngine;
 using UnityEngine.UI;
+using Tidebound.Unity.UI;
 
 namespace Tidebound.Unity.LevelDesign
 {
@@ -25,7 +26,7 @@ namespace Tidebound.Unity.LevelDesign
         private bool ResultOwnsInput => campaign && IsCleared;
         private void BuildResultControls(Transform parent)
         {
-            resultPanel=Panel("VictoryResult",parent,new Rect(),new Color(.025f,.055f,.08f,.97f));
+            resultPanel=Panel("VictoryResult",parent,new Rect(),HarborUI.Cream);
             resultPanel.GetComponent<Image>().raycastTarget=true;resultCanvas=resultPanel.gameObject.AddComponent<CanvasGroup>();
             resultView=resultPanel.gameObject.AddComponent<VictoryResultPanel>();
             resultView.Initialize(font,ContinueFromResult,()=>{if(homeNavigation)ReturnHome();else ToggleResultOverview();},RetryResultSave,()=>SetReducedResultMotion(!reducedResultMotion,true),homeNavigation);

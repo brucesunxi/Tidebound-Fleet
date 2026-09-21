@@ -28,7 +28,7 @@ namespace Tidebound.Unity.LevelDesign
         }
         private void BuildEntryControls(Transform parent)
         {
-            entryErrorPanel = Panel("EntrySaveError", parent, new Rect(), new Color(.025f, .055f, .08f, .97f));
+            entryErrorPanel = Panel("EntrySaveError", parent, new Rect(), Tidebound.Unity.UI.HarborUI.Cream);
             entryErrorPanel.GetComponent<Image>().raycastTarget = true;
             Label("Title", entryErrorPanel, "Unable to save this challenge", 22);
             Label("Explanation", entryErrorPanel, "Your progress and coins have not changed.\nRetry when storage is available.", 16);

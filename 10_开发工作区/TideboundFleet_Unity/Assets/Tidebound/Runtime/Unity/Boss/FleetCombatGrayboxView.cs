@@ -4,6 +4,7 @@ using Tidebound.Combat;
 using Tidebound.Core;
 using UnityEngine;
 using UnityEngine.UI;
+using Tidebound.Unity.UI;
 
 namespace Tidebound.Unity.Boss
 {
@@ -81,7 +82,7 @@ namespace Tidebound.Unity.Boss
         {
             var r=new GameObject(name,typeof(RectTransform)).GetComponent<RectTransform>();r.SetParent(parent,false);
             r.anchorMin=Vector2.zero;r.anchorMax=Vector2.one;r.offsetMin=r.offsetMax=Vector2.zero;
-            var text=r.gameObject.AddComponent<Text>();text.text=label;text.font=font;text.fontSize=size;
+            var text=r.gameObject.AddComponent<HarborText>();text.text=label;text.font=font;text.fontSize=size;
             text.alignment=TextAnchor.MiddleCenter;text.color=Color.white;text.raycastTarget=false;return text;
         }
         private static void Set(RectTransform r,Rect bounds)

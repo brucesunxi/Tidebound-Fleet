@@ -1,6 +1,7 @@
 using Tidebound.Tools;
 using UnityEngine;
 using UnityEngine.UI;
+using Tidebound.Unity.UI;
 
 namespace Tidebound.Unity.LevelDesign
 {
@@ -18,7 +19,7 @@ namespace Tidebound.Unity.LevelDesign
             var rect = new GameObject("DeadlockMessage", typeof(RectTransform)).GetComponent<RectTransform>();
             rect.SetParent(transform, false); rect.anchorMin = Vector2.zero; rect.anchorMax = Vector2.one;
             rect.offsetMin = new Vector2(12, 4); rect.offsetMax = new Vector2(-12, -4);
-            message = rect.gameObject.AddComponent<Text>(); message.font = font; message.fontSize = 17;
+            message = rect.gameObject.AddComponent<HarborText>(); message.font = font; message.fontSize = 17;
             message.color = Color.white; message.alignment = TextAnchor.MiddleCenter; message.raycastTarget = false;
         }
         public void Present(ToolInventory inventory, bool toolsEnabled, int usesLeft)

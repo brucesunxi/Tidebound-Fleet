@@ -111,8 +111,23 @@ namespace Tidebound.Tests
                 {
                     g.ApplyViewport(safe,1);Canvas.ForceUpdateCanvases();var root=(RectTransform)g.CollectionView.transform;
                     foreach(var b in root.GetComponentsInChildren<Button>())
-                    {var corners=new Vector3[4];((RectTransform)b.transform).GetWorldCorners(corners);Assert.That(corners[0].y,Is.GreaterThanOrEqualTo(safe.y-1),b.name);Assert.That(corners[2].y,Is.LessThanOrEqualTo(safe.yMax+1),b.name);}
-                    g.CollectionView.ShowOdds();yield return null;Back(g.CollectionView);
+                    {
+                        var rect=(RectTransform)b.transform;var scroll=b.GetComponentInParent<ScrollRect>();
+                        Assert.That(rect.rect.width,Is.GreaterThanOrEqualTo(48),b.name);Assert.That(rect.rect.height,Is.GreaterThanOrEqualTo(48),b.name);
+                        if(scroll!=null)
+                        {
+                            // C2 scrolls long content instead of shrinking targets below mobile minimums.
+                            Assert.That(scroll.viewport.GetComponent<RectMask2D>(),Is.Not.Null);
+                            Assert.That(rect.anchoredPosition.y,Is.GreaterThanOrEqualTo(0),b.name);
+                            Assert.That(rect.anchoredPosition.y+rect.rect.height,Is.LessThanOrEqualTo(scroll.content.rect.height+1),b.name);
+                        }
+                        else
+                        {var corners=new Vector3[4];rect.GetWorldCorners(corners);Assert.That(corners[0].y,Is.GreaterThanOrEqualTo(safe.y-1),b.name);Assert.That(corners[2].y,Is.LessThanOrEqualTo(safe.yMax+1),b.name);}
+                    }
+                    g.CollectionView.ShowOdds();yield return null;
+                    foreach(var b in root.Find("Transaction").GetComponentsInChildren<Button>())
+                    {var corners=new Vector3[4];((RectTransform)b.transform).GetWorldCorners(corners);Assert.That(corners[0].y,Is.GreaterThanOrEqualTo(safe.y-1));Assert.That(corners[2].y,Is.LessThanOrEqualTo(safe.yMax+1));}
+                    Back(g.CollectionView);
                 }
             }
             finally{UnityEngine.Object.Destroy(g.gameObject);}yield return null;

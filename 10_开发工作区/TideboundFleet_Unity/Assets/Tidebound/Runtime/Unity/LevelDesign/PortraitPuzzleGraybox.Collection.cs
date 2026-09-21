@@ -29,7 +29,7 @@ namespace Tidebound.Unity.LevelDesign
         }
         public void CloseCollection()
         {
-            if(IsHomeCollectionOpen){homeCollectionRoot.gameObject.SetActive(false);homeControls.gameObject.SetActive(true);PresentHome();return;}
+            if(IsHomeCollectionOpen){homeCollectionRoot.gameObject.SetActive(false);homeControls.gameObject.SetActive(true);PresentHome();Tidebound.Unity.UI.HarborUI.Focus(homeControls.Find("Collection").GetComponent<Button>());return;}
             if(!IsCollectionOpen)return;collectionPanel.gameObject.SetActive(false);
             if(collectionPauseOwned && IsPaused && SaveCheckpoint(true))movement.Resume();
             collectionPauseOwned=false;world.PresentationPause=false;NotifyUserActivity();SaveCheckpoint(true);UpdateLabels();

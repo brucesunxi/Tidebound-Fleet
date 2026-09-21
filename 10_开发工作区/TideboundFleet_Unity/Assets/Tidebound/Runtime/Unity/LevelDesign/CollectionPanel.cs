@@ -5,12 +5,23 @@ using Tidebound.Collection;
 using Tidebound.Save;
 using UnityEngine;
 using UnityEngine.UI;
+using Tidebound.Unity.UI;
 
 namespace Tidebound.Unity.LevelDesign
 {
     /// <summary>Graybox collection flow: browse, explicit purchase confirmation, durable reveal, next-attempt equipment.</summary>
     public sealed class CollectionPanel : MonoBehaviour
     {
+        private RectTransform content, viewport, categoryPanel;
+        private ScrollRect scroll;
+        private Text categoryTitle, categoryInfo;
+        private int category;
+        private bool drawMode;
+        private Action openShop;
+        private Rect lastSafe;
+        public int ActiveCategory => category;
+        public bool IsDrawPage => drawMode;
+        public void ConfigureNavigation(Action supplies) { openShop=supplies; }
         private PlayerSaveService service;private Font font;private CollectionShipPreview preview;
         private Text balance,details,message,filterLabel,transactionText;
         private Button equip,exchange,single,ten,free,confirm;
@@ -25,29 +36,52 @@ namespace Tidebound.Unity.LevelDesign
         public CollectionReceipt LastReceipt {get;private set;}
         public void Initialize(PlayerSaveService value,Font typeface,Action close)
         {
-            service=value;font=typeface;
-            Label("Title","FLEET COLLECTION  /  GRAYBOX",19);balance=Label("Balance","",14);
-            Label("EquipmentNote","5 slots - saved now, used on your NEXT attempt",12);
+            service=value;font=HarborUI.Font;
+            var surface=GetComponent<Image>();if(surface!=null)surface.color=HarborUI.Cream;
+            Label("Title","Fleet collection",21);var header=HarborUI.Surface("TitlePlate",transform,HarborUI.Wood);
+            header.raycastTarget=false;header.transform.SetAsFirstSibling();elements["Title"].GetComponent<Text>().color=HarborUI.Cream;
+            balance=Label("Balance","",14);
+            Label("EquipmentNote","5 slots - used on your NEXT attempt",12);
             for(var i=0;i<5;i++){var n=i;slots.Add(Button("Slot"+i,"",()=>TapSlot(n)));}
             filterLabel=Label("FilterSummary","",12);
             Button("Filter","Rarity >",()=>{filter=(filter+1)%6;page=0;Present();});
             Button("Source","Source >",()=>{sourceFilter=(sourceFilter+1)%3;page=0;Present();});
             for(var i=0;i<8;i++){var n=i;cards.Add(Button("Card"+i,"",()=>{var list=Visible();var index=page*8+n;if(index<list.Length)SelectSkin(list[index].Id);}));}
+            foreach(var card in cards)
+            {
+                var art=HarborUI.Rect("ShipCard",card.transform);art.gameObject.AddComponent<ShipCardGraphic>().raycastTarget=false;
+                HarborUI.Place(art,new Rect(25,49,46,64));
+                var text=card.GetComponentInChildren<Text>();text.fontSize=14;text.alignment=TextAnchor.LowerCenter;
+                text.rectTransform.offsetMin=new Vector2(3,6);text.rectTransform.offsetMax=new Vector2(-3,-70);
+            }
             Button("Page","More cards >",()=>{page=(page+1)%Math.Max(1,(Visible().Length+7)/8);Present();});
-            var previewRect=Make("Preview",transform);preview=previewRect.gameObject.AddComponent<CollectionShipPreview>();preview.Initialize();
+            var previewRect=Make("Preview",transform);preview=previewRect.gameObject.AddComponent<CollectionShipPreview>();preview.Initialize(true);
             Button("Rotate","Turn",preview.Rotate);Button("Fire","Fire",preview.Fire);
             details=Label("Details","",12);equip=Button("Equip","Equip",EquipSelected);exchange=Button("Exchange","Exchange",()=>SelectTransaction("Exchange",selected));
             single=Button("Single","",()=>SelectTransaction("Single"));ten=Button("Ten","",()=>SelectTransaction("Ten"));
             free=Button("Free","Claim free BLUE",()=>SelectTransaction("FirstBlue"));
-            Button("Odds","Rates / protection",ShowOdds);message=Label("Message","",12);Button("Close","Return",close);
-            transaction=Make("Transaction",transform);var shade=transaction.gameObject.AddComponent<Image>();shade.color=new Color(.025f,.055f,.08f,1);
-            transactionText=Label("TransactionText","",16,transaction);
+            Button("Odds","Rates / protection",ShowOdds);message=Label("Message","",12);Button("Close","×",close);
+            transaction=Make("Transaction",transform);var shade=transaction.gameObject.AddComponent<HarborImage>();shade.color=HarborUI.Cream;
+            transactionText=Label("TransactionText","",14,transaction);
             confirm=Button("Confirm","Confirm",ConfirmTransaction,transaction);
-            Button("Back","Back to collection",()=>{transaction.gameObject.SetActive(false);Present();},transaction);
+            Button("Back","Back to collection",()=>{transaction.gameObject.SetActive(false);Present();HarborUI.Focus(elements["Category0"].GetComponent<Button>());},transaction);
             transaction.gameObject.SetActive(false);selected=SkinCatalog.All[0].Id;
+            scroll=HarborUI.Scroll("CollectionScroll",transform,out content);viewport=(RectTransform)scroll.transform;
+            foreach(var name in new[]{"EquipmentNote","FilterSummary","Filter","Source","Page","Preview","Rotate","Fire","Details","Equip","Exchange","Single","Ten","Free","Odds"})elements[name].SetParent(content,false);
+            foreach(var b in slots.Concat(cards))b.transform.SetParent(content,false);
+            for(var i=0;i<4;i++){var n=i;Button("Category"+i,new[]{"Skins","Trails","Showcase","Scenes"}[i],()=>SelectCategory(n));}
+            Button("DrawTab","Draw",()=>OpenDraw());Button("SuppliesTab","Supplies",()=>{if(!HasConfirmation)openShop?.Invoke();});
+            categoryPanel=HarborUI.Rect("CategoryPlaceholder",content);
+            categoryTitle=HarborUI.Label("Title",categoryPanel,"",23);
+            categoryInfo=HarborUI.Label("Info",categoryPanel,"",16);
+            HarborUI.Art("CategoryArt",categoryPanel,"Icon_Collection_v1");
+            categoryPanel.gameObject.SetActive(false);
+            elements["Close"].GetComponent<Image>().color=new Color(.93f,.29f,.22f);
+            var closeLabel=elements["Close"].GetComponentInChildren<Text>();closeLabel.color=Color.white;closeLabel.fontSize=27;
+            transaction.SetAsLastSibling();
         }
         public void Open()
-        {gameObject.SetActive(true);transaction.gameObject.SetActive(false);replaceId=null;page=0;LastResult=null;message.text="New skins are never equipped automatically.";Present();}
+        {gameObject.SetActive(true);transaction.gameObject.SetActive(false);replaceId=null;page=0;LastResult=null;drawMode=service?.CanClaimFirstBlue==true;category=0;message.text="New skins are never equipped automatically.";RefreshPage();Present();HarborUI.Focus(elements["Category0"].GetComponent<Button>());}
         private SkinDefinition[] Visible()=>SkinCatalog.All.Where(s=>(filter==0 || (int)s.Rarity==filter-1) && (sourceFilter==0 || sourceFilter==1 && s.IsDefault || sourceFilter==2 && !s.IsDefault)).ToArray();
         public static string ShortName(string id)
         {var s=SkinCatalog.Find(id);return s==null?"Empty":s.IsDefault?"Default":"CBPGR"[(int)s.Rarity]+"-"+id.Substring(id.Length-2);}
@@ -84,7 +118,7 @@ namespace Tidebound.Unity.LevelDesign
             transactionText.text=kind=="FirstBlue" ? "FREE BLUE GIFT\n\nOne unowned blue skin.\nNo coins charged.\nSeparate gift: normal pity counters unchanged.\n\nEquip it after claiming if you wish." :
                 kind=="Exchange" ? "EXCHANGE\n\n"+ShortName(skin)+"\nCost: "+CollectionRules.ExchangeTickets(SkinCatalog.Find(skin).Rarity)+" tickets\n\nNo automatic equipment change." :
                 (kind=="Ten"?"TEN DRAWS":"SINGLE DRAW")+"\n\nCost: "+price+" coins\n"+(kind=="Ten"?"Full batch price locked before drawing.\nAt least one purple or higher.":"")+"\n\nDuplicates become tickets.\nResults are saved before they appear.";
-            confirm.GetComponentInChildren<Text>().text="Confirm";
+            confirm.GetComponentInChildren<Text>().text="Confirm";HarborUI.Focus(confirm);
         }
         public void ConfirmTransaction()
         {
@@ -114,10 +148,12 @@ namespace Tidebound.Unity.LevelDesign
             filterLabel.text=(filter==0?"All rarities":((SkinRarity)(filter-1)).ToString())+" / "+new[]{"All sources","Default","Draw / exchange"}[sourceFilter];
             for(var i=0;i<8;i++)
             {
-                var index=page*8+i;cards[i].gameObject.SetActive(index<list.Length);if(index>=list.Length)continue;
+                var index=page*8+i;cards[i].gameObject.SetActive(category==0 && !drawMode && index<list.Length);if(index>=list.Length)continue;
                 var s=list[index];var owns=d.OwnedIds.Contains(s.Id);var slot=Array.IndexOf(d.Equipment,s.Id);
+                var tint=new[]{new Color(.58f,.76f,.80f),new Color(.22f,.62f,.90f),new Color(.66f,.45f,.85f),HarborUI.Gold,new Color(.94f,.39f,.32f)}[(int)s.Rarity];
+                cards[i].GetComponentInChildren<ShipCardGraphic>().color=owns?tint:new Color(.30f,.42f,.48f);
                 cards[i].GetComponentInChildren<Text>().text=ShortName(s.Id)+"\n"+(slot>=0?"Slot "+(slot+1):owns?"Owned":"Locked");
-                cards[i].GetComponent<Image>().color=s.Id==selected?new Color(.18f,.45f,.53f):owns?new Color(.13f,.27f,.35f):new Color(.08f,.13f,.18f);
+                cards[i].GetComponent<Image>().color=s.Id==selected?HarborUI.Gold:owns?HarborUI.Aqua:new Color(.83f,.87f,.88f);
             }
             var definition=SkinCatalog.Find(selected);var owned=d.OwnedIds.Contains(selected);var equipped=Array.IndexOf(d.Equipment,selected)>=0;
             preview.Present(Math.Max(0,Array.IndexOf(d.Equipment,selected)),owned);
@@ -132,34 +168,92 @@ namespace Tidebound.Unity.LevelDesign
             single.interactable=available && !service.CanClaimFirstBlue;ten.interactable=single.interactable && service.CurrentLevel>=4;
             free.interactable=available && service.CanClaimFirstBlue;free.GetComponentInChildren<Text>().text=service.CanClaimFirstBlue?"Claim FREE blue":"Free blue claimed";
             elements["Page"].GetComponentInChildren<Text>().text="Page "+(page+1)+" / "+Math.Max(1,(list.Length+7)/8)+"  >";
-            elements["EquipmentNote"].GetComponent<Text>().text="NEXT attempt only  |  U "+u+"  |  "+(u<12?(next-u)+" to next price":"Final price tier");
+            elements["EquipmentNote"].GetComponent<Text>().text="NEXT attempt only  |  "+u+" collected  |  "+(u<12?(next-u)+" to next price":"Final price tier");
             elements["Odds"].GetComponentInChildren<Text>().text="Rates / pity  G "+d.GoldDry+"/20  R "+d.RedDry+"/60";
+        }
+        public void OpenDraw()
+        {
+            if(HasConfirmation)return;
+            drawMode=true;category=0;RefreshPage();Present();
+        }
+        public void SelectCategory(int value)
+        {
+            if(HasConfirmation || value<0 || value>3)return;
+            category=value;drawMode=false;RefreshPage();Present();
+        }
+        private void RefreshPage()
+        {
+            foreach(var pair in elements.Where(e=>e.Value.parent==content))pair.Value.gameObject.SetActive(false);
+            categoryPanel.gameObject.SetActive(category!=0);
+            if(category!=0)
+            {
+                categoryTitle.text=new[]{"","Sailing trails","Home showcase","Harbor backgrounds"}[category];
+                categoryInfo.text="Earn through level clears.\n\nThe unlock catalog is being prepared.\nYour current appearance stays unchanged.";
+            }
+            else
+            {
+                var names=drawMode ? new[]{"Preview","Details","Single","Ten","Free","Odds"} :
+                    new[]{"EquipmentNote","FilterSummary","Filter","Source","Page","Preview","Rotate","Details","Equip","Exchange","Free"};
+                foreach(var name in names)elements[name].gameObject.SetActive(true);
+                foreach(var b in slots.Concat(cards))b.gameObject.SetActive(!drawMode);
+            }
+            elements["Title"].GetComponent<Text>().text=drawMode?"Ship draw":"Fleet collection";
+            scroll.verticalNormalizedPosition=1;
+            if(lastSafe.width>0)Layout(lastSafe);
         }
         public void Layout(Rect safe)
         {
-            Place((RectTransform)transform,safe);var w=safe.width;var top=safe.height;
-            At("Title",12,top-42,w-24,32);At("Balance",8,top-73,w-16,28);At("EquipmentNote",8,top-97,w-16,22);
-            for(var i=0;i<5;i++)At("Slot"+i,12+i*(w-24)/5,top-151,(w-34)/5,48);
-            At("Filter",12,top-195,92,38);At("Source",w-104,top-195,92,38);At("FilterSummary",106,top-195,w-212,38);
-            for(var i=0;i<8;i++)At("Card"+i,12+i%4*(w-24)/4,top-259-i/4*60,(w-36)/4,54);
-            At("Page",12,top-355,w-24,32);At("Preview",12,top-429,76,76);At("Rotate",12,top-454,36,23);At("Fire",52,top-454,36,23);At("Details",98,top-451,w-110,90);
-            At("Equip",12,top-499,(w-30)/2,42);At("Exchange",18+(w-30)/2,top-499,(w-30)/2,42);
-            At("Single",12,top-547,(w-30)/2,42);At("Ten",18+(w-30)/2,top-547,(w-30)/2,42);
-            At("Free",12,top-591,w-24,38);At("Odds",12,top-631,w-24,36);
-            At("Message",12,48,w-24,28);At("Close",12,6,w-24,38);
-            var scale=Mathf.Min(1,(top-84)/631);
-            foreach(var item in elements.Where(e=>e.Value.parent==transform && e.Key!="Message" && e.Key!="Close" && e.Key!="Transaction"))
-            {var r=item.Value;Place(r,new Rect(r.anchoredPosition.x,top+(r.anchoredPosition.y-top)*scale,r.sizeDelta.x,r.sizeDelta.y*scale));}
-            Place(transaction,new Rect(0,0,w,top));Place((RectTransform)transactionText.transform,new Rect(16,132,w-32,top-154));
-            At("Confirm",16,74,w-32,46);At("Back",16,18,w-32,46);
+            lastSafe=safe;safe=new Rect(safe.x+8,safe.y+8,safe.width-16,safe.height-16);Place((RectTransform)transform,safe);var w=safe.width;var h=safe.height;
+            Place((RectTransform)transform.Find("TitlePlate"),new Rect(12,h-67,w-84,58));
+            At("Title",16,h-61,w-88,48);At("Close",w-66,h-61,52,48);
+            At("Balance",12,h-103,w-24,36);
+            for(var i=0;i<4;i++)At("Category"+i,12+i*(w-24)/4,h-161,(w-30)/4,50);
+            Place(viewport,new Rect(12,132,w-24,h-305));
+            var cw=w-24;var ch=category!=0?480:drawMode?580:1044;
+            content.sizeDelta=new Vector2(cw,ch);content.anchoredPosition=Vector2.zero;
+            if(category!=0)
+            {
+                Place(categoryPanel,new Rect(0,0,cw,ch));
+                Place(categoryTitle.rectTransform,new Rect(12,ch-74,cw-24,60));
+                Place((RectTransform)categoryPanel.Find("CategoryArt"),new Rect((cw-150)/2,ch-244,150,150));
+                Place(categoryInfo.rectTransform,new Rect(16,ch-420,cw-32,160));
+            }
+            else if(drawMode)
+            {
+                At("Preview",(cw-190)/2,ch-200,190,190);At("Details",12,ch-360,cw-24,152);
+                At("Single",6,ch-424,(cw-18)/2,54);At("Ten",12+(cw-18)/2,ch-424,(cw-18)/2,54);
+                At("Free",6,ch-486,cw-12,52);At("Odds",6,ch-548,cw-12,52);
+                if(service?.CanClaimFirstBlue==true)
+                {
+                    At("Free",6,ch-60,cw-12,52);At("Preview",(cw-190)/2,ch-266,190,190);
+                    At("Details",12,ch-430,cw-24,152);At("Single",6,ch-492,(cw-18)/2,54);At("Ten",12+(cw-18)/2,ch-492,(cw-18)/2,54);
+                }
+            }
+            else
+            {
+                At("EquipmentNote",4,ch-36,cw-8,32);
+                for(var i=0;i<5;i++)At("Slot"+i,4+i*(cw-8)/5,ch-96,(cw-18)/5,54);
+                At("Filter",4,ch-154,(cw-14)/2,48);At("Source",10+(cw-14)/2,ch-154,(cw-14)/2,48);
+                At("FilterSummary",4,ch-190,cw-8,30);
+                for(var i=0;i<8;i++)At("Card"+i,4+i%3*(cw-8)/3,ch-320-i/3*130,(cw-20)/3,122);
+                At("Page",4,ch-636,cw-8,48);
+                At("Preview",4,ch-750,100,100);At("Details",112,ch-800,cw-116,154);
+                At("Rotate",4,ch-860,100,48);At("Equip",112,ch-860,cw-116,48);
+                At("Exchange",4,ch-918,cw-8,50);At("Free",4,ch-976,cw-8,50);
+            }
+            At("Message",14,68,w-28,56);At("DrawTab",14,10,(w-34)/2,52);At("SuppliesTab",20+(w-34)/2,10,(w-34)/2,52);
+            Place(transaction,new Rect(0,0,w,h));Place(transactionText.rectTransform,new Rect(18,150,w-36,h-172));
+            At("Confirm",16,82,w-32,52);At("Back",16,18,w-32,52);
+            for(var i=0;i<4;i++)elements["Category"+i].GetComponent<Image>().color=category==i&&!drawMode?HarborUI.Gold:HarborUI.Aqua;
+            elements["DrawTab"].GetComponent<Image>().color=drawMode?HarborUI.Gold:HarborUI.Aqua;
         }
         private void At(string name,float x,float y,float w,float h)=>Place(elements[name],new Rect(x,y,w,h));
         private RectTransform Make(string name,Transform parent)
         {var r=new GameObject(name,typeof(RectTransform)).GetComponent<RectTransform>();r.SetParent(parent,false);r.anchorMin=r.anchorMax=r.pivot=Vector2.zero;elements[name]=r;return r;}
         private Text Label(string name,string value,int size,Transform parent=null)
-        {var r=Make(name,parent??transform);var t=r.gameObject.AddComponent<Text>();t.font=font;t.fontSize=size;t.text=value;t.color=Color.white;t.alignment=TextAnchor.MiddleCenter;t.raycastTarget=false;return t;}
+        {var r=Make(name,parent??transform);var t=r.gameObject.AddComponent<HarborText>();t.font=font;t.fontSize=Math.Max(14,size);t.text=value;t.color=HarborUI.Ink;t.alignment=TextAnchor.MiddleCenter;t.raycastTarget=false;return t;}
         private Button Button(string name,string value,Action action,Transform parent=null)
-        {var r=Make(name,parent??transform);var image=r.gameObject.AddComponent<Image>();image.color=new Color(.13f,.27f,.35f);var b=r.gameObject.AddComponent<Button>();b.targetGraphic=image;b.onClick.AddListener(()=>action());var t=Label(name+"Label",value,13,r);t.rectTransform.anchorMax=Vector2.one;t.rectTransform.offsetMin=t.rectTransform.offsetMax=Vector2.zero;return b;}
+        {var r=Make(name,parent??transform);var image=r.gameObject.AddComponent<HarborImage>();image.color=HarborUI.Aqua;var b=r.gameObject.AddComponent<Button>();b.targetGraphic=image;b.onClick.AddListener(()=>action());var t=Label(name+"Label",value,13,r);t.rectTransform.anchorMax=Vector2.one;t.rectTransform.offsetMin=new Vector2(5,3);t.rectTransform.offsetMax=new Vector2(-5,-3);return b;}
         private static void Place(RectTransform r,Rect rect){r.anchoredPosition=rect.position;r.sizeDelta=rect.size;}
     }
 }

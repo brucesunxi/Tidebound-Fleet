@@ -21,6 +21,7 @@ using Tidebound.Unity.Ship;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Tidebound.Unity.UI;
 
 namespace Tidebound.Unity.LevelDesign
 {
@@ -136,7 +137,7 @@ namespace Tidebound.Unity.LevelDesign
             movementTiming = timing ?? new ShipMovementTiming();
             transitTiming = laneTiming ?? new LaneTransitTiming();
             this.combatTiming = combatTiming ?? new CombatTiming();
-            font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            font = HarborUI.Font;
             initialized = true;
             if(homeNavigation){BuildHome();return;}
             var saved=saveService?.Snapshot.Attempt;
@@ -273,7 +274,7 @@ namespace Tidebound.Unity.LevelDesign
         }
         public void CloseAcquisition()
         {
-            if(IsHomeShopOpen){homeShopRoot.gameObject.SetActive(false);homeControls.gameObject.SetActive(true);PresentHome();return;}
+            if(IsHomeShopOpen){homeShopRoot.gameObject.SetActive(false);homeControls.gameObject.SetActive(true);PresentHome();HarborUI.Focus(homeControls.Find("Supplies").GetComponent<Button>());return;}
             if(acquisitionPanel==null)return;
             acquisitionPanel.gameObject.SetActive(false);
             if(acquisitionPauseOwned && IsPaused && SaveCheckpoint(true))movement.Resume();
@@ -455,14 +456,14 @@ namespace Tidebound.Unity.LevelDesign
             var canvasRect = Rect("GrayboxControls", presentation.transform);
             overlay = canvasRect.gameObject.AddComponent<Canvas>(); overlay.renderMode = RenderMode.ScreenSpaceOverlay; overlay.sortingOrder = 10;
             canvasRect.gameObject.AddComponent<GraphicRaycaster>();
-            topPanel = Panel("Top", canvasRect, new Rect(), new Color(.055f,.12f,.18f));
-            toolsPanel = Panel("Tools", canvasRect, new Rect(), new Color(.055f,.12f,.18f));
+            topPanel = Panel("Top", canvasRect, new Rect(), HarborUI.Cream);
+            toolsPanel = Panel("Tools", canvasRect, new Rect(), HarborUI.Cream);
             Button("Menu",topPanel,"Menu",ToggleMenu);
             Button("Next",topPanel,">",() => SelectLevel((LevelIndex+1)%catalog.Count));
             pause = Button("Pause",topPanel,"Pause",TogglePause);
             title = Label("Title",topPanel,"",19);
             wallet=Label("Wallet",topPanel,"",12);
-            battlePanel = Panel("Battle",topPanel,new Rect(),new Color(.055f,.12f,.18f));
+            battlePanel = Panel("Battle",topPanel,new Rect(),HarborUI.Cream);
             combatView = battlePanel.gameObject.AddComponent<FleetCombatGrayboxView>();
             combatView.Initialize(session,combat,font);
             Button("Restart",toolsPanel,"Restart",Restart);
@@ -474,7 +475,7 @@ namespace Tidebound.Unity.LevelDesign
             reverseButton=Button("Reverse",toolsPanel,"",()=>SelectTool(ShipTool.Reverse));
             foreach(var name in new[]{"Restart","Hint","Auto"})toolsPanel.Find(name).gameObject.SetActive(!tools.Enabled);
             foreach(var button in new[]{rescueButton,shuffleButton,reverseButton})button.gameObject.SetActive(tools.Enabled);
-            menuPanel=Panel("PrototypeMenu",canvasRect,new Rect(),new Color(.025f,.055f,.08f,.97f));
+            menuPanel=Panel("PrototypeMenu",canvasRect,new Rect(),HarborUI.Cream);
             menuPanel.GetComponent<Image>().raycastTarget=true;
             Label("MenuTitle",menuPanel,"Prototype controls",20);
             Button("Previous",menuPanel,"Previous",()=>{CloseMenu();SelectLevel((LevelIndex+catalog.Count-1)%catalog.Count);});
@@ -490,7 +491,7 @@ namespace Tidebound.Unity.LevelDesign
                 menuPanel.Find("Previous").gameObject.SetActive(false);menuPanel.Find("Next").gameObject.SetActive(false);
             }
             menuPanel.gameObject.SetActive(false);
-            acquisitionPanel=Panel("ToolAcquisition",canvasRect,new Rect(),new Color(.025f,.055f,.08f,.97f));
+            acquisitionPanel=Panel("ToolAcquisition",canvasRect,new Rect(),HarborUI.Cream);
             acquisitionPanel.GetComponent<Image>().raycastTarget=true;
             shopPanel=acquisitionPanel.gameObject.AddComponent<CoinShopPanel>();
             shopPanel.Initialize(saveService,toolInventory,CoinShopCatalogReader.LoadDefault(),font,CloseAcquisition,()=>tools.UsesLeft);
@@ -601,12 +602,12 @@ namespace Tidebound.Unity.LevelDesign
         }
         private Text Label(string name, Transform parent, string value, int size)
         {
-            var r=Rect(name,parent); var t=r.gameObject.AddComponent<Text>(); t.font=font; t.fontSize=size; t.text=value;
-            t.alignment=TextAnchor.MiddleCenter; t.color=Color.white; t.raycastTarget=false; return t;
+            var r=Rect(name,parent); var t=r.gameObject.AddComponent<HarborText>(); t.font=font; t.fontSize=size; t.text=value;
+            t.alignment=TextAnchor.MiddleCenter; t.color=HarborUI.Ink; t.raycastTarget=false; return t;
         }
         private Button Button(string name, Transform parent, string label, Action clicked)
         {
-            var r=Panel(name,parent,new Rect(),new Color(.13f,.27f,.35f)); var image=r.GetComponent<Image>(); image.raycastTarget=true;
+            var image=HarborUI.Surface(name,parent,HarborUI.Aqua);var r=image.rectTransform;image.raycastTarget=true;
             var b=r.gameObject.AddComponent<Button>(); b.targetGraphic=image;
             if (clicked!=null) b.onClick.AddListener(() => { NotifyUserActivity(); clicked(); });
             var text=Label("Label",r,label,14); text.rectTransform.anchorMax=Vector2.one;

@@ -5,12 +5,15 @@ using Tidebound.Tools;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Tidebound.Unity.UI;
 
 namespace Tidebound.Unity.LevelDesign
 {
     public sealed partial class PortraitPuzzleGraybox
     {
         private bool homeNavigation, homePauseOwned, homeDispatch;
+        private RawImage homeBackdrop;
+        private CollectionShipPreview showcase;
         private Canvas homeCanvas;
         private Vector2Int homeScreen;
         private Rect homeSafe;
@@ -31,43 +34,57 @@ namespace Tidebound.Unity.LevelDesign
             homeCanvas.renderMode = RenderMode.ScreenSpaceOverlay; homeCanvas.sortingOrder = 30;
             homeRoot.gameObject.AddComponent<GraphicRaycaster>();
             var backdrop = Panel("Sea", homeRoot, new Rect(), new Color(.08f, .39f, .48f));
-            backdrop.anchorMax = Vector2.one; backdrop.offsetMin = backdrop.offsetMax = Vector2.zero;
-            backdrop.GetComponent<Image>().raycastTarget = true;
-            homeControls = Rect("HomeControls", homeRoot);
-            Button("Settings", homeControls, "Settings", () => homeSettings.gameObject.SetActive(true));
-            homeWallet = Label("Coins", homeControls, "", 20);
-            Button("Collection", homeControls, "Collection", OpenCollection);
-            Button("SkinDraw", homeControls, "Skin Draw", OpenCollection);
-            Button("Supplies", homeControls, "Supplies", OpenShop);
-            foreach (var label in new[] { "Daily Gift", "Invite", "Rankings" })
-                Button(label, homeControls, label + "\nSoon", null).interactable = false;
-            // A reused preview keeps navigation playable; final showcase art and categories arrive in C2/D1.
-            Rect("ShowcasePreview", homeControls).gameObject.AddComponent<CollectionShipPreview>().Initialize();
-            homeContinue = Button("Continue", homeControls, "", ContinueFromHome);
-            homeNotice = Label("Notice", homeControls, "", 15);
-            homeSettings = Panel("HomeSettings", homeRoot, new Rect(), new Color(.025f, .055f, .08f, 1));
-            homeSettings.GetComponent<Image>().raycastTarget = true;
-            Label("Title", homeSettings, "Settings", 24);
-            Button("Hints", homeSettings, "Toggle auto hints", () => SetAssistancePreferences(!autoHintsEnabled, reducedHintMotion, true));
-            Button("Motion", homeSettings, "Toggle reduced motion", () =>
+            backdrop.anchorMax=Vector2.one;backdrop.offsetMin=backdrop.offsetMax=Vector2.zero;backdrop.GetComponent<Image>().raycastTarget=true;
+            homeBackdrop=HarborUI.Art("Harbor",homeRoot,"Harbor_Background_v1");HarborUI.Fill(homeBackdrop.rectTransform);
+            homeControls=Rect("HomeControls",homeRoot);
+            HarborUI.Button("Settings",homeControls,"Settings",()=>{homeSettings.gameObject.SetActive(true);HarborUI.Focus(homeSettings.Find("LanguageAuto").GetComponent<Button>());});
+            var walletSurface=HarborUI.Surface("WalletSurface",homeControls,HarborUI.Cream);walletSurface.raycastTarget=false;
+            homeWallet=HarborUI.Label("Coins",homeControls,"",20);
+            HarborUI.Button("Collection",homeControls,"Collection",OpenCollection);
+            HarborUI.Button("SkinDraw",homeControls,"Skin Draw",OpenHomeDraw);
+            HarborUI.Button("Supplies",homeControls,"Supplies",OpenShop);
+            foreach(var label in new[]{"Daily Gift","Invite","Rankings"})HarborUI.Button(label,homeControls,label+"\nSoon",null).interactable=false;
+            var names=new[]{"Collection","SkinDraw","Supplies","Daily Gift","Invite","Rankings"};
+            var icons=new[]{"Collection","SkinDraw","Supplies","DailyGift","Invite","Rankings"};
+            for(var i=0;i<names.Length;i++)
             {
-                var reduced = !reducedEntryMotion;
-                SetReducedEntryMotion(reduced, true); SetReducedResultMotion(reduced, true);
-                SetAssistancePreferences(autoHintsEnabled, reduced, true);
+                var button=homeControls.Find(names[i]);var icon=HarborUI.Art("Icon",button,"Icon_"+icons[i]+"_v1");
+                HarborUI.Place(icon.rectTransform,new Rect(10,36,56,56));
+                var label=button.GetComponentInChildren<Text>().rectTransform;label.anchorMin=label.anchorMax=label.pivot=Vector2.zero;
+                HarborUI.Place(label,new Rect(2,2,72,38));button.GetComponentInChildren<Text>().fontSize=12;
+            }
+            showcase=Rect("ShowcasePreview",homeControls).gameObject.AddComponent<CollectionShipPreview>();showcase.Initialize(true);
+            showcase.AllowMotion=()=>!reducedEntryMotion && !homeSettings.gameObject.activeSelf && Application.isFocused;
+            homeContinue=HarborUI.Button("Continue",homeControls,"",ContinueFromHome,true);
+            homeContinue.GetComponentInChildren<Text>().fontSize=21;
+            homeContinue.GetComponentInChildren<Text>().rectTransform.offsetMin=new Vector2(6,3);homeContinue.GetComponentInChildren<Text>().rectTransform.offsetMax=new Vector2(-6,-3);
+            homeNotice=HarborUI.Label("Notice",homeControls,"",14);
+            homeSettings=HarborUI.Surface("HomeSettings",homeRoot,HarborUI.Cream).rectTransform;
+            HarborUI.Label("Title",homeSettings,"Settings",26);
+            HarborUI.Label("LanguageLabel",homeSettings,"Language",18);
+            HarborUI.Button("LanguageAuto",homeSettings,"Automatic",()=>UILanguage.SetPreference(LanguagePreference.Auto));
+            HarborUI.Button("LanguageEnglish",homeSettings,"English",()=>UILanguage.SetPreference(LanguagePreference.English));
+            HarborUI.Button("LanguageChinese",homeSettings,"Chinese",()=>UILanguage.SetPreference(LanguagePreference.Chinese));
+            HarborUI.Button("Hints",homeSettings,"",()=>SetAssistancePreferences(!autoHintsEnabled,reducedHintMotion,true));
+            HarborUI.Button("Motion",homeSettings,"",()=>
+            {
+                var reduced=!reducedEntryMotion;SetReducedEntryMotion(reduced,true);SetReducedResultMotion(reduced,true);
+                SetAssistancePreferences(autoHintsEnabled,reduced,true);
             });
-            Button("Close", homeSettings, "Back", () => homeSettings.gameObject.SetActive(false));
+            HarborUI.Button("Close",homeSettings,"Back",()=>{homeSettings.gameObject.SetActive(false);HarborUI.Focus(homeControls.Find("Settings").GetComponent<Button>());});
             homeSettings.gameObject.SetActive(false);
-            homeCollectionRoot = Panel("HomeCollection", homeRoot, new Rect(), new Color(.025f, .055f, .08f, 1));
+            homeCollectionRoot = HarborUI.Surface("HomeCollection",homeRoot,HarborUI.Cream).rectTransform;
             homeCollectionRoot.GetComponent<Image>().raycastTarget = true;
             homeCollection = homeCollectionRoot.gameObject.AddComponent<CollectionPanel>();
-            homeCollection.Initialize(saveService, font, CloseCollection); homeCollectionRoot.gameObject.SetActive(false);
+            homeCollection.Initialize(saveService, font, CloseCollection);
+            homeCollection.ConfigureNavigation(()=>{CloseCollection();OpenHomeShop();}); homeCollectionRoot.gameObject.SetActive(false);
             // Inactive previews must not render into another preview's private layer.
             homeControls.Find("ShowcasePreview").gameObject.SetActive(true);
-            homeShopRoot = Panel("HomeSupplies", homeRoot, new Rect(), new Color(.025f, .055f, .08f, 1));
+            homeShopRoot = HarborUI.Surface("HomeSupplies",homeRoot,HarborUI.Cream).rectTransform;
             homeShopRoot.GetComponent<Image>().raycastTarget = true;
             homeShop = homeShopRoot.gameObject.AddComponent<CoinShopPanel>();
             homeShop.Initialize(saveService, toolInventory, CoinShopCatalogReader.LoadDefault(), font, CloseAcquisition);
-            homeShopRoot.Find("CloseShop").GetComponentInChildren<Text>().text = "Back to home";
+            homeShop.ConfigureNavigation(()=>{CloseAcquisition();OpenHomeCollection();},()=>{CloseAcquisition();OpenHomeDraw();});
             homeShopRoot.gameObject.SetActive(false);
             if (FindObjectOfType<EventSystem>() == null)
                 new GameObject("NavigationEventSystem", typeof(EventSystem), typeof(StandaloneInputModule)).transform.SetParent(transform, false);
@@ -81,24 +98,32 @@ namespace Tidebound.Unity.LevelDesign
             homeCanvas.scaleFactor = Mathf.Max(1, Screen.width) / 390f;
             var safe = new Rect(Screen.safeArea.position / homeCanvas.scaleFactor, Screen.safeArea.size / homeCanvas.scaleFactor);
             Place(homeControls, safe); var w = safe.width; var h = safe.height;
-            Place((RectTransform)homeControls.Find("Settings"), new Rect(12, h - 64, 82, 48));
-            Place(homeWallet.rectTransform, new Rect(106, h - 64, w - 118, 48));
-            var left = new[] { "Collection", "SkinDraw", "Supplies" };
-            var right = new[] { "Daily Gift", "Invite", "Rankings" };
-            for (var i = 0; i < 3; i++)
+            var texture=homeBackdrop.texture;
+            if(texture!=null)
             {
-                Place((RectTransform)homeControls.Find(left[i]), new Rect(12, h * .62f - i * 84, 86, 68));
-                Place((RectTransform)homeControls.Find(right[i]), new Rect(w - 98, h * .62f - i * 84, 86, 68));
+                var screenAspect=(float)Screen.width/Mathf.Max(1,Screen.height);var textureAspect=(float)texture.width/texture.height;
+                var u=Mathf.Min(1,screenAspect/textureAspect);var v=Mathf.Min(1,textureAspect/screenAspect);
+                homeBackdrop.uvRect=new Rect((1-u)/2,(1-v)/2,u,v);
             }
-            var size = Mathf.Min(180, w - 204);
-            Place((RectTransform)homeControls.Find("ShowcasePreview"), new Rect((w - size) / 2, h * .44f, size, size));
-            Place(homeNotice.rectTransform, new Rect(20, 142, w - 40, 72));
-            Place((RectTransform)homeContinue.transform, new Rect(32, 52, w - 64, 76));
-            Place(homeSettings, safe);
-            Place((RectTransform)homeSettings.Find("Title"), new Rect(20, h / 2 + 110, w - 40, 44));
-            var names = new[] { "Hints", "Motion", "Close" };
-            for (var i = 0; i < names.Length; i++)
-                Place((RectTransform)homeSettings.Find(names[i]), new Rect(24, h / 2 + 40 - 64 * i, w - 48, 48));
+            Place((RectTransform)homeControls.Find("Settings"),new Rect(12,h-64,82,48));
+            Place((RectTransform)homeControls.Find("WalletSurface"),new Rect(112,h-64,Mathf.Min(160,w-124),48));
+            Place(homeWallet.rectTransform,new Rect(112,h-64,Mathf.Min(160,w-124),48));
+            var left=new[]{"Collection","SkinDraw","Supplies"};var right=new[]{"Daily Gift","Invite","Rankings"};
+            var y=Mathf.Min(h-180,h*.67f);
+            for(var i=0;i<3;i++)
+            {
+                Place((RectTransform)homeControls.Find(left[i]),new Rect(12,y-i*102,76,94));
+                Place((RectTransform)homeControls.Find(right[i]),new Rect(w-88,y-i*102,76,94));
+            }
+            var size=Mathf.Min(250,w-142);
+            Place((RectTransform)homeControls.Find("ShowcasePreview"),new Rect((w-size)/2,h*.39f,size,size));
+            Place(homeNotice.rectTransform,new Rect(28,130,w-56,54));
+            Place((RectTransform)homeContinue.transform,new Rect(40,44,w-80,72));
+            Place(homeSettings,safe);
+            Place((RectTransform)homeSettings.Find("Title"),new Rect(24,h-84,w-48,56));
+            Place((RectTransform)homeSettings.Find("LanguageLabel"),new Rect(24,h-137,w-48,40));
+            var names=new[]{"LanguageAuto","LanguageEnglish","LanguageChinese","Hints","Motion","Close"};
+            for(var i=0;i<names.Length;i++)Place((RectTransform)homeSettings.Find(names[i]),new Rect(28,h-202-i*64,w-56,52));
             homeCollection.Layout(safe); homeShop.Layout(safe);
         }
         private void PresentHome()
@@ -109,6 +134,13 @@ namespace Tidebound.Unity.LevelDesign
             homeContinue.GetComponentInChildren<Text>().text = saveService?.IsAvailable != true ? "Play practice" : saved != null ?
                 (saved.Victory ? "View result" : "Continue") + "\nLevel " + saved.LevelNumber :
                 "Start\nLevel " + (saveService?.CurrentLevel ?? 1);
+            if(homeSettings.gameObject.activeSelf)
+            {
+                homeSettings.Find("Hints").GetComponentInChildren<Text>().text="Auto hints: "+(autoHintsEnabled?"On":"Off");
+                homeSettings.Find("Motion").GetComponentInChildren<Text>().text="Motion: "+(reducedEntryMotion?"Reduced":"Full");
+                var languageButtons=new[]{"LanguageAuto","LanguageEnglish","LanguageChinese"};
+                for(var i=0;i<3;i++)homeSettings.Find(languageButtons[i]).GetComponent<Image>().color=(int)UILanguage.Preference==i?HarborUI.Gold:HarborUI.Aqua;
+            }
             if (IsHomeShopOpen) homeShop.Present();
         }
         public void ContinueFromHome()
@@ -171,16 +203,18 @@ namespace Tidebound.Unity.LevelDesign
             presentation.SetActive(false); homeRoot.gameObject.SetActive(true);
             homeNotice.text = ""; LayoutHome(); PresentHome();
         }
+        public void OpenHomeDraw()
+        {OpenHomeCollection();if(IsHomeCollectionOpen)homeCollection.OpenDraw();}
         private void OpenHomeCollection()
         {
-            if (!IsHomeOpen || IsHomeShopOpen || IsHomeCollectionOpen) return;
+            if (!IsHomeOpen || IsHomeShopOpen || IsHomeCollectionOpen || homeSettings.gameObject.activeSelf) return;
             if (saveService?.IsAvailable != true || saveService.CurrentLevel < 3)
             { homeNotice.text = "Collection unlocks after clearing Level 2."; return; }
             homeControls.gameObject.SetActive(false); homeCollection.Open();
         }
         private void OpenHomeShop()
         {
-            if (!IsHomeOpen || IsHomeShopOpen || IsHomeCollectionOpen) return;
+            if (!IsHomeOpen || IsHomeShopOpen || IsHomeCollectionOpen || homeSettings.gameObject.activeSelf) return;
             homeControls.gameObject.SetActive(false); homeShop.Open();
         }
         private void ClearHome()

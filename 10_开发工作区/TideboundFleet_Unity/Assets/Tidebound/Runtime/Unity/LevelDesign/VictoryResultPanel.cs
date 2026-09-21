@@ -2,6 +2,7 @@ using System;
 using Tidebound.Save;
 using UnityEngine;
 using UnityEngine.UI;
+using Tidebound.Unity.UI;
 
 namespace Tidebound.Unity.LevelDesign
 {
@@ -76,10 +77,10 @@ namespace Tidebound.Unity.LevelDesign
         private static RectTransform Box(string name,Transform parent,Color color)
         {var r=Rect(name,parent);var image=r.gameObject.AddComponent<Image>();image.color=color;image.raycastTarget=false;return r;}
         private Text Label(string name,int size)
-        {var text=Rect(name,transform).gameObject.AddComponent<Text>();text.font=font;text.fontSize=size;text.alignment=TextAnchor.MiddleCenter;text.color=Color.white;text.raycastTarget=false;return text;}
+        {var text=Rect(name,transform).gameObject.AddComponent<HarborText>();text.font=font;text.fontSize=size;text.alignment=TextAnchor.MiddleCenter;text.color=HarborUI.Ink;text.raycastTarget=false;return text;}
         private Button Button(string name,Action action)
         {
-            var rect=Box(name,transform,new Color(.13f,.30f,.39f));rect.GetComponent<Image>().raycastTarget=true;
+            var rect=HarborUI.Surface(name,transform,HarborUI.Gold).rectTransform;rect.GetComponent<Image>().raycastTarget=true;
             var button=rect.gameObject.AddComponent<Button>();button.targetGraphic=rect.GetComponent<Image>();button.onClick.AddListener(()=>action());
             var text=Label(name+"Label",16);text.transform.SetParent(rect,false);text.rectTransform.anchorMin=Vector2.zero;text.rectTransform.anchorMax=Vector2.one;
             text.rectTransform.offsetMin=text.rectTransform.offsetMax=Vector2.zero;return button;
