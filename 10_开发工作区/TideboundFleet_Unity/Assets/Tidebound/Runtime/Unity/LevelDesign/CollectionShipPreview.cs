@@ -12,20 +12,21 @@ namespace Tidebound.Unity.LevelDesign
         public Func<bool> AllowMotion;
         private RenderTexture texture;private Camera camera;private Transform ship;private MeshRenderer hull;private Image shot;private float shotTime=-1;private int direction;
         private ShipPrototypeResources resources;
+        private HarborShowcaseModel showcaseModel;
         public void Initialize(bool showcase=false)
         {
             this.showcase=showcase;
             var rig=new GameObject("PreviewRig");rig.transform.SetParent(transform,false);rig.transform.position=new Vector3(5000+(++nextRig)*32,5000,0);
             resources=rig.AddComponent<ShipPrototypeResources>();resources.Initialize();
             var model=new GameObject("StandardShip");model.transform.SetParent(rig.transform,false);ship=model.transform;
-            if(showcase)model.AddComponent<HarborShowcaseModel>().Build();
+            if(showcase){showcaseModel=model.AddComponent<HarborShowcaseModel>();showcaseModel.Build();ship.localScale=new Vector3(1.16f,1,1);}
             else {hull=resources.AddHull(ship,2,0);resources.AddShadow(ship,2);}
-            baseRotation=showcase?Quaternion.Euler(58,0,-150):Quaternion.identity;ship.localRotation=baseRotation;
-            basePosition=showcase?new Vector3(0,-.68f,0):Vector3.zero;ship.localPosition=basePosition;
+            baseRotation=showcase?Quaternion.Euler(66,0,-145):Quaternion.identity;ship.localRotation=baseRotation;
+            basePosition=showcase?new Vector3(0,-.88f,0):Vector3.zero;ship.localPosition=basePosition;
             foreach(var t in rig.GetComponentsInChildren<Transform>())t.gameObject.layer=29;
             var lens=new GameObject("PreviewCamera");lens.transform.SetParent(rig.transform,false);lens.transform.localPosition=new Vector3(0,0,-10);
-            camera=lens.AddComponent<Camera>();camera.orthographic=true;camera.orthographicSize=showcase?1.50f:1.2f;camera.cullingMask=1<<29;camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=Color.clear;camera.nearClipPlane=.1f;camera.farClipPlane=20;camera.depth=-5;
-            texture=new RenderTexture(showcase?512:192,showcase?512:192,16){name="TideboundShipPreview"};texture.Create();camera.targetTexture=texture;
+            camera=lens.AddComponent<Camera>();camera.orthographic=true;camera.orthographicSize=showcase?1.49f:1.2f;camera.cullingMask=1<<29;camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=Color.clear;camera.nearClipPlane=.1f;camera.farClipPlane=20;camera.depth=-5;
+            texture=new RenderTexture(showcase?640:192,showcase?640:192,16){name="TideboundShipPreview",antiAliasing=showcase?4:1};texture.Create();camera.targetTexture=texture;
             var image=gameObject.AddComponent<RawImage>();image.texture=texture;image.raycastTarget=false;
             var dot=new GameObject("PreviewShot",typeof(RectTransform));dot.transform.SetParent(transform,false);shot=dot.AddComponent<Image>();shot.color=new Color(1,.85f,.3f);shot.raycastTarget=false;shot.rectTransform.sizeDelta=new Vector2(4,8);shot.enabled=false;
         }
@@ -43,6 +44,7 @@ namespace Tidebound.Unity.LevelDesign
             {
                 var animate=AllowMotion?.Invoke()==true;
                 if(animate)sway+=Time.unscaledDeltaTime;
+                showcaseModel.SetMotionPhase(sway);
                 ship.localRotation=baseRotation*Quaternion.Euler(0,0,animate?Mathf.Sin(sway*1.2566f):0);
                 ship.localPosition=basePosition+(animate?new Vector3(0,Mathf.Sin(sway*1.2566f)*.012f,0):Vector3.zero);
             }

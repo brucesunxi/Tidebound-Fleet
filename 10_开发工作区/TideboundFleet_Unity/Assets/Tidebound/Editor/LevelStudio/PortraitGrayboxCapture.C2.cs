@@ -23,6 +23,8 @@ namespace Tidebound.EditorTools
         }
         private static IEnumerator CaptureC2Frames(PortraitPuzzleGraybox game)
         {
+            if(Environment.GetEnvironmentVariable("TIDEBOUND_CAPTURE_SHOWCASE_ONLY")=="1")
+            {yield return CaptureShowcasePolishFrames(game);yield break;}
             var catalog=ResultCatalog(game);var previous=UILanguage.Preference;
             foreach(var locale in new[]{LanguagePreference.English,LanguagePreference.Chinese})
             foreach(var size in new[]{new Vector2Int(360,640),new Vector2Int(390,844)})
@@ -59,6 +61,44 @@ namespace Tidebound.EditorTools
             game.Initialize(catalog,saveService:new PlayerSaveService(ResultStore(catalog,4)),campaign:true,useHomeNavigation:true);
             game.OpenCollection();yield return null;yield return C2Frame("C2_Pseudo_Collection.png");
             UILanguage.SetPseudoForReview(false);UILanguage.SetPreference(previous,false);
+        }
+        private static IEnumerator CaptureShowcasePolishFrames(PortraitPuzzleGraybox game)
+        {
+            var catalog=ResultCatalog(game);var previous=UILanguage.Preference;
+            try
+            {
+                foreach(var locale in new[]{LanguagePreference.English,LanguagePreference.Chinese})
+                foreach(var size in new[]{new Vector2Int(360,640),new Vector2Int(390,844)})
+                {
+                    UILanguage.SetPreference(locale,false);SetGameViewSize(size);var expires=Time.realtimeSinceStartup+10;
+                    while((Screen.width!=size.x||Screen.height!=size.y)&&Time.realtimeSinceStartup<expires)yield return null;
+                    if(Screen.width!=size.x||Screen.height!=size.y)throw new TimeoutException("Showcase viewport did not settle.");
+                    var service=new PlayerSaveService(ResultStore(catalog,4));service.Collect(Guid.NewGuid().ToString("N"),"FirstBlue");
+                    game.Initialize(catalog,saveService:service,campaign:true,useHomeNavigation:true);yield return null;yield return null;
+                    var preview=game.transform.Find("HomeNavigation/HomeControls/ShowcasePreview").GetComponent<CollectionShipPreview>();
+                    preview.AllowMotion=()=>false;yield return null;
+                    var tag=locale+"_"+size.x+"x"+size.y;yield return SaveFrame("Showcase_Home_"+tag+".png");
+                    if(locale==LanguagePreference.Chinese&&size.x==390)
+                    {
+                        var model=preview.GetComponentInChildren<HarborShowcaseModel>();model.SetWaterVisible(false);yield return null;
+                        yield return SaveFrame("Showcase_WithoutWater.png");model.SetWaterVisible(true);
+                        // Record actual changing game frames; capture never invokes the continue click.
+                        preview.AllowMotion=()=>true;var timeline=new System.Collections.Generic.List<string>();
+                        var pointer=new PointerEventData(EventSystem.current){button=PointerEventData.InputButton.Left};
+                        var button=game.transform.Find("HomeNavigation/HomeControls/Continue").gameObject;
+                        for(var frame=0;frame<28;frame++)
+                        {
+                            if(frame==10)ExecuteEvents.Execute(button,pointer,ExecuteEvents.pointerDownHandler);
+                            if(frame==15)ExecuteEvents.Execute(button,pointer,ExecuteEvents.pointerUpHandler);
+                            yield return new WaitForSecondsRealtime(.13f);yield return SaveFrame("Motion_"+frame.ToString("D3")+".png");
+                            timeline.Add(Time.realtimeSinceStartup.ToString("R",System.Globalization.CultureInfo.InvariantCulture));
+                        }
+                        System.IO.File.WriteAllLines(System.IO.Path.Combine(OutputDirectory,"Motion_Timestamps.txt"),timeline);
+                        ExecuteEvents.Execute(button,pointer,ExecuteEvents.pointerUpHandler);
+                    }
+                }
+            }
+            finally{UILanguage.SetPreference(previous,false);}
         }
     }
 }
