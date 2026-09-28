@@ -70,7 +70,7 @@ namespace Tidebound.Unity.LevelDesign
             entryRequestInFlight = true;
             try
             {
-                var saved = restart ? saveService.Restart(next) : saveService.Start(next);
+                var saved = restart ? saveService.Restart(next,(prior,replacement)=>Tidebound.Config.PlayableLevelCatalog.CanReplaceAttempt(catalog,prior,replacement)) : saveService.Start(next);
                 if (!saved)
                 {
                     pendingEntry = next; pendingRestart = restart;

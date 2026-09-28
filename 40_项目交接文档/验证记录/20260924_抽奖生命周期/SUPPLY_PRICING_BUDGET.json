@@ -1,0 +1,104 @@
+{
+  "status": "design_candidate_not_runtime",
+  "date": "2026-09-24",
+  "source": "COLLECTION_LONG_TERM_DESIGN_20260924.md",
+  "source_sha256": "6e92f2984aae635f3bf1b6a1d9bb9ae00a384eb348b9b4211aef67a6c897e8c4",
+  "tool_prices": {
+    "reverse": 200,
+    "rescue": 250,
+    "shuffle": 300,
+    "bundle_1_each": 650
+  },
+  "packs": [
+    {
+      "coins": 1000,
+      "usd_cents": 99,
+      "coins_per_usd": 1010.101,
+      "extra_unit_value_vs_smallest_percent": 0.0
+    },
+    {
+      "coins": 3300,
+      "usd_cents": 299,
+      "coins_per_usd": 1103.6789,
+      "extra_unit_value_vs_smallest_percent": 9.2642
+    },
+    {
+      "coins": 12000,
+      "usd_cents": 999,
+      "coins_per_usd": 1201.2012,
+      "extra_unit_value_vs_smallest_percent": 18.9189
+    },
+    {
+      "coins": 27000,
+      "usd_cents": 1999,
+      "coins_per_usd": 1350.6753,
+      "extra_unit_value_vs_smallest_percent": 33.7169
+    }
+  ],
+  "draw_costs": {
+    "skin_13_paid": 46600,
+    "trail_5_paid": 7900,
+    "showcase_11_paid": 45700,
+    "total_excluding_scene": 100200
+  },
+  "assumptions": [
+    "No actual revenue/retention forecast",
+    "No advertising, sign-in, sharing coins, deadlock rewards, recharge or free tool gifts counted in base 75 coins/win reserve",
+    "180 and 400 are constant income sensitivity scenarios, not progression prediction",
+    "USD retail reference before store-specific tax differences; no developer net income estimate"
+  ],
+  "sensitivity": [
+    {
+      "income_per_win": 180,
+      "tool_reserve_per_win": 75,
+      "net_per_win": 105,
+      "equivalent_wins_to_save_7500": 72
+    },
+    {
+      "income_per_win": 260,
+      "tool_reserve_per_win": 75,
+      "net_per_win": 185,
+      "equivalent_wins_to_save_7500": 41
+    },
+    {
+      "income_per_win": 340,
+      "tool_reserve_per_win": 75,
+      "net_per_win": 265,
+      "equivalent_wins_to_save_7500": 29
+    },
+    {
+      "income_per_win": 400,
+      "tool_reserve_per_win": 75,
+      "net_per_win": 325,
+      "equivalent_wins_to_save_7500": 24
+    }
+  ],
+  "zero_wallet_cash_examples": [
+    {
+      "coin_target": 7500,
+      "pack_counts": [
+        1,
+        2,
+        0,
+        0
+      ],
+      "usd_cents": 697,
+      "remainder": 100
+    },
+    {
+      "coin_target": 100200,
+      "pack_counts": [
+        4,
+        1,
+        1,
+        3
+      ],
+      "usd_cents": 7691,
+      "remainder": 100
+    }
+  ],
+  "unit_cost_7500_usd_range": [
+    5.5528,
+    7.425
+  ]
+}

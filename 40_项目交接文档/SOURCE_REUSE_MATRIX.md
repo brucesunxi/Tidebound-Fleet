@@ -42,6 +42,8 @@
 | S14／10，C | U 的 TMP、UGUI、DOTween／Pro、ParticleImage、QuickOutline 等依赖与资源 | 已有 UI／动画／粒子组件候选 | 优先现有 TMP／UGUI 和已实现动画；需要插件时先核对许可及移动端依赖，不为了“复用”增加框架 |
 | S15／11，B | R `LocalPlatform`；U 旧广告及统计入口 | 奖励请求／成功／失败交互分支 | 本地模拟广告不是真实 SDK；后续通过统一广告接口接入本产品配置，离线仍可玩 |
 | S16／5R、7、9，D | 三源码中未找到对应完整系统 | 反向依赖生成、真实状态 Solver、舰队 AttackToken、幂等结算与概率经济 | 原创实现；不得用随机摆放、原停车寻路或参考商城冒充完成 |
+| S17／V2-C2，B | U `Assets/TJ/Prefabs/UIManager.prefab`、`PowerUps.cs:75-176`；P `UIManager.ts`、`UIParent.ts`；R `LayerManager.js`、`IllustratedPanel.js`、`PropsPanel.js` | UI分层、页面生命周期、数据驱动道具弹窗、图鉴信息结构与监听清理 | 已整理为[UI复用审计](UI_SOURCE_REUSE_AUDIT_20260922.md)并落实原创Design System；不复制外部Prefab、反编译代码、美术或广告耦合 |
+| S18／7、10，B+C | U `ParticleImage.cs`、`CoinAttraction.prefab`、`UIManager.cs:71`、`Vehicle.cs:283`、TMP浮字示例；R `UIMgr.js:338`、`Animal.js:214`；P `TipMain.ts:56` | 飞币吸附、受击抖动、连击时间条与文字上浮 | 2026-09-24只读复核：正式工程已含同源ParticleImage、DOTween、QuickOutline及TMP示例，无须重复导入；适配攻击事件与右上目标，旧固定50金币协程不能复用。连击改5秒且首船启动，QuickOutline不能直接套透明PNG。详见[战斗动效复用核查](COMBAT_FEEDBACK_REUSE_AUDIT_20260924.md)，本轮仅规划未接入 |
 
 ## 3. 源码中应避免带入的问题
 

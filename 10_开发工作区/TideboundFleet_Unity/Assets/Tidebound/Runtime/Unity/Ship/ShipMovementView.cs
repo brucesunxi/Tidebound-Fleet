@@ -17,6 +17,8 @@ namespace Tidebound.Unity.Ship
         private Action<string> clickHandler;
         private Coroutine animationRoutine;
         private bool paused;
+        public bool IsTravelling {get;private set;}
+        public bool IsPaused=>paused;
 
         public string ShipId => shipId;
         private Transform VisualRoot => visualRoot != null ? visualRoot : transform;
@@ -38,13 +40,16 @@ namespace Tidebound.Unity.Ship
         public void PlayTravel(Vector3 targetTailWorld, float duration, Action completed)
         {
             if (duration <= 0f) throw new ArgumentOutOfRangeException(nameof(duration));
+            GetComponentInChildren<Tidebound.Unity.LevelDesign.ShipFloatPresentation>()?.ClearImpact();
             StartExclusive(TravelRoutine(targetTailWorld, duration, completed));
         }
 
         public void PlayBlockedFeedback(Vector3 lateralOffset, float duration, Action completed)
         {
             if (duration <= 0f) throw new ArgumentOutOfRangeException(nameof(duration));
-            StartExclusive(BlockedFeedbackRoutine(lateralOffset, duration, completed));
+            var feedback=GetComponentInChildren<Tidebound.Unity.LevelDesign.ShipFloatPresentation>();
+            feedback?.Impact();
+            StartExclusive(BlockedFeedbackRoutine(feedback!=null?Vector3.zero:lateralOffset, duration, completed));
         }
 
         public void SetPaused(bool value) => paused = value;
@@ -58,6 +63,7 @@ namespace Tidebound.Unity.Ship
 
         private IEnumerator TravelRoutine(Vector3 target, float duration, Action completed)
         {
+            IsTravelling=true;
             var root = VisualRoot;
             var start = root.position;
             var elapsed = 0f;
@@ -72,6 +78,7 @@ namespace Tidebound.Unity.Ship
                 yield return null;
             }
             root.position = target;
+            IsTravelling=false;
             animationRoutine = null;
             completed?.Invoke();
         }

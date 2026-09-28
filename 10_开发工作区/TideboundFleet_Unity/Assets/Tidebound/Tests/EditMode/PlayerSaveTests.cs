@@ -37,6 +37,33 @@ namespace Tidebound.Tests
         }
         private static void Advance(SavedGameRuntime game,double seconds=10){game.Transit.Advance(seconds);game.Combat.Advance();}
         [Test]
+        public void FreshHomeStartAfterReloadKeepsSpentStockAndUsesExistingRestartReceipt()
+        {
+            var store=new Store();var save=new PlayerSaveService(store);
+            using(var old=Blocked(true))using(var next=Blocked(true))
+            {
+                save.Start(old);save.Inventory.Grant("home-test",1,0,0);
+                using(var tool=new ShipToolSystem(old.Session,old.Movement,save.Inventory))Assert.That(tool.Rescue(),Is.EqualTo(ToolUseStatus.Applied));
+                save.Checkpoint(true);var loaded=new PlayerSaveService(store);var stock=loaded.Inventory.Count(ShipTool.Rescue);var wallet=loaded.Coins;
+                Assert.That(loaded.StartFromHome(next),Is.True);Assert.That(loaded.Inventory.Count(ShipTool.Rescue),Is.EqualTo(stock));
+                Assert.That(next.Session.ToolUses,Is.Zero);Assert.That(next.Session.Board.ShipCount,Is.EqualTo(3));Assert.That(next.Transit.ElapsedTime,Is.Zero);
+                Assert.That(loaded.Coins,Is.EqualTo(wallet));Assert.That(loaded.StartFromHome(next),Is.False);
+                Assert.That(loaded.Snapshot.Settlements.Count(r=>r.Kind=="VoluntaryRestart"),Is.EqualTo(1));Assert.That(new PlayerSaveService(store).IsAvailable,Is.True);
+            }
+        }
+        [Test]
+        public void FailedFreshStartPreservesOldAttemptUntilOneSuccessfulCommit()
+        {
+            var store=new Store();var save=new PlayerSaveService(store);
+            using(var old=Blocked(true))using(var next=Blocked(true))
+            {
+                save.Start(old);Move(old,"C");Advance(old);save.Checkpoint();var original=save.Snapshot;
+                store.Fail=true;Assert.That(save.StartFromHome(next),Is.False);Assert.That(save.Runtime,Is.SameAs(old));
+                Assert.That(save.Snapshot.Attempt.AttemptId,Is.EqualTo(original.Attempt.AttemptId));Assert.That(save.DailyRestartCount,Is.Zero);
+                store.Fail=false;Assert.That(save.StartFromHome(next),Is.True);Assert.That(save.Runtime,Is.SameAs(next));Assert.That(save.DailyRestartCount,Is.EqualTo(1));
+            }
+        }
+        [Test]
         public void AcceptedIntentRestoresExactlyOnceIncludingPartialMove()
         {
             var store=new Store();var save=new PlayerSaveService(store);
@@ -95,7 +122,7 @@ namespace Tidebound.Tests
                 {loaded.AttachRestored(restored);loaded.Checkpoint(true);Assert.That(loaded.Coins,Is.EqualTo(101));}
                 using(var old=Single())Assert.That(save.Start(old),Is.False);
                 using(var second=Single(2))
-                {Assert.That(save.Start(second),Is.True);Move(second,"A");Advance(second);save.Checkpoint();Assert.That(save.Coins,Is.EqualTo(222));}
+                {Assert.That(save.Start(second),Is.True);Move(second,"A");Advance(second);save.Checkpoint();Assert.That(save.Coins,Is.EqualTo(202));}
                 Assert.That(save.Snapshot.Settlements.Length,Is.EqualTo(2));
             }
         }

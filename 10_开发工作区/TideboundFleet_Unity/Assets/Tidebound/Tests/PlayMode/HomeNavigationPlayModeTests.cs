@@ -71,159 +71,90 @@ namespace Tidebound.Tests
             return game;
         }
         [UnityTest]
-        public IEnumerator BrowsingNeverStartsAttemptAndHomeResumeKeepsIdentityAndPauseOwnership()
+        public IEnumerator HomeStartResetsDeparturesAndClockButPreservesAccount()
         {
-            var store = new Store(); var game = Create(store);
+            var store=new Store();var game=Create(store);
             try
             {
-                Assert.That(game.IsHomeOpen, Is.True); Assert.That(game.Session, Is.Null); Assert.That(store.Data?.Attempt, Is.Null);
-                var writes = store.Writes; game.OpenCollection(); game.OpenShop(); yield return null;
-                game.CloseAcquisition(); Assert.That(store.Data?.Attempt, Is.Null); Assert.That(store.Writes, Is.EqualTo(writes));
-                game.ContinueFromHome(); var id = game.Session.SessionId;
-                Assert.That(game.IsHomeOpen, Is.False); game.ReturnHome();
-                Assert.That(game.IsHomeOpen, Is.True); Assert.That(store.Data.Attempt.Paused, Is.False);
-                game.Restart(); game.ClickShip("A"); game.SelectTool(ShipTool.Rescue); yield return null;
-                Assert.That(game.Session.SessionId, Is.EqualTo(id)); Assert.That(game.Session.Board.ShipCount, Is.EqualTo(2));
-                game.ContinueFromHome(); Assert.That(game.IsPaused, Is.False); Assert.That(game.Session.SessionId, Is.EqualTo(id));
-                game.TogglePause(); game.ReturnHome(); game.ContinueFromHome();
-                Assert.That(game.IsPaused, Is.True, "An explicit player pause is preserved.");
+                Assert.That(game.IsHomeOpen,Is.True);Assert.That(game.Session,Is.Null);
+                game.ContinueFromHome();var id=game.Session.SessionId;
+                game.ClickShip("A");var until=Time.realtimeSinceStartup+5;while(game.IsBusy&&Time.realtimeSinceStartup<until)yield return null;
+                Assert.That(game.Session.Board.ShipCount,Is.EqualTo(1));game.ReturnHome();Assert.That(game.IsHomeOpen,Is.True);
+                var elapsed=game.SaveService.Runtime.Transit.ElapsedTime;var coins=game.SaveService.Coins;
+                yield return new WaitForSecondsRealtime(.1f);Assert.That(game.SaveService.Runtime.Transit.ElapsedTime,Is.EqualTo(elapsed));
+                game.ContinueFromHome();Assert.That(game.Session.SessionId,Is.Not.EqualTo(id));
+                Assert.That(game.Session.Board.ShipCount,Is.EqualTo(2));Assert.That(game.SaveService.Runtime.Transit.ElapsedTime,Is.Zero);
+                Assert.That(game.SaveService.Runtime.PendingCoins,Is.Zero);Assert.That(game.SaveService.Coins,Is.EqualTo(coins));
+                Assert.That(game.IsResultOpen,Is.False);Assert.That(game.IsResumingEntry,Is.False);
+                var next=game.Session.SessionId;game.ContinueFromHome();Assert.That(game.Session.SessionId,Is.EqualTo(next));
             }
-            finally { UnityEngine.Object.Destroy(game.gameObject); } yield return null;
+            finally{UnityEngine.Object.Destroy(game.gameObject);}yield return null;
         }
         [UnityTest]
-        public IEnumerator SuppliesDoNotResetSpentUsesAndRestartingAppFromHomeRestoresSameAttempt()
+        public IEnumerator WonTenStartsElevenAndDisplaysStartGameInsteadOfOldReceipt()
         {
-            var store = new Store { Data = Before(3) }; var seed = new PlayerSaveService(store);
-            seed.Collect(Guid.NewGuid().ToString("N"), "FirstBlue");
-            var game = Create(store);
+            var store=Won(10);var game=Create(store,Catalog(100));
             try
             {
-                game.ContinueFromHome(); game.SelectTool(ShipTool.Reverse); game.ClickShip("A");
-                Assert.That(game.Tools.UsesLeft, Is.EqualTo(4)); var id = game.Session.SessionId;
-                game.ToggleMenu(); game.ReturnHome(); Assert.That(game.IsHomeOpen, Is.True);
-                game.OpenShop(); game.ShopPanel.SelectProduct("rescue_1"); game.ShopPanel.ConfirmPurchase(); game.ShopPanel.ConfirmPurchase(); game.CloseAcquisition();
-                Assert.That(game.Tools.UsesLeft, Is.EqualTo(4)); Assert.That(store.Data.Attempt.ToolUses, Is.EqualTo(1));
-                Assert.That(store.Data.Attempt.Paused, Is.False); Assert.That(store.Data.Purchases.Length, Is.EqualTo(1));
-                UnityEngine.Object.Destroy(game.gameObject); yield return null;
-                game = Create(store); Assert.That(game.Session, Is.Null); game.ContinueFromHome();
-                Assert.That(game.Session.SessionId, Is.EqualTo(id)); Assert.That(game.Tools.UsesLeft, Is.EqualTo(4));
-                Assert.That(game.IsResumingEntry, Is.True); Assert.That(game.IsPaused, Is.False);
-                Assert.That(game.Session.GetShip("A").Direction, Is.EqualTo(ShipDirection.Down));
+                var stars=game.SaveService.Snapshot.ClearStars;var coins=game.SaveService.Coins;
+                var label=game.transform.Find("UI_MainMenu/MainActionButton/UI_Button_Main/Face/SubLabel").GetComponent<Text>();
+                Assert.That(label.text,Does.Contain("11"));
+                var main=label.transform.parent.Find("Label").GetComponent<Tidebound.Unity.UI.HarborText>();Assert.That(main.Source,Is.EqualTo("Start Game"));
+                game.ContinueFromHome();Assert.That(game.LevelIndex,Is.EqualTo(10));Assert.That(game.IsResultOpen,Is.False);
+                Assert.That(game.Session.Board.ShipCount,Is.EqualTo(2));Assert.That(game.SaveService.Snapshot.ClearStars,Is.EqualTo(stars));Assert.That(game.SaveService.Coins,Is.EqualTo(coins));
             }
-            finally { UnityEngine.Object.Destroy(game.gameObject); } yield return null;
+            finally{UnityEngine.Object.Destroy(game.gameObject);}yield return null;
         }
         [UnityTest]
-        public IEnumerator ReturningHomeFreezesOutstandingLaneWorkUntilExplicitContinue()
+        public IEnumerator RelaunchWithIncompleteTenStartsTenFreshAndStorageFailureKeepsOldAttempt()
         {
-            var store = new Store(); var game = Create(store);
+            var store=new Store{Data=Before(10)};var service=new PlayerSaveService(store);
+            using(var attempt=service.CreateNextAttempt(Level("Nav_10")))
+            {service.Start(attempt);var op=attempt.Movement.TryBeginMove("A").Operation;attempt.Movement.CompleteTravel(op.OperationId);service.Checkpoint(true);}
+            var id=store.Data.Attempt.AttemptId;var game=Create(store,Catalog(100));
             try
             {
-                game.ContinueFromHome(); game.ClickShip("A");
-                var deadline = Time.realtimeSinceStartup + 8;
-                while (game.IsBusy && Time.realtimeSinceStartup < deadline) yield return null;
-                Assert.That(game.IsBusy, Is.False); Assert.That(game.SaveService.Runtime.Transit.ActiveCount, Is.GreaterThan(0));
-                game.ReturnHome(); var elapsed = game.SaveService.Runtime.Transit.ElapsedTime; var id = game.Session.SessionId;
-                yield return new WaitForSecondsRealtime(.2f);
-                Assert.That(game.SaveService.Runtime.Transit.ElapsedTime, Is.EqualTo(elapsed));
-                Assert.That(game.Session.SessionId, Is.EqualTo(id)); game.ContinueFromHome(); yield return null; yield return null;
-                Assert.That(game.SaveService.Runtime.Transit.ElapsedTime, Is.GreaterThan(elapsed));
+                store.Fail=true;game.ContinueFromHome();Assert.That(game.IsHomeOpen,Is.True);Assert.That(game.Session,Is.Null);Assert.That(store.Data.Attempt.AttemptId,Is.EqualTo(id));
+                store.Fail=false;game.ContinueFromHome();Assert.That(game.LevelIndex,Is.EqualTo(9));Assert.That(game.Session.SessionId,Is.Not.EqualTo(id));Assert.That(game.Session.Board.ShipCount,Is.EqualTo(2));
             }
-            finally { UnityEngine.Object.Destroy(game.gameObject); } yield return null;
+            finally{store.Fail=false;UnityEngine.Object.Destroy(game.gameObject);}yield return null;
         }
         [UnityTest]
-        public IEnumerator FailedHomeCheckpointStaysInGameWithoutReplacingAttempt()
+        public IEnumerator MissingOrBrokenNextLevelKeepsHomeAndSavedRewards()
         {
-            var store = new Store(); var game = Create(store);
+            var available=false;var broken=false;
+            var catalog=new PlayableLevelCatalog(Enumerable.Range(1,100).Select(n=>"Nav_"+n),id=>id!="Nav_11"||available,id=>{if(broken)throw new IOException();return Level(id);});
+            var store=Won(10);var game=Create(store,catalog);
             try
             {
-                game.ContinueFromHome(); var id = game.Session.SessionId; store.Fail = true;
-                game.ReturnHome(); Assert.That(game.IsHomeOpen, Is.False); Assert.That(game.Session.SessionId, Is.EqualTo(id));
-                store.Fail = false; game.ReturnHome(); Assert.That(game.IsHomeOpen, Is.True);
-                game.ContinueFromHome(); Assert.That(game.Session.SessionId, Is.EqualTo(id));
+                var writes=store.Writes;game.ContinueFromHome();Assert.That(game.IsHomeOpen,Is.True);Assert.That(store.Writes,Is.EqualTo(writes));
+                available=true;broken=true;game.ContinueFromHome();Assert.That(game.IsHomeOpen,Is.True);Assert.That(store.Writes,Is.EqualTo(writes));
+                broken=false;game.ContinueFromHome();Assert.That(game.LevelIndex,Is.EqualTo(10));Assert.That(game.IsResultOpen,Is.False);
             }
-            finally { store.Fail = false; UnityEngine.Object.Destroy(game.gameObject); } yield return null;
+            finally{UnityEngine.Object.Destroy(game.gameObject);}yield return null;
         }
         [UnityTest]
-        public IEnumerator LevelTenIsAnOrdinaryResultWithUnavailableNextAndNoChapterStatistics()
+        public IEnumerator FirstBlueRemainsClaimableWithoutHijackingDirectHomeStart()
         {
-            var store = Won(10); var game = Create(store);
+            var game=Create(Won(2));
             try
-            {
-                game.ContinueFromHome(); Assert.That(game.IsResultReadable, Is.True); Assert.That(game.IsHomeOpen, Is.False);
-                var id = game.Session.SessionId; var coins = game.SaveService.Coins; var writes = store.Writes;
-                game.ContinueFromResult(); game.ContinueFromResult(); yield return null;
-                Assert.That(game.IsResultReadable, Is.True); Assert.That(game.IsHomeOpen, Is.False);
-                Assert.That(game.Session.SessionId, Is.EqualTo(id)); Assert.That(game.SaveService.Coins, Is.EqualTo(coins));
-                Assert.That(store.Writes, Is.EqualTo(writes));
-                Assert.That(game.ResultView.transform.Find("NextLevel").GetComponent<Button>().interactable, Is.True);
-                Assert.That(game.ResultView.transform.Find("Chapter").gameObject.activeSelf, Is.False);
-                Assert.That(game.ResultView.transform.Find("ProgressTrack").gameObject.activeSelf, Is.False);
-                Assert.That(game.ResultView.transform.Find("ResultSubtitle").GetComponent<Text>().text, Does.Contain("not available"));
-                game.ReturnHome(); Assert.That(game.IsHomeOpen, Is.True); game.ContinueFromHome();
-                Assert.That(game.IsResultReadable, Is.True); Assert.That(game.Session.SessionId, Is.EqualTo(id));
-            }
-            finally { UnityEngine.Object.Destroy(game.gameObject); } yield return null;
+            {Assert.That(game.SaveService.CanClaimFirstBlue,Is.True);game.ContinueFromHome();Assert.That(game.LevelIndex,Is.EqualTo(2));Assert.That(game.IsCollectionOpen,Is.False);Assert.That(game.IsHomeOpen,Is.False);Assert.That(game.SaveService.CanClaimFirstBlue,Is.True);}
+            finally{UnityEngine.Object.Destroy(game.gameObject);}yield return null;
         }
         [UnityTest]
-        public IEnumerator FiveHundredEntryCatalogAllowsElevenOnlyWhenItsContentIsAvailable()
+        public IEnumerator FinishedCampaignDoesNotReopenReceiptOrInventLevel101()
         {
-            var reads = new List<string>(); var available = false; var broken = false;
-            var catalog = new PlayableLevelCatalog(Enumerable.Range(1, 500).Select(n => "Nav_" + n),
-                id => id != "Nav_11" || available, id => { reads.Add(id); if (id == "Nav_11" && broken) throw new IOException(); return Level(id); });
-            var store = Won(10); var game = Create(store, catalog);
+            var store=Won(100);var game=Create(store,Catalog(100));
             try
-            {
-                Assert.That(reads, Is.Empty); game.ContinueFromHome(); Assert.That(reads, Is.EqualTo(new[] { "Nav_10" }));
-                var id = game.Session.SessionId; game.ContinueFromResult(); Assert.That(game.Session.SessionId, Is.EqualTo(id));
-                available = true; broken = true; game.ContinueFromResult(); Assert.That(game.IsResultReadable, Is.True);
-                Assert.That(game.Session.SessionId, Is.EqualTo(id)); broken = false; game.ContinueFromResult();
-                Assert.That(game.LevelIndex, Is.EqualTo(10)); Assert.That(game.Session.LevelId, Is.EqualTo("Nav_11"));
-                var next = game.Session.SessionId; game.ContinueFromResult(); Assert.That(game.Session.SessionId, Is.EqualTo(next));
-                Assert.That(store.Data.Settlements.Length, Is.EqualTo(10));
-            }
-            finally { UnityEngine.Object.Destroy(game.gameObject); } yield return null;
+            {var writes=store.Writes;game.ContinueFromHome();Assert.That(game.IsHomeOpen,Is.True);Assert.That(game.Session,Is.Null);Assert.That(store.Writes,Is.EqualTo(writes));Assert.That(game.GetComponentsInChildren<Button>().Single(b=>b.name=="UI_Button_Main").interactable,Is.False);}
+            finally{UnityEngine.Object.Destroy(game.gameObject);}yield return null;
         }
         [UnityTest]
-        public IEnumerator FirstBlueIsClaimedAtHomeBeforeCreatingLevelThreeWithoutAutoEquipment()
+        public IEnumerator UnavailableAccountAllowsPracticeWithoutWritingOverSave()
         {
-            var store = Won(2); var game = Create(store);
-            try
-            {
-                game.ContinueFromHome(); var id = game.Session.SessionId; var equipment = game.SaveService.Snapshot.Collection.Equipment;
-                game.ContinueFromResult(); Assert.That(game.IsHomeOpen, Is.True); Assert.That(game.IsCollectionOpen, Is.True);
-                Assert.That(game.Session.SessionId, Is.EqualTo(id)); Assert.That(store.Data.Attempt.LevelNumber, Is.EqualTo(2));
-                game.CollectionView.SelectTransaction("FirstBlue"); game.CollectionView.ConfirmTransaction(); game.CollectionView.ConfirmTransaction();
-                Assert.That(game.SaveService.CanClaimFirstBlue, Is.False); Assert.That(game.SaveService.Snapshot.Collection.Equipment, Is.EqualTo(equipment));
-                game.CloseCollection(); game.ContinueFromHome(); game.ContinueFromResult();
-                Assert.That(game.LevelIndex, Is.EqualTo(2)); Assert.That(store.Data.Collection.Receipts.Length, Is.EqualTo(1));
-            }
-            finally { UnityEngine.Object.Destroy(game.gameObject); } yield return null;
-        }
-        [UnityTest]
-        public IEnumerator UnavailableAccountStillAllowsExplicitPracticeWithoutWritingOverSave()
-        {
-            var store = new Store { Corrupt = true }; var game = Create(store);
-            try
-            {
-                Assert.That(game.IsHomeOpen, Is.True); Assert.That(game.SaveService.IsAvailable, Is.False);
-                game.ContinueFromHome(); Assert.That(game.Session.Board.ShipCount, Is.EqualTo(2));
-                Assert.That(game.IsHomeOpen, Is.False); game.ReturnHome(); Assert.That(game.IsHomeOpen, Is.True);
-                Assert.That(store.Writes, Is.Zero);
-            }
-            finally { UnityEngine.Object.Destroy(game.gameObject); } yield return null;
-        }
-        [UnityTest]
-        public IEnumerator MissingSavedLevelStaysHomeAndPreservesStoredAttempt()
-        {
-            var store = Won(10); var id = store.Data.Attempt.AttemptId; var game = Create(store, Catalog(9));
-            try
-            {
-                var writes = store.Writes; game.ContinueFromHome();
-                Assert.That(game.IsHomeOpen, Is.True); Assert.That(game.Session, Is.Null);
-                Assert.That(store.Data.Attempt.AttemptId, Is.EqualTo(id)); Assert.That(store.Writes, Is.EqualTo(writes));
-                Assert.That(game.HomeNotice, Does.Contain("not available"));
-            }
-            finally { UnityEngine.Object.Destroy(game.gameObject); } yield return null;
+            var store=new Store{Corrupt=true};var game=Create(store);
+            try{game.ContinueFromHome();Assert.That(game.Session.Board.ShipCount,Is.EqualTo(2));game.ReturnHome();Assert.That(game.IsHomeOpen,Is.True);Assert.That(store.Writes,Is.Zero);}
+            finally{UnityEngine.Object.Destroy(game.gameObject);}yield return null;
         }
     }
 }

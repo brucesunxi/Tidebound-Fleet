@@ -55,11 +55,16 @@ namespace Tidebound.Save
     }
     public sealed class PlayerSaveData
     {
-        public const int CurrentVersion=4;
+        public const int CurrentVersion=6;
         public int Version=CurrentVersion;
         public CollectionData Collection=new CollectionData();
+        public AppearanceData Appearance=new AppearanceData();
+        // Additive v4 field: historical files without it retain the default display ship.
+        public string ShowcaseId=ShowcaseCatalog.DefaultId;
         public long Revision,Coins;
         public int CurrentLevel=1,HighestClearedLevel,DailyRestartCount;
+        // Validate guarantees one durable victory per sequential cleared level. A property adds no save field.
+        public int ClearStars => HighestClearedLevel;
         public string MaxLocalDay="";
         public bool ImportedToolInventory;
         public ToolInventoryData Tools=new ToolInventoryData();
@@ -68,11 +73,11 @@ namespace Tidebound.Save
         public CoinPurchaseRecord[] Purchases=Array.Empty<CoinPurchaseRecord>();
         public PlayerSaveData Copy()
         {
-            var copy=(PlayerSaveData)MemberwiseClone();copy.Collection=Collection?.Copy();copy.Tools=Tools.Copy();copy.Attempt=Attempt?.Copy();copy.Settlements=Settlements.Select(x=>x.Copy()).ToArray();copy.Purchases=Purchases.Select(x=>x.Copy()).ToArray();return copy;
+            var copy=(PlayerSaveData)MemberwiseClone();copy.Appearance=Appearance?.Copy();copy.Collection=Collection?.Copy();copy.Tools=Tools.Copy();copy.Attempt=Attempt?.Copy();copy.Settlements=Settlements.Select(x=>x.Copy()).ToArray();copy.Purchases=Purchases.Select(x=>x.Copy()).ToArray();return copy;
         }
         public void Validate()
         {
-            if((Version!=2 && Version!=3 && Version!=CurrentVersion) || Purchases==null || (Version==2 && Purchases.Length!=0) || Revision<0 || Coins<0 || CurrentLevel<1 || CurrentLevel>10001 || HighestClearedLevel!=CurrentLevel-1 || DailyRestartCount<0 ||
+            if((Version!=2 && Version!=3 && Version!=4 && Version!=5 && Version!=CurrentVersion) || Purchases==null || (Version==2 && Purchases.Length!=0) || Revision<0 || Coins<0 || CurrentLevel<1 || CurrentLevel>10001 || HighestClearedLevel!=CurrentLevel-1 || DailyRestartCount<0 ||
                 Tools==null || Settlements==null || Settlements.Any(s=>s==null || string.IsNullOrWhiteSpace(s.AttemptId) || s.BattleCoins<0 || s.FirstClearCoins<0) ||
                 Settlements.Select(s=>s.AttemptId).Distinct(StringComparer.Ordinal).Count()!=Settlements.Length)
                 throw new ArgumentException("Invalid player save.");
@@ -83,7 +88,13 @@ namespace Tidebound.Save
             foreach(var p in Purchases)p.Validate();
             if(Collection==null)throw new ArgumentException("Missing collection profile.");
             Collection.Validate(CurrentLevel);
-            if(Version<CurrentVersion && !Collection.IsPristine)throw new ArgumentException("Legacy save contains unexpected collection transactions.");
+            if(Appearance==null)throw new ArgumentException("Missing appearance profile.");
+            Appearance.Validate(HighestClearedLevel,Collection);
+            if(Version<6&&Appearance.UniqueReceipts.Length!=0)throw new ArgumentException("Legacy version contains new draw transactions.");
+            var appearanceIds=Appearance.DrawReceipts.Select(r=>r.RequestId).Concat(Appearance.UniqueReceipts.Select(r=>r.RequestId)).ToArray();
+            if(appearanceIds.Distinct().Count()!=appearanceIds.Length || appearanceIds.Intersect(Purchases.Select(r=>r.RequestId).Concat(Collection.Receipts.Select(r=>r.RequestId)).Concat(Collection.EquipmentReceipts.Select(r=>r.RequestId))).Any())throw new ArgumentException("Appearance request reused across transaction types.");
+            if(!ShowcaseCatalog.IsOwned(ShowcaseId,HighestClearedLevel)&&!Appearance.UniqueReceipts.Any(r=>r.Pool==DrawPool.Showcase&&r.ItemId==ShowcaseId))throw new ArgumentException("Invalid or locked showcase selection.");
+            if(Version<4 && !Collection.IsPristine)throw new ArgumentException("Legacy save contains unexpected collection transactions.");
             if(Purchases.Select(p=>p.RequestId).Intersect(Collection.Receipts.Select(r=>r.RequestId).Concat(Collection.EquipmentReceipts.Select(r=>r.RequestId)),StringComparer.Ordinal).Any())throw new ArgumentException("Request id reused across transaction types.");
             Tools.Validate();
             if(Purchases.Any(p=>!Tools.Receipts.Contains(p.InventoryReceipt,StringComparer.Ordinal)) ||
@@ -91,13 +102,13 @@ namespace Tidebound.Save
                 throw new ArgumentException("Purchase and inventory receipts disagree.");
             var wins=Settlements.Where(r=>r.Kind=="Victory").OrderBy(r=>r.LevelNumber).ToArray();
             if(wins.Length!=HighestClearedLevel || wins.Where((r,i)=>r.LevelNumber!=i+1).Any() ||
-                Coins!=Settlements.Sum(r=>(long)r.BattleCoins+r.FirstClearCoins)-Purchases.Sum(p=>(long)p.Price)-Collection.CoinSpent)throw new ArgumentException("Invalid settlement balance or progression.");
+                Coins!=Settlements.Sum(r=>(long)r.BattleCoins+r.FirstClearCoins)-Purchases.Sum(p=>(long)p.Price)-Collection.CoinSpent-Appearance.CoinSpent)throw new ArgumentException("Invalid settlement balance or progression.");
             foreach(var r in Settlements)
             {
                 if(!Guid.TryParseExact(r.AttemptId,"N",out _) || string.IsNullOrWhiteSpace(r.LevelId) || r.LevelNumber<1 || r.LevelNumber>10000 ||
-                    r.EconomyVersion!=BattleCoinRules.Version || !DateTime.TryParseExact(r.Day,"yyyy-MM-dd",System.Globalization.CultureInfo.InvariantCulture,System.Globalization.DateTimeStyles.None,out _) ||
+                    !BattleCoinRules.Supports(r.EconomyVersion) || !DateTime.TryParseExact(r.Day,"yyyy-MM-dd",System.Globalization.CultureInfo.InvariantCulture,System.Globalization.DateTimeStyles.None,out _) ||
                     (r.Kind!="Victory" && r.Kind!="DeadlockRestart" && r.Kind!="VoluntaryRestart") ||
-                    (r.Kind=="Victory" ? r.RestartOrdinal!=0 || r.FirstClearCoins!=BattleCoinRules.FirstClear(r.LevelNumber) : r.RestartOrdinal<1 || r.FirstClearCoins!=0) ||
+                    (r.Kind=="Victory" ? r.RestartOrdinal!=0 || r.FirstClearCoins!=BattleCoinRules.FirstClear(r.LevelNumber,r.EconomyVersion) : r.RestartOrdinal<1 || r.FirstClearCoins!=0) ||
                     (r.Kind=="VoluntaryRestart" && r.BattleCoins!=0) || (r.RestartOrdinal>10 && r.BattleCoins!=0))throw new ArgumentException("Invalid settlement receipt.");
             }
             if(DailyRestartCount!=Settlements.Count(r=>r.RestartOrdinal>0 && r.Day==MaxLocalDay))throw new ArgumentException("Invalid restart allowance.");

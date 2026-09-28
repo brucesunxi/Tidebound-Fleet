@@ -1,0 +1,1112 @@
+{
+  "scope": "CURRENT_CSHARP_CORE_SOURCES_MONO_HARNESS_NOT_UNITY_EDITOR_OR_PLAYMODE",
+  "rules_version": "ForwardUntilBlockedV1",
+  "exit_mode": "AllBoundaryEdges",
+  "solver_version": "LevelSolverV1",
+  "budget": {
+    "max_states": 50000,
+    "max_footprint_cells": 2000000,
+    "solver_time_ms": 10000
+  },
+  "prototypes": [
+    {
+      "name": "4-ship prototype",
+      "layout_fingerprint": "390DC03B09CDE93B7519A000F5C80484DFD6D2081D5CB6B44507305EA152D429",
+      "initial_placements": [
+        {
+          "id": "A",
+          "tail": [
+            1,
+            1
+          ],
+          "direction": "Up",
+          "length": 2,
+          "occupied": [
+            [
+              1,
+              1
+            ],
+            [
+              1,
+              2
+            ]
+          ]
+        },
+        {
+          "id": "B",
+          "tail": [
+            0,
+            4
+          ],
+          "direction": "Right",
+          "length": 2,
+          "occupied": [
+            [
+              0,
+              4
+            ],
+            [
+              1,
+              4
+            ]
+          ]
+        },
+        {
+          "id": "C",
+          "tail": [
+            4,
+            5
+          ],
+          "direction": "Down",
+          "length": 2,
+          "occupied": [
+            [
+              4,
+              5
+            ],
+            [
+              4,
+              4
+            ]
+          ]
+        },
+        {
+          "id": "D",
+          "tail": [
+            5,
+            1
+          ],
+          "direction": "Left",
+          "length": 2,
+          "occupied": [
+            [
+              5,
+              1
+            ],
+            [
+              4,
+              1
+            ]
+          ]
+        }
+      ],
+      "initial_direct_exits": [],
+      "pure_exit_peeling": [],
+      "remaining_after_peeling": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "solver_default": {
+        "status": "Solved",
+        "optimality": "Proven",
+        "method": "BreadthFirstSearch",
+        "reason": null,
+        "visited_state_count": 45,
+        "stored_footprint_cells": 264,
+        "effective_actions": 5,
+        "solution": [
+          "A",
+          "D",
+          "C",
+          "B",
+          "A"
+        ]
+      },
+      "solver_no_exit_peeling": {
+        "status": "Solved",
+        "optimality": "Proven",
+        "method": "BreadthFirstSearch",
+        "reason": null,
+        "visited_state_count": 45,
+        "stored_footprint_cells": 264,
+        "effective_actions": 5,
+        "solution": [
+          "A",
+          "D",
+          "C",
+          "B",
+          "A"
+        ]
+      },
+      "minimum_effective_actions": 5,
+      "minimum_necessary_partial_moves": 1,
+      "optimality_basis": "BFS unit-cost shortest solution; every complete no-prop solution has exactly N exits, so Pmin=Lopt-N.",
+      "full_reachable_graph": {
+        "status": "SOLVED_GRAPH_EXHAUSTED",
+        "all_reachable_states": 46,
+        "effective_edges": 100,
+        "solvable_states": 46,
+        "unsolvable_states": 0,
+        "terminal_clear_states": 1,
+        "terminal_stuck_states": 0
+      },
+      "initial_effective_actions": [
+        {
+          "action": {
+            "ship": "A",
+            "kind": "partial",
+            "from": [
+              1,
+              1
+            ],
+            "target_tail": [
+              1,
+              2
+            ],
+            "travel_distance": 1,
+            "blocker": "B"
+          },
+          "solvable_full_graph": true,
+          "solver": {
+            "status": "Solved",
+            "optimality": "Proven",
+            "method": "BreadthFirstSearch",
+            "reason": null,
+            "visited_state_count": 20,
+            "stored_footprint_cells": 104,
+            "effective_actions": 4,
+            "solution": [
+              "D",
+              "C",
+              "B",
+              "A"
+            ]
+          }
+        },
+        {
+          "action": {
+            "ship": "B",
+            "kind": "partial",
+            "from": [
+              0,
+              4
+            ],
+            "target_tail": [
+              2,
+              4
+            ],
+            "travel_distance": 2,
+            "blocker": "C"
+          },
+          "solvable_full_graph": true,
+          "solver": {
+            "status": "Solved",
+            "optimality": "Proven",
+            "method": "BreadthFirstSearch",
+            "reason": null,
+            "visited_state_count": 18,
+            "stored_footprint_cells": 98,
+            "effective_actions": 4,
+            "solution": [
+              "A",
+              "D",
+              "C",
+              "B"
+            ]
+          }
+        },
+        {
+          "action": {
+            "ship": "C",
+            "kind": "partial",
+            "from": [
+              4,
+              5
+            ],
+            "target_tail": [
+              4,
+              3
+            ],
+            "travel_distance": 2,
+            "blocker": "D"
+          },
+          "solvable_full_graph": true,
+          "solver": {
+            "status": "Solved",
+            "optimality": "Proven",
+            "method": "BreadthFirstSearch",
+            "reason": null,
+            "visited_state_count": 18,
+            "stored_footprint_cells": 98,
+            "effective_actions": 4,
+            "solution": [
+              "B",
+              "A",
+              "D",
+              "C"
+            ]
+          }
+        },
+        {
+          "action": {
+            "ship": "D",
+            "kind": "partial",
+            "from": [
+              5,
+              1
+            ],
+            "target_tail": [
+              3,
+              1
+            ],
+            "travel_distance": 2,
+            "blocker": "A"
+          },
+          "solvable_full_graph": true,
+          "solver": {
+            "status": "Solved",
+            "optimality": "Proven",
+            "method": "BreadthFirstSearch",
+            "reason": null,
+            "visited_state_count": 20,
+            "stored_footprint_cells": 104,
+            "effective_actions": 4,
+            "solution": [
+              "C",
+              "B",
+              "A",
+              "D"
+            ]
+          }
+        }
+      ],
+      "provided_solution_replay": [
+        {
+          "step": 1,
+          "action": {
+            "ship": "A",
+            "kind": "partial",
+            "from": [
+              1,
+              1
+            ],
+            "target_tail": [
+              1,
+              2
+            ],
+            "travel_distance": 1,
+            "blocker": "B"
+          },
+          "before": "390DC03B09CDE93B7519A000F5C80484DFD6D2081D5CB6B44507305EA152D429",
+          "after": "5DC5C88BF718EE77D88CA4EFDB3CA0A1F90D20F34F2BC53BDFA30A737F4D8C64",
+          "remaining": 4
+        },
+        {
+          "step": 2,
+          "action": {
+            "ship": "D",
+            "kind": "exit",
+            "from": [
+              5,
+              1
+            ],
+            "target_tail": [
+              -1,
+              1
+            ],
+            "travel_distance": 6,
+            "blocker": null
+          },
+          "before": "5DC5C88BF718EE77D88CA4EFDB3CA0A1F90D20F34F2BC53BDFA30A737F4D8C64",
+          "after": "B9A1E756DCFFE37AFFE5431DFED3EEF4CFE85C5969080DD509E56F836B8E23A9",
+          "remaining": 3
+        },
+        {
+          "step": 3,
+          "action": {
+            "ship": "C",
+            "kind": "exit",
+            "from": [
+              4,
+              5
+            ],
+            "target_tail": [
+              4,
+              -1
+            ],
+            "travel_distance": 6,
+            "blocker": null
+          },
+          "before": "B9A1E756DCFFE37AFFE5431DFED3EEF4CFE85C5969080DD509E56F836B8E23A9",
+          "after": "F228980F2620696F61998B2F19D48D46CDE105172D754D90826D5A8E2894E748",
+          "remaining": 2
+        },
+        {
+          "step": 4,
+          "action": {
+            "ship": "B",
+            "kind": "exit",
+            "from": [
+              0,
+              4
+            ],
+            "target_tail": [
+              6,
+              4
+            ],
+            "travel_distance": 6,
+            "blocker": null
+          },
+          "before": "F228980F2620696F61998B2F19D48D46CDE105172D754D90826D5A8E2894E748",
+          "after": "571722FBEBE021CCDA18E85D58FC25474C8C6C07C0EAC5B454DB63A661F57371",
+          "remaining": 1
+        },
+        {
+          "step": 5,
+          "action": {
+            "ship": "A",
+            "kind": "exit",
+            "from": [
+              1,
+              2
+            ],
+            "target_tail": [
+              1,
+              6
+            ],
+            "travel_distance": 4,
+            "blocker": null
+          },
+          "before": "571722FBEBE021CCDA18E85D58FC25474C8C6C07C0EAC5B454DB63A661F57371",
+          "after": "5F69DB70C421FB412C72A56F69203E71D11ED541AB1C0CA0435CEE30BAE73837",
+          "remaining": 0
+        }
+      ],
+      "proof_replay": {
+        "version": 1,
+        "valid": true,
+        "complete": true,
+        "applied_steps": 5
+      }
+    },
+    {
+      "name": "8-ship prototype",
+      "layout_fingerprint": "B1E181D319F36929748D731349F22D6BB88D0EC435BE592E9FA16949D7AEA631",
+      "initial_placements": [
+        {
+          "id": "A",
+          "tail": [
+            1,
+            1
+          ],
+          "direction": "Up",
+          "length": 2,
+          "occupied": [
+            [
+              1,
+              1
+            ],
+            [
+              1,
+              2
+            ]
+          ]
+        },
+        {
+          "id": "B",
+          "tail": [
+            0,
+            4
+          ],
+          "direction": "Right",
+          "length": 2,
+          "occupied": [
+            [
+              0,
+              4
+            ],
+            [
+              1,
+              4
+            ]
+          ]
+        },
+        {
+          "id": "C",
+          "tail": [
+            4,
+            5
+          ],
+          "direction": "Down",
+          "length": 2,
+          "occupied": [
+            [
+              4,
+              5
+            ],
+            [
+              4,
+              4
+            ]
+          ]
+        },
+        {
+          "id": "D",
+          "tail": [
+            5,
+            1
+          ],
+          "direction": "Left",
+          "length": 2,
+          "occupied": [
+            [
+              5,
+              1
+            ],
+            [
+              4,
+              1
+            ]
+          ]
+        },
+        {
+          "id": "E",
+          "tail": [
+            3,
+            1
+          ],
+          "direction": "Left",
+          "length": 2,
+          "occupied": [
+            [
+              3,
+              1
+            ],
+            [
+              2,
+              1
+            ]
+          ]
+        },
+        {
+          "id": "F",
+          "tail": [
+            2,
+            0
+          ],
+          "direction": "Left",
+          "length": 2,
+          "occupied": [
+            [
+              2,
+              0
+            ],
+            [
+              1,
+              0
+            ]
+          ]
+        },
+        {
+          "id": "G",
+          "tail": [
+            2,
+            4
+          ],
+          "direction": "Down",
+          "length": 2,
+          "occupied": [
+            [
+              2,
+              4
+            ],
+            [
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "id": "H",
+          "tail": [
+            5,
+            2
+          ],
+          "direction": "Left",
+          "length": 2,
+          "occupied": [
+            [
+              5,
+              2
+            ],
+            [
+              4,
+              2
+            ]
+          ]
+        }
+      ],
+      "initial_direct_exits": [
+        "F"
+      ],
+      "pure_exit_peeling": [
+        "F"
+      ],
+      "remaining_after_peeling": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "G",
+        "H"
+      ],
+      "solver_default": {
+        "status": "Solved",
+        "optimality": "Proven",
+        "method": "BreadthFirstSearch",
+        "reason": null,
+        "visited_state_count": 284,
+        "stored_footprint_cells": 3166,
+        "effective_actions": 10,
+        "solution": [
+          "A",
+          "E",
+          "D",
+          "F",
+          "G",
+          "B",
+          "A",
+          "H",
+          "C",
+          "B"
+        ]
+      },
+      "solver_no_exit_peeling": {
+        "status": "Solved",
+        "optimality": "Proven",
+        "method": "BreadthFirstSearch",
+        "reason": null,
+        "visited_state_count": 284,
+        "stored_footprint_cells": 3166,
+        "effective_actions": 10,
+        "solution": [
+          "A",
+          "E",
+          "D",
+          "F",
+          "G",
+          "B",
+          "A",
+          "H",
+          "C",
+          "B"
+        ]
+      },
+      "minimum_effective_actions": 10,
+      "minimum_necessary_partial_moves": 2,
+      "optimality_basis": "BFS unit-cost shortest solution; every complete no-prop solution has exactly N exits, so Pmin=Lopt-N.",
+      "full_reachable_graph": {
+        "status": "SOLVED_GRAPH_EXHAUSTED",
+        "all_reachable_states": 290,
+        "effective_edges": 838,
+        "solvable_states": 264,
+        "unsolvable_states": 26,
+        "terminal_clear_states": 1,
+        "terminal_stuck_states": 1
+      },
+      "initial_effective_actions": [
+        {
+          "action": {
+            "ship": "A",
+            "kind": "partial",
+            "from": [
+              1,
+              1
+            ],
+            "target_tail": [
+              1,
+              2
+            ],
+            "travel_distance": 1,
+            "blocker": "B"
+          },
+          "solvable_full_graph": true,
+          "solver": {
+            "status": "Solved",
+            "optimality": "Proven",
+            "method": "BreadthFirstSearch",
+            "reason": null,
+            "visited_state_count": 258,
+            "stored_footprint_cells": 2776,
+            "effective_actions": 9,
+            "solution": [
+              "E",
+              "D",
+              "F",
+              "G",
+              "B",
+              "A",
+              "H",
+              "C",
+              "B"
+            ]
+          }
+        },
+        {
+          "action": {
+            "ship": "C",
+            "kind": "partial",
+            "from": [
+              4,
+              5
+            ],
+            "target_tail": [
+              4,
+              4
+            ],
+            "travel_distance": 1,
+            "blocker": "H"
+          },
+          "solvable_full_graph": true,
+          "solver": {
+            "status": "Solved",
+            "optimality": "Proven",
+            "method": "BreadthFirstSearch",
+            "reason": null,
+            "visited_state_count": 158,
+            "stored_footprint_cells": 1716,
+            "effective_actions": 10,
+            "solution": [
+              "A",
+              "E",
+              "D",
+              "F",
+              "G",
+              "B",
+              "A",
+              "H",
+              "C",
+              "B"
+            ]
+          }
+        },
+        {
+          "action": {
+            "ship": "F",
+            "kind": "exit",
+            "from": [
+              2,
+              0
+            ],
+            "target_tail": [
+              -1,
+              0
+            ],
+            "travel_distance": 3,
+            "blocker": null
+          },
+          "solvable_full_graph": true,
+          "solver": {
+            "status": "Solved",
+            "optimality": "Proven",
+            "method": "BreadthFirstSearch",
+            "reason": null,
+            "visited_state_count": 124,
+            "stored_footprint_cells": 1210,
+            "effective_actions": 9,
+            "solution": [
+              "A",
+              "E",
+              "D",
+              "G",
+              "B",
+              "A",
+              "H",
+              "C",
+              "B"
+            ]
+          }
+        },
+        {
+          "action": {
+            "ship": "G",
+            "kind": "partial",
+            "from": [
+              2,
+              4
+            ],
+            "target_tail": [
+              2,
+              3
+            ],
+            "travel_distance": 1,
+            "blocker": "E"
+          },
+          "solvable_full_graph": true,
+          "solver": {
+            "status": "Solved",
+            "optimality": "Proven",
+            "method": "BreadthFirstSearch",
+            "reason": null,
+            "visited_state_count": 241,
+            "stored_footprint_cells": 2600,
+            "effective_actions": 9,
+            "solution": [
+              "B",
+              "A",
+              "E",
+              "D",
+              "F",
+              "G",
+              "H",
+              "C",
+              "B"
+            ]
+          }
+        },
+        {
+          "action": {
+            "ship": "H",
+            "kind": "partial",
+            "from": [
+              5,
+              2
+            ],
+            "target_tail": [
+              3,
+              2
+            ],
+            "travel_distance": 2,
+            "blocker": "A"
+          },
+          "solvable_full_graph": false,
+          "solver": {
+            "status": "Deadlocked",
+            "optimality": "Unproven",
+            "method": "BreadthFirstSearch",
+            "reason": "All reachable forward states exhausted.",
+            "visited_state_count": 18,
+            "stored_footprint_cells": 234,
+            "effective_actions": 0,
+            "solution": []
+          }
+        }
+      ],
+      "provided_solution_replay": [
+        {
+          "step": 1,
+          "action": {
+            "ship": "A",
+            "kind": "partial",
+            "from": [
+              1,
+              1
+            ],
+            "target_tail": [
+              1,
+              2
+            ],
+            "travel_distance": 1,
+            "blocker": "B"
+          },
+          "before": "B1E181D319F36929748D731349F22D6BB88D0EC435BE592E9FA16949D7AEA631",
+          "after": "199765CE6F29C020DB96378BE093EAECCF7C580B583C30F5C0712C90CFFC3B4A",
+          "remaining": 8
+        },
+        {
+          "step": 2,
+          "action": {
+            "ship": "E",
+            "kind": "exit",
+            "from": [
+              3,
+              1
+            ],
+            "target_tail": [
+              -1,
+              1
+            ],
+            "travel_distance": 4,
+            "blocker": null
+          },
+          "before": "199765CE6F29C020DB96378BE093EAECCF7C580B583C30F5C0712C90CFFC3B4A",
+          "after": "3B4CBFA432CCEA11FC0A061CDA07E61CF6B60D2C464251591B2B1883CD9AF0D1",
+          "remaining": 7
+        },
+        {
+          "step": 3,
+          "action": {
+            "ship": "D",
+            "kind": "exit",
+            "from": [
+              5,
+              1
+            ],
+            "target_tail": [
+              -1,
+              1
+            ],
+            "travel_distance": 6,
+            "blocker": null
+          },
+          "before": "3B4CBFA432CCEA11FC0A061CDA07E61CF6B60D2C464251591B2B1883CD9AF0D1",
+          "after": "A9663977044F5496E653F8E0BCB680B32E516DA0C5837BEAC82F5669B897B6CF",
+          "remaining": 6
+        },
+        {
+          "step": 4,
+          "action": {
+            "ship": "F",
+            "kind": "exit",
+            "from": [
+              2,
+              0
+            ],
+            "target_tail": [
+              -1,
+              0
+            ],
+            "travel_distance": 3,
+            "blocker": null
+          },
+          "before": "A9663977044F5496E653F8E0BCB680B32E516DA0C5837BEAC82F5669B897B6CF",
+          "after": "42E9C55B22B2F28C6C2FFE8F6A4EB0C0A6C29253E2A0EDFBCB5146683102C2B1",
+          "remaining": 5
+        },
+        {
+          "step": 5,
+          "action": {
+            "ship": "G",
+            "kind": "exit",
+            "from": [
+              2,
+              4
+            ],
+            "target_tail": [
+              2,
+              -1
+            ],
+            "travel_distance": 5,
+            "blocker": null
+          },
+          "before": "42E9C55B22B2F28C6C2FFE8F6A4EB0C0A6C29253E2A0EDFBCB5146683102C2B1",
+          "after": "3401707DC34B62BE8DC7867ABE0F3090F499BA8EDF357E0B5458FB60328D9154",
+          "remaining": 4
+        },
+        {
+          "step": 6,
+          "action": {
+            "ship": "B",
+            "kind": "partial",
+            "from": [
+              0,
+              4
+            ],
+            "target_tail": [
+              2,
+              4
+            ],
+            "travel_distance": 2,
+            "blocker": "C"
+          },
+          "before": "3401707DC34B62BE8DC7867ABE0F3090F499BA8EDF357E0B5458FB60328D9154",
+          "after": "AB55E10D6458B9A66712D29199DF1ED59E9694A3F1D471264FF25A14A3E8BD73",
+          "remaining": 4
+        },
+        {
+          "step": 7,
+          "action": {
+            "ship": "A",
+            "kind": "exit",
+            "from": [
+              1,
+              2
+            ],
+            "target_tail": [
+              1,
+              6
+            ],
+            "travel_distance": 4,
+            "blocker": null
+          },
+          "before": "AB55E10D6458B9A66712D29199DF1ED59E9694A3F1D471264FF25A14A3E8BD73",
+          "after": "36C1F19992D501BAD0123D9E247280BAC462986AE0668323EF0335BC81D739A8",
+          "remaining": 3
+        },
+        {
+          "step": 8,
+          "action": {
+            "ship": "H",
+            "kind": "exit",
+            "from": [
+              5,
+              2
+            ],
+            "target_tail": [
+              -1,
+              2
+            ],
+            "travel_distance": 6,
+            "blocker": null
+          },
+          "before": "36C1F19992D501BAD0123D9E247280BAC462986AE0668323EF0335BC81D739A8",
+          "after": "B7C4DF55B3DDEE9A49DF31CFE9745BAC56A2DEF24E8E911EE907451AEC7C62D8",
+          "remaining": 2
+        },
+        {
+          "step": 9,
+          "action": {
+            "ship": "C",
+            "kind": "exit",
+            "from": [
+              4,
+              5
+            ],
+            "target_tail": [
+              4,
+              -1
+            ],
+            "travel_distance": 6,
+            "blocker": null
+          },
+          "before": "B7C4DF55B3DDEE9A49DF31CFE9745BAC56A2DEF24E8E911EE907451AEC7C62D8",
+          "after": "66C7FBBD023415F068D12C32073394B9763B47D7B57331AABF7345486CC1AEBA",
+          "remaining": 1
+        },
+        {
+          "step": 10,
+          "action": {
+            "ship": "B",
+            "kind": "exit",
+            "from": [
+              2,
+              4
+            ],
+            "target_tail": [
+              6,
+              4
+            ],
+            "travel_distance": 4,
+            "blocker": null
+          },
+          "before": "66C7FBBD023415F068D12C32073394B9763B47D7B57331AABF7345486CC1AEBA",
+          "after": "5F69DB70C421FB412C72A56F69203E71D11ED541AB1C0CA0435CEE30BAE73837",
+          "remaining": 0
+        }
+      ],
+      "proof_replay": {
+        "version": 1,
+        "valid": true,
+        "complete": true,
+        "applied_steps": 10
+      },
+      "wrong_H_first": {
+        "action": {
+          "ship": "H",
+          "kind": "partial",
+          "from": [
+            5,
+            2
+          ],
+          "target_tail": [
+            3,
+            2
+          ],
+          "travel_distance": 2,
+          "blocker": "A"
+        },
+        "solver": {
+          "status": "Deadlocked",
+          "optimality": "Unproven",
+          "method": "BreadthFirstSearch",
+          "reason": "All reachable forward states exhausted.",
+          "visited_state_count": 18,
+          "stored_footprint_cells": 234,
+          "effective_actions": 0,
+          "solution": []
+        },
+        "full_reachable_graph": {
+          "status": "UNSOLVABLE_EXHAUSTIVE",
+          "all_reachable_states": 18,
+          "effective_edges": 31,
+          "solvable_states": 0,
+          "unsolvable_states": 18,
+          "terminal_clear_states": 0,
+          "terminal_stuck_states": 1
+        }
+      }
+    }
+  ],
+  "source_sha256": {
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Data/AssemblyInfo.cs": "a3376c554f888b51b9f5b389ef2b0c0593217bee264a3e9010bb7eaf846a60b0",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Data/Board/GridPosition.cs": "4a498b5f6ad01674ddf0510663a5e94e2887da746fba2f190add0ab0f394850b",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Data/Board/ShipPlacementData.cs": "e2f0ad4f958660613c7e1d97d05dcd1417ee0b26fb9f969609362aa022ae1fca",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Data/Boss/BossDefinition.cs": "9a57a223c30afe49dff8847e5440ebe92b5909e3121cb300e2c80790ce526dac",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Data/Boss/BossRuntimeData.cs": "ad07614d9b70f22d4db3f61597ccfceccc849147a2383096c24babb20e59b405",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Data/Config/LevelData.cs": "7b051afcd472280fc8a42d5ed84d57831a5deb30d839fb832b6288d6f4dccb7b",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Data/Core/GameState.cs": "90be57695bd12a74bb61e7bde15f2905d22e4bff85bb4918b4463bdc774fccee",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Data/Ship/ShipDefinition.cs": "39b7d50806c9035bb8b05a405801131edc4bc4dc7306f8444239e34c4aca8e71",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Data/Ship/ShipDirection.cs": "05ff7379c7c0fbf02d3c4a6ea6e2718edd42099046702fb523e888050ff59b35",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Data/Ship/ShipRuntimeData.cs": "4829c5fd1be7687535cb4795d590da256b1e3040ca6b8b74e65b00644cb9c572",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Data/Ship/ShipState.cs": "8e9413de704656bd7bcdd377541b7f4e4f751570a1989997c49b8e5215613906",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/AssemblyInfo.cs": "2b7bfbf1d6dd633893ef6f04f3af7ce75cc55f6bbd4c144b6fdae4d0ca0ddd06",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Board/BoardModel.cs": "8af777c27f0870b4f47fc066e600fff3d6860615c97b7c0f8e652d3edf113ac5",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Board/BoardShipSnapshot.cs": "010b597ac03b466f7a47c1323e998b620fc8b28d3f9320becacbc4ece23c8793",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Board/BoardValidator.cs": "f2ffb4398cb12bd8a9825300e3d98c2261730099ea11c12abb92378a35e11f60",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Board/ForwardPathResult.cs": "4bd3c30b677954e08e3008b76d8b83e0979e8554be6fe52a44ffb5b5bb57108b",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Board/GridFootprint.cs": "1e82bd07e715df4616ac89fb580034a149f747dacbddf47a585ba38011b4a00c",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Board/ValidationResult.cs": "d53e71bdbebb76f51ed3fb7c04602d86066ebfe95857695877de9b265626ac23",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Collection/AppearanceCatalog.cs": "6c7f92206d64de51d5b087554c0f72e04fb80b90d233cfec3940ebe23ceb2e74",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Collection/AppearanceDrawEngine.cs": "09511cc3bff4b2ecf8cd4cc337bb4d37f81207c6cd8b1f05a177f3048a9fb29e",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Collection/ClearRewardMilestones.cs": "8be5098c9706dca0f8e78153d945162a902128db0883f25cbb351def5f387a99",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Collection/CollectionData.cs": "5d74283df38679ed83261c266f0b58ba2ea4b93fa9e5de1c32e0287204e9f8c3",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Collection/CollectionDrawEngine.cs": "8b8bedf77ba8f08fa229ac66e902fd3f78228339619b822fb21c4f6c904ba921",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Collection/CollectionShipAllocator.cs": "33eb7473efac85a2df3b63e940ee9c6d52442124e168967a2a2741a17d8ecf06",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Collection/ShowcaseCatalog.cs": "bb07730114080ae51b7b9b11889199ac491553ccf5674cbcd65df2dce77a9f57",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Collection/SkinCatalog.cs": "9b6745179624ac98802794e1ae75f1b9b1bfa64f67ec6f99b71254cade511333",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Collection/UniqueDrawEngine.cs": "ce85183fff720c17fdca6e105025a38ff8830591392c86d7d273ff0338e9ab3c",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Combat/AttackToken.cs": "9c08036e2c37e9dc3a75600d6d491b94abec4e6609162dc599f07a183bef00b7",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Combat/ExitComboState.cs": "76ecd474905c4a2cd74434c007216c6d779d61022be20024af69ccec8eb24887",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Combat/FleetCombatSystem.cs": "151060deedbbf00a9e0bca484c8fd36a66caeccc14ade26a07643adbb3937519",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Constants/FoundationLimits.cs": "024e38b8f2ddec63b1264c84500a3461cba5d5ec38046793c467e26abcca1db4",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Events/GameEvents.cs": "d764219fcd2d6bf54320397823553efbe7b059140deea4715fc024a5b8cc02f0",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Events/IEventBus.cs": "6c925e14cb5df5d07639aaf7453626f95b7aa69ca67840a4c39e429995a925c3",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Events/SessionEventBus.cs": "4436c8d858b19d1b248887a262b4435d75f62bf5d5f65254eec78cdb9cb3cb60",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Fleet/FleetRoster.cs": "453a9349b91f00772a6611933f62e89b28e5d5eeb75b645d862899c542e56fca",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/GameSession/GameSession.cs": "dc61dedb14ac80f8eac15d9a2ff5a378c2bf92556319f34649fa2e039be4b568",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/GameSession/LevelSessionFactory.cs": "4bdf0679d43b18b2e1910936a2856c3b925a9223284ecbe20f7d2539c9010cfb",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Lane/LaneRoute.cs": "18a20f8d859a9dd2f955c1e33b59a1e5df5c8dff82a1fdfcbeb9d11922bff9ad",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Lane/LaneTransitOperation.cs": "744b1cface97afae8fc9379452e77af4bc2485e26e033fb3d3d7791b180dfe0b",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Lane/LaneTransitTiming.cs": "1d0f53248ff64c493df360ab1fd5f720682385f54ed57b62db88a20c02ba9511",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Lane/TransitSystem.cs": "a340136b405455021138ae9bd8c2da1ba5fb272920ea586c78a6e6d9b4f7668c",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/BoardDependencyGraph.cs": "bc6ebc6715a1a8bda286066528fd110063771ac26f5dda7634caa794eb79943f",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/BoardSolvabilityAnalyzer.cs": "679c734dda5886debcbe788c2f9c23457ed8118b598c3bb0c5be5de777e9ee0a",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/CampaignLevelPlan.cs": "f6e96d4d5a5cd3f8351b406ca50122f41845170a1011aa8f5b1edd13fb00443d",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/LevelEntrySequence.cs": "c26d2a6608f940c857cca9f6c6fbbc698fb9f08c0ce46e66632c35c8eba192f8",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/LevelLayoutIdentity.cs": "dfb080fd6aeff790328a9408ed72345c5e83d9cce90307ba84c7c9a1c63f5980",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/LevelProductionProfile.cs": "5981d964fe4716010fcb93360003fc357692c4c25ba148afbfcc9f41fa1a5128",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/LevelProductionValidator.cs": "568ecf503da8e0f0dc109b85e866e5ddb0778d49affb58691e3a1232d1f26cdc",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/LevelRecipe.cs": "b1422a81c6cd9e7e2f45c2bc7b121e25799cd2d4bb13611577def545b156a894",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/LevelSolutionProof.cs": "aeaf9f4a75cb74a36566219e063b2f8b3217da3393fbd6eae52d961c1e98f4fa",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/LevelSolver.cs": "551949c669c7cdd925d30f22e5724783462ddcc341c5933e1ff806a1f7bbbfe0",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/LevelStructureAnalyzer.cs": "48842080853de1f1a8f94b5a15825ea3c3d94a344cdfa20f8e2fae1473e817ee",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/LocalLayoutAnalyzer.cs": "f630610116fe2c0dad8d5e44bb50f5519d6b6a6290fcf1f5ac3923eb1b99f2b0",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/RecipeLevelGenerator.cs": "79b3101a57a49fb980650479e4afbaa1c26206e1ada55c0513d818c32b66a204",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/ReverseGenerationProfile.cs": "c4b4867fcc434d43746855c37c79f00f5abaaa8401905ad68ab351556fafdc21",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/ReverseLevelGenerator.cs": "d97dad714fe0be29033e8378e6f0e904653718189f3cb9ef3f00472c39f21a01",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/SolutionProof.cs": "17ec52a7521d7b7e343ba19686327dc96cfc5c37540a4d2e097ced8e323a855b",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Save/BattleCoinRules.cs": "0e02cee1185ab07cefbd23e37581a6b8e246a24952159bb076e16ba0f0d6b6a4",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Save/CoinShopCatalog.cs": "ac59d470eb7ac04dd88c2178abbcd42b5a9c72614b86cc8f73a366e3cbfe12fb",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Save/PlayerSaveData.cs": "4029834734cfdfc1f401245632478e7d8a073467cf0b4ef1307de2ba07f9f4f2",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Save/PlayerSaveService.Appearance.cs": "9da56184d4a20b849d191ad0429f75f5e56d018fcd3dc5a0d33479b6c62895a6",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Save/PlayerSaveService.AppearanceDraws.cs": "a40b9021e2e824041617988c264122f1b5592128d07e2fe8090301158e2e0845",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Save/PlayerSaveService.Collection.cs": "f1cd32963a37a8ba1194ea08586e6fa2a508c5296da6226330c0726448b5ae2c",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Save/PlayerSaveService.Draws.cs": "6b824f7f3dfddf36042a8dc3b83c730b58bf609928db0211ef1827a6291165f3",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Save/PlayerSaveService.Showcase.cs": "eb19374edb30e1974b5ccbb74cf5905ca499bb2de221b18e302e59185ce68239",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Save/PlayerSaveService.UniqueDraws.cs": "46856f98c68cd81d695926c10aa4877261240d003ccd2e8d8d1cabedc7ff3c25",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Save/PlayerSaveService.cs": "35bc408f01213b2d9cd3a68c310c7fd53247a7a0e77f975dde1673fc49fd1ea7",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Save/SavedGameRuntime.cs": "2f8113cce4ce8f51d04ec19521a3b91b8898026d768d9c889d8faddd21d21407",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Save/VictoryResult.cs": "deeb4520a7a8a778460ea3ad00afe06678da7c9f718339f33943bc7eab62c310",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Ship/ShipMoveOperation.cs": "ee2c94c4ca1a900f40781788c5bdb6b21fcdec15ec3da593f19043ea924e5afb",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Ship/ShipMovementSystem.cs": "fd5bbb109ae15a7e30bd0c2874f05325b1a360f9dc61a927c85bbe69e7bee0cc",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Tools/BoardAssistance.cs": "dc869fa07c1862d29431e74289e021f96fa8a9e9a6a36a2b75f7f25cfed49023",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Tools/BoardProgressMonitor.cs": "0947787b69ff4b83de890f1eea74fda053a951507b9971715214104b6f1f5b80",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Tools/RemainingFleetShuffler.cs": "4160cc4ce483fcc7888b2d86cff113700e882b3b74be819993895baa6dfaa662",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Tools/ShipToolSystem.cs": "b58912489b6c79164b68e1333202977b55dcc070d2a75c1fc1bcacc433143d4f",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Tools/ToolInventory.cs": "80da90e46f548d60ac436298101fe8645e0984b414ab2b0056cf6ec6227d2082"
+  },
+  "harness_sha256": "729b2c411899ead16b94c36f93cae976f6302c4d5d6c27a5ffbad240381cdcfe"
+}

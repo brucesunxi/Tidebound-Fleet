@@ -20,10 +20,13 @@ namespace Tidebound.Unity.Boss
         private readonly List<RectTransform> seats=new List<RectTransform>();
         private readonly List<Text> counts=new List<Text>();
         private readonly Dictionary<string,RectTransform> projectiles=new Dictionary<string,RectTransform>();
-        public int ProjectileCount => projectiles.Count;
-        public void Initialize(GameSession session,FleetCombatSystem combat,Font font)
+        private FleetBattleArtView artwork;
+        public FleetBattleArtView Artwork=>artwork;
+        public int ProjectileCount => artwork!=null?artwork.ProjectileCount:projectiles.Count;
+        public void Initialize(GameSession session,FleetCombatSystem combat,Font font,int productLevel=0)
         {
             this.session=session;this.combat=combat;this.font=font;root=(RectTransform)transform;
+            if(productLevel>0){artwork=gameObject.AddComponent<FleetBattleArtView>();artwork.Initialize(session,combat,productLevel);return;}
             gameObject.AddComponent<RectMask2D>();
             boss=Panel("Kraken",new Color(.65f,.20f,.30f));bossImage=boss.GetComponent<Image>();
             Text("KrakenLabel",boss,"KRAKEN",12);
@@ -40,6 +43,7 @@ namespace Tidebound.Unity.Boss
         public void Present()
         {
             if(combat==null) return;
+            if(artwork!=null){artwork.Present();return;}
             var w=root.rect.width;var h=root.rect.height;
             Set(boss,new Rect(w/2-45,h-24,90,22));
             Set(hpTrack,new Rect(8,h-39,w-16,11));

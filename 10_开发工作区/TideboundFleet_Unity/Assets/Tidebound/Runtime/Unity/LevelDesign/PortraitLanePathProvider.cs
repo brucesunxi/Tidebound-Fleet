@@ -10,12 +10,14 @@ namespace Tidebound.Unity.LevelDesign
     public sealed class PortraitLanePathProvider : ILanePathProvider
     {
         private readonly float width, height;
-        private const float Inset = PortraitBoardLayout.LaneWidthInCells / 2;
-        public PortraitLanePathProvider(int width, int height)
+        private readonly float Inset,ingress;
+        public PortraitLanePathProvider(int width, int height,bool gameplay=false)
         {
             this.width = width; this.height = height;
+            Inset=gameplay?PortraitBoardLayout.GameplayLaneCenterInCells:PortraitBoardLayout.LaneWidthInCells/2;
+            ingress=gameplay?.95f:PortraitBoardLayout.LaneWidthInCells;
         }
-        public Vector3 FleetIngressPosition => new Vector3(width / 2, height + PortraitBoardLayout.LaneWidthInCells, 0);
+        public Vector3 FleetIngressPosition => new Vector3(width / 2, height + ingress, 0);
         public LaneWorldPath CreatePath(LaneRoute route, Vector3 tail)
         {
             var tl = new Vector3(-Inset, height + Inset, 0);

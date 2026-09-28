@@ -13,7 +13,8 @@ namespace Tidebound.Config
     {
         public const string Status = "CandidateNeedsPlaytest";
 
-        public static string Write(RecipeGenerationResult candidate)
+        public static string Write(RecipeGenerationResult candidate, string recipeVersion = Phase5RLevelRecipes.Version,
+            string screeningVersion = Phase5RLevelRecipes.ScreeningVersion)
         {
             if (candidate?.Status != LevelGenerationStatus.Success || candidate.Generation == null)
                 throw new ArgumentException("A certified recipe candidate is required.", nameof(candidate));
@@ -28,8 +29,8 @@ namespace Tidebound.Config
                 if (issues.Count > 0 || !result.ConstructionProof.Replay(result.Level.LevelId, board).IsComplete)
                     throw new ArgumentException("Candidate no longer matches its recipe or construction witness.");
                 root["status"] = Status;
-                root["recipeVersion"] = Phase5RLevelRecipes.Version;
-                root["screeningVersion"] = Phase5RLevelRecipes.ScreeningVersion;
+                root["recipeVersion"] = recipeVersion;
+                root["screeningVersion"] = screeningVersion;
                 root["recipe"] = Profile(candidate.Recipe.Profile);
                 root["localScreen"] = new JObject
                 {

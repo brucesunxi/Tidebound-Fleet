@@ -1,0 +1,1242 @@
+{
+  "profilesPerScenario": 3000,
+  "seedRange": "000...001 through 000...bb8",
+  "quantiles": "P10/P50/P90 nearest rank (rounded index)",
+  "method": "Production C# draw engine. Synthetic profiles. Batch audit has no exchanges. Lifecycle uses minimum boat income, no ads/payment/retries, all 100 clears, optional highest-rarity-affordable exchanges after each purchase, stops buying at completion. Fixed per-clear tool budgets are sensitivity assumptions, not a simulation of actual tool demand or inventory. Candidate fixed price/cap affect audit wallet only; draw rules remain production.",
+  "pool": [
+    {
+      "Id": "TF_SKIN_K03",
+      "ChineseName": "远航号",
+      "rarity": "Common"
+    },
+    {
+      "Id": "TF_SKIN_K04",
+      "ChineseName": "黑帆号",
+      "rarity": "Epic"
+    },
+    {
+      "Id": "TF_SKIN_K09",
+      "ChineseName": "红轮号",
+      "rarity": "Common"
+    },
+    {
+      "Id": "TF_SKIN_K11",
+      "ChineseName": "银鲨号",
+      "rarity": "Uncommon"
+    },
+    {
+      "Id": "TF_SKIN_K13",
+      "ChineseName": "草莓号",
+      "rarity": "Uncommon"
+    },
+    {
+      "Id": "TF_SKIN_K15",
+      "ChineseName": "薄荷号",
+      "rarity": "Uncommon"
+    },
+    {
+      "Id": "TF_SKIN_K16",
+      "ChineseName": "糖梦号",
+      "rarity": "Rare"
+    },
+    {
+      "Id": "TF_SKIN_K19",
+      "ChineseName": "雷霆号",
+      "rarity": "Epic"
+    },
+    {
+      "Id": "TF_SKIN_K21",
+      "ChineseName": "虹梦号",
+      "rarity": "Epic"
+    },
+    {
+      "Id": "TF_SKIN_K24",
+      "ChineseName": "南瓜号",
+      "rarity": "Rare"
+    },
+    {
+      "Id": "TF_SKIN_K26",
+      "ChineseName": "月兔号",
+      "rarity": "Rare"
+    },
+    {
+      "Id": "TF_SKIN_K28",
+      "ChineseName": "星际号",
+      "rarity": "Legendary"
+    },
+    {
+      "Id": "TF_SKIN_K29",
+      "ChineseName": "异星号",
+      "rarity": "Legendary"
+    },
+    {
+      "Id": "TF_SKIN_K31",
+      "ChineseName": "秘宝号",
+      "rarity": "Legendary"
+    }
+  ],
+  "batchAudit": {
+    "batches": [
+      {
+        "batch": 1,
+        "unique": [
+          5.0,
+          6.0,
+          7.0
+        ],
+        "newInBatch": [
+          4.0,
+          5.0,
+          6.0
+        ],
+        "meanNew": 5.208,
+        "zeroNewRate": 0.0,
+        "meanDuplicate": 4.792,
+        "ticketGain": [
+          50.0,
+          70.0,
+          120.0
+        ],
+        "coinsSpent": [
+          2700.0,
+          2700.0,
+          2700.0
+        ]
+      },
+      {
+        "batch": 2,
+        "unique": [
+          8.0,
+          9.0,
+          10.0
+        ],
+        "newInBatch": [
+          2.0,
+          3.0,
+          4.0
+        ],
+        "meanNew": 2.674,
+        "zeroNewRate": 0.0016666666666666668,
+        "meanDuplicate": 7.326,
+        "ticketGain": [
+          90.0,
+          130.0,
+          220.0
+        ],
+        "coinsSpent": [
+          6750.0,
+          6750.0,
+          6750.0
+        ]
+      },
+      {
+        "batch": 3,
+        "unique": [
+          9.0,
+          10.0,
+          11.0
+        ],
+        "newInBatch": [
+          0.0,
+          1.0,
+          2.0
+        ],
+        "meanNew": 1.0666666666666667,
+        "zeroNewRate": 0.2813333333333333,
+        "meanDuplicate": 8.933333333333334,
+        "ticketGain": [
+          130.0,
+          200.0,
+          310.0
+        ],
+        "coinsSpent": [
+          13050.0,
+          13050.0,
+          13050.0
+        ]
+      },
+      {
+        "batch": 5,
+        "unique": [
+          10.0,
+          11.0,
+          12.0
+        ],
+        "newInBatch": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "meanNew": 0.36466666666666664,
+        "zeroNewRate": 0.665,
+        "meanDuplicate": 9.635333333333334,
+        "ticketGain": [
+          160.0,
+          240.0,
+          370.0
+        ],
+        "coinsSpent": [
+          25650.0,
+          25650.0,
+          27900.0
+        ]
+      },
+      {
+        "batch": 10,
+        "unique": [
+          12.0,
+          12.0,
+          13.0
+        ],
+        "newInBatch": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "meanNew": 0.16,
+        "zeroNewRate": 0.8463333333333334,
+        "meanDuplicate": 9.84,
+        "ticketGain": [
+          170.0,
+          270.0,
+          430.0
+        ],
+        "coinsSpent": [
+          57150.0,
+          67950.0,
+          72900.0
+        ]
+      }
+    ],
+    "firstTenSinglesCost": [
+      3600.0,
+      3900.0,
+      4050.0
+    ],
+    "meanFirstTenSinglesCost": 3891.1666666666665
+  },
+  "endPool": {
+    "assumption": "Controlled states, not sampled population: 13/14, missing one red; gold dry 0; red dry 0 or 59. Full-pool engine behavior only.",
+    "noNewWithoutNearRedPity": 0.96,
+    "noNewWithRedPityNextDraw": 0.65,
+    "fullPoolChargedTen": 3000
+  },
+  "lifecycle": [
+    {
+      "name": "current-ten-no-tools-no-exchange",
+      "kind": "Ten",
+      "toolBudget": 0,
+      "capped": false,
+      "exchange": false,
+      "fixedPrice": 0,
+      "reserve": 650,
+      "firstTenRate": 1.0,
+      "firstTenLevel": [
+        12.0,
+        12.0,
+        12.0
+      ],
+      "completionRate": 0.25566666666666665,
+      "completionLevel": [
+        72.0,
+        90.0,
+        99.0
+      ],
+      "checkpoints": [
+        {
+          "level": 10,
+          "unique": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "wallet": [
+            2627.0,
+            2627.0,
+            2627.0
+          ],
+          "draws": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "coinsSpent": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "completeRate": 0.0
+        },
+        {
+          "level": 30,
+          "unique": [
+            9.0,
+            10.0,
+            11.0
+          ],
+          "wallet": [
+            977.0,
+            977.0,
+            3227.0
+          ],
+          "draws": [
+            30.0,
+            30.0,
+            30.0
+          ],
+          "coinsSpent": [
+            10800.0,
+            13050.0,
+            13050.0
+          ],
+          "completeRate": 0.0
+        },
+        {
+          "level": 60,
+          "unique": [
+            11.0,
+            12.0,
+            13.0
+          ],
+          "wallet": [
+            1577.0,
+            5177.0,
+            7877.0
+          ],
+          "draws": [
+            60.0,
+            70.0,
+            80.0
+          ],
+          "coinsSpent": [
+            38250.0,
+            40950.0,
+            44550.0
+          ],
+          "completeRate": 0.0036666666666666666
+        },
+        {
+          "level": 100,
+          "unique": [
+            12.0,
+            13.0,
+            14.0
+          ],
+          "wallet": [
+            2177.0,
+            5777.0,
+            28277.0
+          ],
+          "draws": [
+            120.0,
+            150.0,
+            160.0
+          ],
+          "coinsSpent": [
+            88650.0,
+            111150.0,
+            114750.0
+          ],
+          "completeRate": 0.25566666666666665
+        }
+      ]
+    },
+    {
+      "name": "current-ten-no-tools-exchange",
+      "kind": "Ten",
+      "toolBudget": 0,
+      "capped": false,
+      "exchange": true,
+      "fixedPrice": 0,
+      "reserve": 650,
+      "firstTenRate": 1.0,
+      "firstTenLevel": [
+        12.0,
+        12.0,
+        12.0
+      ],
+      "completionRate": 0.7406666666666667,
+      "completionLevel": [
+        77.0,
+        88.0,
+        99.0
+      ],
+      "checkpoints": [
+        {
+          "level": 10,
+          "unique": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "wallet": [
+            2627.0,
+            2627.0,
+            2627.0
+          ],
+          "draws": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "coinsSpent": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "completeRate": 0.0
+        },
+        {
+          "level": 30,
+          "unique": [
+            9.0,
+            10.0,
+            11.0
+          ],
+          "wallet": [
+            977.0,
+            977.0,
+            5027.0
+          ],
+          "draws": [
+            20.0,
+            30.0,
+            30.0
+          ],
+          "coinsSpent": [
+            9000.0,
+            13050.0,
+            13050.0
+          ],
+          "completeRate": 0.0
+        },
+        {
+          "level": 60,
+          "unique": [
+            12.0,
+            12.0,
+            13.0
+          ],
+          "wallet": [
+            2477.0,
+            5177.0,
+            7877.0
+          ],
+          "draws": [
+            60.0,
+            70.0,
+            70.0
+          ],
+          "coinsSpent": [
+            38250.0,
+            40950.0,
+            43650.0
+          ],
+          "completeRate": 0.010333333333333333
+        },
+        {
+          "level": 100,
+          "unique": [
+            13.0,
+            14.0,
+            14.0
+          ],
+          "wallet": [
+            3977.0,
+            15227.0,
+            39977.0
+          ],
+          "draws": [
+            110.0,
+            140.0,
+            150.0
+          ],
+          "coinsSpent": [
+            76950.0,
+            102150.0,
+            112950.0
+          ],
+          "completeRate": 0.7406666666666667
+        }
+      ]
+    },
+    {
+      "name": "current-single-75-exchange",
+      "kind": "Single",
+      "toolBudget": 75,
+      "capped": false,
+      "exchange": true,
+      "fixedPrice": 0,
+      "reserve": 650,
+      "firstTenRate": 0.0,
+      "firstTenLevel": [],
+      "completionRate": 0.425,
+      "completionLevel": [
+        80.0,
+        93.0,
+        98.0
+      ],
+      "checkpoints": [
+        {
+          "level": 10,
+          "unique": [
+            3.0,
+            4.0,
+            5.0
+          ],
+          "wallet": [
+            677.0,
+            827.0,
+            827.0
+          ],
+          "draws": [
+            4.0,
+            4.0,
+            4.0
+          ],
+          "coinsSpent": [
+            1200.0,
+            1200.0,
+            1350.0
+          ],
+          "completeRate": 0.0
+        },
+        {
+          "level": 30,
+          "unique": [
+            9.0,
+            9.0,
+            10.0
+          ],
+          "wallet": [
+            727.0,
+            977.0,
+            1277.0
+          ],
+          "draws": [
+            20.0,
+            22.0,
+            23.0
+          ],
+          "coinsSpent": [
+            10650.0,
+            10950.0,
+            11200.0
+          ],
+          "completeRate": 0.0
+        },
+        {
+          "level": 60,
+          "unique": [
+            12.0,
+            12.0,
+            12.0
+          ],
+          "wallet": [
+            727.0,
+            1127.0,
+            1527.0
+          ],
+          "draws": [
+            57.0,
+            62.0,
+            64.0
+          ],
+          "coinsSpent": [
+            40250.0,
+            40650.0,
+            41050.0
+          ],
+          "completeRate": 0.0023333333333333335
+        },
+        {
+          "level": 100,
+          "unique": [
+            13.0,
+            13.0,
+            14.0
+          ],
+          "wallet": [
+            827.0,
+            1527.0,
+            25177.0
+          ],
+          "draws": [
+            103.0,
+            128.0,
+            132.0
+          ],
+          "coinsSpent": [
+            84400.0,
+            108050.0,
+            108750.0
+          ],
+          "completeRate": 0.425
+        }
+      ]
+    },
+    {
+      "name": "current-ten-75-exchange",
+      "kind": "Ten",
+      "toolBudget": 75,
+      "capped": false,
+      "exchange": true,
+      "fixedPrice": 0,
+      "reserve": 650,
+      "firstTenRate": 1.0,
+      "firstTenLevel": [
+        14.0,
+        14.0,
+        14.0
+      ],
+      "completionRate": 0.6276666666666667,
+      "completionLevel": [
+        79.0,
+        89.0,
+        98.0
+      ],
+      "checkpoints": [
+        {
+          "level": 10,
+          "unique": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "wallet": [
+            2027.0,
+            2027.0,
+            2027.0
+          ],
+          "draws": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "coinsSpent": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "completeRate": 0.0
+        },
+        {
+          "level": 30,
+          "unique": [
+            8.0,
+            9.0,
+            10.0
+          ],
+          "wallet": [
+            2927.0,
+            5177.0,
+            5177.0
+          ],
+          "draws": [
+            20.0,
+            20.0,
+            20.0
+          ],
+          "coinsSpent": [
+            6750.0,
+            6750.0,
+            9000.0
+          ],
+          "completeRate": 0.0
+        },
+        {
+          "level": 60,
+          "unique": [
+            12.0,
+            12.0,
+            13.0
+          ],
+          "wallet": [
+            827.0,
+            827.0,
+            7127.0
+          ],
+          "draws": [
+            60.0,
+            70.0,
+            70.0
+          ],
+          "coinsSpent": [
+            34650.0,
+            40950.0,
+            40950.0
+          ],
+          "completeRate": 0.009
+        },
+        {
+          "level": 100,
+          "unique": [
+            13.0,
+            14.0,
+            14.0
+          ],
+          "wallet": [
+            4727.0,
+            8327.0,
+            32627.0
+          ],
+          "draws": [
+            110.0,
+            140.0,
+            140.0
+          ],
+          "coinsSpent": [
+            76950.0,
+            101250.0,
+            104850.0
+          ],
+          "completeRate": 0.6276666666666667
+        }
+      ]
+    },
+    {
+      "name": "current-ten-250-exchange",
+      "kind": "Ten",
+      "toolBudget": 250,
+      "capped": false,
+      "exchange": true,
+      "fixedPrice": 0,
+      "reserve": 650,
+      "firstTenRate": 1.0,
+      "firstTenLevel": [
+        22.0,
+        22.0,
+        22.0
+      ],
+      "completionRate": 0.371,
+      "completionLevel": [
+        83.0,
+        95.0,
+        99.0
+      ],
+      "checkpoints": [
+        {
+          "level": 10,
+          "unique": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "wallet": [
+            627.0,
+            627.0,
+            627.0
+          ],
+          "draws": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "coinsSpent": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "completeRate": 0.0
+        },
+        {
+          "level": 30,
+          "unique": [
+            5.0,
+            6.0,
+            8.0
+          ],
+          "wallet": [
+            4327.0,
+            4327.0,
+            4327.0
+          ],
+          "draws": [
+            10.0,
+            10.0,
+            10.0
+          ],
+          "coinsSpent": [
+            2700.0,
+            2700.0,
+            2700.0
+          ],
+          "completeRate": 0.0
+        },
+        {
+          "level": 60,
+          "unique": [
+            10.0,
+            11.0,
+            12.0
+          ],
+          "wallet": [
+            3727.0,
+            5977.0,
+            5977.0
+          ],
+          "draws": [
+            50.0,
+            50.0,
+            50.0
+          ],
+          "coinsSpent": [
+            25650.0,
+            25650.0,
+            27900.0
+          ],
+          "completeRate": 0.0013333333333333333
+        },
+        {
+          "level": 100,
+          "unique": [
+            12.0,
+            13.0,
+            14.0
+          ],
+          "wallet": [
+            3777.0,
+            6477.0,
+            15477.0
+          ],
+          "draws": [
+            110.0,
+            120.0,
+            120.0
+          ],
+          "coinsSpent": [
+            76950.0,
+            85950.0,
+            88650.0
+          ],
+          "completeRate": 0.371
+        }
+      ]
+    },
+    {
+      "name": "candidate-single-75-exchange",
+      "kind": "Single",
+      "toolBudget": 75,
+      "capped": true,
+      "exchange": true,
+      "fixedPrice": 600,
+      "reserve": 650,
+      "firstTenRate": 0.0,
+      "firstTenLevel": [],
+      "completionRate": 0.0013333333333333333,
+      "completionLevel": [
+        67.0,
+        96.0,
+        100.0
+      ],
+      "checkpoints": [
+        {
+          "level": 10,
+          "unique": [
+            2.0,
+            3.0,
+            3.0
+          ],
+          "wallet": [
+            827.0,
+            827.0,
+            827.0
+          ],
+          "draws": [
+            2.0,
+            2.0,
+            2.0
+          ],
+          "coinsSpent": [
+            1200.0,
+            1200.0,
+            1200.0
+          ],
+          "completeRate": 0.0
+        },
+        {
+          "level": 30,
+          "unique": [
+            5.0,
+            7.0,
+            8.0
+          ],
+          "wallet": [
+            1127.0,
+            1127.0,
+            1127.0
+          ],
+          "draws": [
+            11.0,
+            11.0,
+            11.0
+          ],
+          "coinsSpent": [
+            6600.0,
+            6600.0,
+            6600.0
+          ],
+          "completeRate": 0.0
+        },
+        {
+          "level": 60,
+          "unique": [
+            9.0,
+            10.0,
+            11.0
+          ],
+          "wallet": [
+            677.0,
+            677.0,
+            677.0
+          ],
+          "draws": [
+            26.0,
+            26.0,
+            26.0
+          ],
+          "coinsSpent": [
+            15600.0,
+            15600.0,
+            15600.0
+          ],
+          "completeRate": 0.0
+        },
+        {
+          "level": 100,
+          "unique": [
+            10.0,
+            11.0,
+            12.0
+          ],
+          "wallet": [
+            677.0,
+            677.0,
+            677.0
+          ],
+          "draws": [
+            45.0,
+            45.0,
+            45.0
+          ],
+          "coinsSpent": [
+            27000.0,
+            27000.0,
+            27000.0
+          ],
+          "completeRate": 0.0013333333333333333
+        }
+      ]
+    },
+    {
+      "name": "candidate-ten-75-exchange",
+      "kind": "Ten",
+      "toolBudget": 75,
+      "capped": true,
+      "exchange": true,
+      "fixedPrice": 600,
+      "reserve": 650,
+      "firstTenRate": 1.0,
+      "firstTenLevel": [
+        25.0,
+        25.0,
+        25.0
+      ],
+      "completionRate": 0.0016666666666666668,
+      "completionLevel": [
+        81.0,
+        100.0,
+        100.0
+      ],
+      "checkpoints": [
+        {
+          "level": 10,
+          "unique": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "wallet": [
+            2027.0,
+            2027.0,
+            2027.0
+          ],
+          "draws": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "coinsSpent": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "completeRate": 0.0
+        },
+        {
+          "level": 30,
+          "unique": [
+            5.0,
+            6.0,
+            8.0
+          ],
+          "wallet": [
+            2327.0,
+            2327.0,
+            2327.0
+          ],
+          "draws": [
+            10.0,
+            10.0,
+            10.0
+          ],
+          "coinsSpent": [
+            5400.0,
+            5400.0,
+            5400.0
+          ],
+          "completeRate": 0.0
+        },
+        {
+          "level": 60,
+          "unique": [
+            8.0,
+            9.0,
+            10.0
+          ],
+          "wallet": [
+            5477.0,
+            5477.0,
+            5477.0
+          ],
+          "draws": [
+            20.0,
+            20.0,
+            20.0
+          ],
+          "coinsSpent": [
+            10800.0,
+            10800.0,
+            10800.0
+          ],
+          "completeRate": 0.0
+        },
+        {
+          "level": 100,
+          "unique": [
+            10.0,
+            11.0,
+            12.0
+          ],
+          "wallet": [
+            677.0,
+            677.0,
+            677.0
+          ],
+          "draws": [
+            50.0,
+            50.0,
+            50.0
+          ],
+          "coinsSpent": [
+            27000.0,
+            27000.0,
+            27000.0
+          ],
+          "completeRate": 0.0016666666666666668
+        }
+      ]
+    },
+    {
+      "name": "candidate-ten-250-exchange",
+      "kind": "Ten",
+      "toolBudget": 250,
+      "capped": true,
+      "exchange": true,
+      "fixedPrice": 600,
+      "reserve": 650,
+      "firstTenRate": 1.0,
+      "firstTenLevel": [
+        60.0,
+        60.0,
+        60.0
+      ],
+      "completionRate": 0.0,
+      "completionLevel": [],
+      "checkpoints": [
+        {
+          "level": 10,
+          "unique": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "wallet": [
+            627.0,
+            627.0,
+            627.0
+          ],
+          "draws": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "coinsSpent": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "completeRate": 0.0
+        },
+        {
+          "level": 30,
+          "unique": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "wallet": [
+            2827.0,
+            2827.0,
+            2827.0
+          ],
+          "draws": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "coinsSpent": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "completeRate": 0.0
+        },
+        {
+          "level": 60,
+          "unique": [
+            5.0,
+            6.0,
+            8.0
+          ],
+          "wallet": [
+            727.0,
+            727.0,
+            727.0
+          ],
+          "draws": [
+            10.0,
+            10.0,
+            10.0
+          ],
+          "coinsSpent": [
+            5400.0,
+            5400.0,
+            5400.0
+          ],
+          "completeRate": 0.0
+        },
+        {
+          "level": 100,
+          "unique": [
+            5.0,
+            6.0,
+            8.0
+          ],
+          "wallet": [
+            5127.0,
+            5127.0,
+            5127.0
+          ],
+          "draws": [
+            10.0,
+            10.0,
+            10.0
+          ],
+          "coinsSpent": [
+            5400.0,
+            5400.0,
+            5400.0
+          ],
+          "completeRate": 0.0
+        }
+      ]
+    }
+  ],
+  "sourceSha256": {
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Data/AssemblyInfo.cs": "a3376c554f888b51b9f5b389ef2b0c0593217bee264a3e9010bb7eaf846a60b0",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Data/Board/GridPosition.cs": "4a498b5f6ad01674ddf0510663a5e94e2887da746fba2f190add0ab0f394850b",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Data/Board/ShipPlacementData.cs": "e2f0ad4f958660613c7e1d97d05dcd1417ee0b26fb9f969609362aa022ae1fca",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Data/Boss/BossDefinition.cs": "9a57a223c30afe49dff8847e5440ebe92b5909e3121cb300e2c80790ce526dac",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Data/Boss/BossRuntimeData.cs": "ad07614d9b70f22d4db3f61597ccfceccc849147a2383096c24babb20e59b405",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Data/Config/LevelData.cs": "7b051afcd472280fc8a42d5ed84d57831a5deb30d839fb832b6288d6f4dccb7b",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Data/Core/GameState.cs": "90be57695bd12a74bb61e7bde15f2905d22e4bff85bb4918b4463bdc774fccee",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Data/Ship/ShipDefinition.cs": "39b7d50806c9035bb8b05a405801131edc4bc4dc7306f8444239e34c4aca8e71",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Data/Ship/ShipDirection.cs": "05ff7379c7c0fbf02d3c4a6ea6e2718edd42099046702fb523e888050ff59b35",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Data/Ship/ShipRuntimeData.cs": "4829c5fd1be7687535cb4795d590da256b1e3040ca6b8b74e65b00644cb9c572",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Data/Ship/ShipState.cs": "8e9413de704656bd7bcdd377541b7f4e4f751570a1989997c49b8e5215613906",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/AssemblyInfo.cs": "2b7bfbf1d6dd633893ef6f04f3af7ce75cc55f6bbd4c144b6fdae4d0ca0ddd06",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Board/BoardModel.cs": "8af777c27f0870b4f47fc066e600fff3d6860615c97b7c0f8e652d3edf113ac5",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Board/BoardShipSnapshot.cs": "010b597ac03b466f7a47c1323e998b620fc8b28d3f9320becacbc4ece23c8793",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Board/BoardValidator.cs": "f2ffb4398cb12bd8a9825300e3d98c2261730099ea11c12abb92378a35e11f60",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Board/ForwardPathResult.cs": "4bd3c30b677954e08e3008b76d8b83e0979e8554be6fe52a44ffb5b5bb57108b",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Board/GridFootprint.cs": "1e82bd07e715df4616ac89fb580034a149f747dacbddf47a585ba38011b4a00c",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Board/ValidationResult.cs": "d53e71bdbebb76f51ed3fb7c04602d86066ebfe95857695877de9b265626ac23",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Collection/AppearanceCatalog.cs": "15529ec74a658c4212172f2d455101912bb79e172fdd777ce879768fe9bfe741",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Collection/AppearanceDrawEngine.cs": "09511cc3bff4b2ecf8cd4cc337bb4d37f81207c6cd8b1f05a177f3048a9fb29e",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Collection/CollectionData.cs": "5d74283df38679ed83261c266f0b58ba2ea4b93fa9e5de1c32e0287204e9f8c3",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Collection/CollectionDrawEngine.cs": "8b8bedf77ba8f08fa229ac66e902fd3f78228339619b822fb21c4f6c904ba921",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Collection/CollectionShipAllocator.cs": "33eb7473efac85a2df3b63e940ee9c6d52442124e168967a2a2741a17d8ecf06",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Collection/ShowcaseCatalog.cs": "bb07730114080ae51b7b9b11889199ac491553ccf5674cbcd65df2dce77a9f57",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Collection/SkinCatalog.cs": "9b6745179624ac98802794e1ae75f1b9b1bfa64f67ec6f99b71254cade511333",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Combat/AttackToken.cs": "9c08036e2c37e9dc3a75600d6d491b94abec4e6609162dc599f07a183bef00b7",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Combat/FleetCombatSystem.cs": "151060deedbbf00a9e0bca484c8fd36a66caeccc14ade26a07643adbb3937519",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Constants/FoundationLimits.cs": "024e38b8f2ddec63b1264c84500a3461cba5d5ec38046793c467e26abcca1db4",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Events/GameEvents.cs": "d764219fcd2d6bf54320397823553efbe7b059140deea4715fc024a5b8cc02f0",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Events/IEventBus.cs": "6c925e14cb5df5d07639aaf7453626f95b7aa69ca67840a4c39e429995a925c3",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Events/SessionEventBus.cs": "4436c8d858b19d1b248887a262b4435d75f62bf5d5f65254eec78cdb9cb3cb60",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Fleet/FleetRoster.cs": "453a9349b91f00772a6611933f62e89b28e5d5eeb75b645d862899c542e56fca",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/GameSession/GameSession.cs": "dc61dedb14ac80f8eac15d9a2ff5a378c2bf92556319f34649fa2e039be4b568",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/GameSession/LevelSessionFactory.cs": "4bdf0679d43b18b2e1910936a2856c3b925a9223284ecbe20f7d2539c9010cfb",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Lane/LaneRoute.cs": "18a20f8d859a9dd2f955c1e33b59a1e5df5c8dff82a1fdfcbeb9d11922bff9ad",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Lane/LaneTransitOperation.cs": "744b1cface97afae8fc9379452e77af4bc2485e26e033fb3d3d7791b180dfe0b",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Lane/LaneTransitTiming.cs": "1d0f53248ff64c493df360ab1fd5f720682385f54ed57b62db88a20c02ba9511",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Lane/TransitSystem.cs": "a340136b405455021138ae9bd8c2da1ba5fb272920ea586c78a6e6d9b4f7668c",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/BoardDependencyGraph.cs": "bc6ebc6715a1a8bda286066528fd110063771ac26f5dda7634caa794eb79943f",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/BoardSolvabilityAnalyzer.cs": "679c734dda5886debcbe788c2f9c23457ed8118b598c3bb0c5be5de777e9ee0a",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/CampaignLevelPlan.cs": "f6e96d4d5a5cd3f8351b406ca50122f41845170a1011aa8f5b1edd13fb00443d",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/LevelEntrySequence.cs": "c26d2a6608f940c857cca9f6c6fbbc698fb9f08c0ce46e66632c35c8eba192f8",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/LevelLayoutIdentity.cs": "dfb080fd6aeff790328a9408ed72345c5e83d9cce90307ba84c7c9a1c63f5980",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/LevelProductionProfile.cs": "5981d964fe4716010fcb93360003fc357692c4c25ba148afbfcc9f41fa1a5128",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/LevelProductionValidator.cs": "568ecf503da8e0f0dc109b85e866e5ddb0778d49affb58691e3a1232d1f26cdc",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/LevelRecipe.cs": "b1422a81c6cd9e7e2f45c2bc7b121e25799cd2d4bb13611577def545b156a894",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/LevelSolutionProof.cs": "aeaf9f4a75cb74a36566219e063b2f8b3217da3393fbd6eae52d961c1e98f4fa",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/LevelSolver.cs": "551949c669c7cdd925d30f22e5724783462ddcc341c5933e1ff806a1f7bbbfe0",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/LevelStructureAnalyzer.cs": "48842080853de1f1a8f94b5a15825ea3c3d94a344cdfa20f8e2fae1473e817ee",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/LocalLayoutAnalyzer.cs": "f630610116fe2c0dad8d5e44bb50f5519d6b6a6290fcf1f5ac3923eb1b99f2b0",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/RecipeLevelGenerator.cs": "79b3101a57a49fb980650479e4afbaa1c26206e1ada55c0513d818c32b66a204",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/ReverseGenerationProfile.cs": "c4b4867fcc434d43746855c37c79f00f5abaaa8401905ad68ab351556fafdc21",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/ReverseLevelGenerator.cs": "d97dad714fe0be29033e8378e6f0e904653718189f3cb9ef3f00472c39f21a01",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/SolutionProof.cs": "17ec52a7521d7b7e343ba19686327dc96cfc5c37540a4d2e097ced8e323a855b",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Save/BattleCoinRules.cs": "649c43df42209ab2521da3e2fe3fcde9dfead67833a518f959de892fd4049676",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Save/CoinShopCatalog.cs": "ac59d470eb7ac04dd88c2178abbcd42b5a9c72614b86cc8f73a366e3cbfe12fb",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Save/PlayerSaveData.cs": "67fcf15b580186a62e1312a13390491bcbcb18a6e91bfabf43556a0cb90318bf",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Save/PlayerSaveService.Appearance.cs": "9da56184d4a20b849d191ad0429f75f5e56d018fcd3dc5a0d33479b6c62895a6",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Save/PlayerSaveService.AppearanceDraws.cs": "1c8e2d6ac3ef5d3ab0375671b546c3afbc9edb101c63aedf1fed6d91a6c3177f",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Save/PlayerSaveService.Collection.cs": "585dde4e4ceee4a28c9716bd4c7c9e39404b80976dc4fe384b96ea62cd9b8054",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Save/PlayerSaveService.Draws.cs": "c12cbfe094d4045dd5d9f7854fadd0eee6636da43dbbb93d8ca236e0378cc263",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Save/PlayerSaveService.Showcase.cs": "b5a23a5f8336e9094de6668ef3c4c3af3434cf5f055d5a56ce4dea4ee957db34",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Save/PlayerSaveService.cs": "fbb2d7ace6d48b47dcced5e133ffc36254d93ece582cad41d7fa338cd458f289",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Save/SavedGameRuntime.cs": "ca0ffd85d0d7d6170df2df884ec525ad7cae02a48472e4522fcf24b8284064bc",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Save/VictoryResult.cs": "4e2dec0397b1e74af7a02f29e43b579c1fe5c488d84c58e1eafd320f61c8cf6f",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Ship/ShipMoveOperation.cs": "ee2c94c4ca1a900f40781788c5bdb6b21fcdec15ec3da593f19043ea924e5afb",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Ship/ShipMovementSystem.cs": "fd5bbb109ae15a7e30bd0c2874f05325b1a360f9dc61a927c85bbe69e7bee0cc",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Tools/BoardAssistance.cs": "dc869fa07c1862d29431e74289e021f96fa8a9e9a6a36a2b75f7f25cfed49023",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Tools/BoardProgressMonitor.cs": "0947787b69ff4b83de890f1eea74fda053a951507b9971715214104b6f1f5b80",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Tools/RemainingFleetShuffler.cs": "4160cc4ce483fcc7888b2d86cff113700e882b3b74be819993895baa6dfaa662",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Tools/ShipToolSystem.cs": "b58912489b6c79164b68e1333202977b55dcc070d2a75c1fc1bcacc433143d4f",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Tools/ToolInventory.cs": "80da90e46f548d60ac436298101fe8645e0984b414ab2b0056cf6ec6227d2082",
+    "40_项目交接文档/验证记录/20260924_抽奖生命周期/DrawLifecycleAudit.cs": "f8e2b363ad2fc04cf7c1803bf838725c3831d4695002800df400f7abb39fdeb9",
+    "40_项目交接文档/验证记录/20260924_抽奖生命周期/run_audit.py": "7898e8a699b8f4d73350ce9c156a17ea1954ab3cf3d5e3abf37d0d41c8f6e12c"
+  }
+}

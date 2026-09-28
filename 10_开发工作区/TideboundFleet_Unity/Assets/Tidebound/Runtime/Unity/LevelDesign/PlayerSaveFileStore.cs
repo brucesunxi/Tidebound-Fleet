@@ -26,12 +26,19 @@ namespace Tidebound.Unity.LevelDesign
             // Preserve receipt timestamp strings exactly; JObject defaults may coerce them to Date tokens.
             using(var reader=new JsonTextReader(new StringReader(envelope.Payload)){DateParseHandling=DateParseHandling.None})json=JObject.Load(reader);
             if(json["Version"]?.Type!=JTokenType.Integer)throw new InvalidDataException("Missing save version.");
-            if((int)json["Version"]==PlayerSaveData.CurrentVersion)
+            if((int)json["Version"]>=4)
             {
                 var collection=json["Collection"] as JObject;
                 var required=new[]{"Version","CatalogVersion","RulesVersion","ProfileSeed","OwnedIds","Equipment","Tickets","TotalDraws","GoldDry","RedDry","DuplicateDry","FirstBlueClaimed","Receipts","EquipmentReceipts"};
                 if(collection==null || required.Any(k=>collection[k]==null || collection[k].Type==JTokenType.Null))throw new InvalidDataException("Incomplete collection profile.");
             }
+            if((int)json["Version"]>=5)
+            {
+                var appearance=json["Appearance"] as JObject;
+                if(appearance==null||appearance["SceneId"]?.Type!=JTokenType.String||appearance["TrailId"]?.Type!=JTokenType.String||appearance.Property("Equipment")==null||appearance["DrawReceipts"]?.Type!=JTokenType.Array)
+                    throw new InvalidDataException("Incomplete appearance profile.");
+            }
+            if((int)json["Version"]>=6 && json["Appearance"]?["UniqueReceipts"]?.Type!=JTokenType.Array)throw new InvalidDataException("Missing unique draw ledger.");
             var data=json.ToObject<PlayerSaveData>();if(data==null)throw new InvalidDataException("Missing player save.");data.Validate();return data;
         }
         public void Save(PlayerSaveData data)

@@ -3,39 +3,47 @@ using UnityEngine.UI;
 
 namespace Tidebound.Unity.UI
 {
-    /// <summary>Scalable rounded UI surface. Geometry only; no generated bitmap or material instance.</summary>
+    public enum HarborSurfaceKind { Panel, Control, Tab, Card, Inset }
+
+    /// <summary>Shared, maskable pearl surface. Geometry stays inside its fixed hit area.</summary>
     public sealed class HarborImage : Image
     {
-        public float Radius = 18;
-        public float Border = 2;
-        public Color Edge = new Color(.85f, .67f, .32f);
+        public float Radius=18, Border=2, Depth=4;
+        public Color Edge=HarborDesignTokens.PearlWhite;
+        public HarborSurfaceKind Kind;
+        public bool Selected, Pressed, Focused;
         protected override void OnPopulateMesh(VertexHelper vh)
         {
-            vh.Clear(); var r = GetPixelAdjustedRect();
-            if (r.width <= 0 || r.height <= 0) return;
-            Draw(vh, r, Radius, Edge);
-            var inset = Mathf.Min(Border, Mathf.Min(r.width, r.height) / 4);
-            r = new Rect(r.x + inset, r.y + inset, r.width - inset * 2, r.height - inset * 2);
-            Draw(vh, r, Mathf.Max(0, Radius - inset), color);
-        }
-        private static void Draw(VertexHelper vh, Rect r, float radius, Color c)
-        {
-            var start = vh.currentVertCount;
-            vh.AddVert(r.center, c, Vector2.zero);
-            radius = Mathf.Clamp(radius, 0, Mathf.Min(r.width, r.height) / 2);
-            const int segments = 8;
-            for (var corner = 0; corner < 4; corner++)
+            vh.Clear();var bounds=GetPixelAdjustedRect();
+            if(bounds.width<=0||bounds.height<=0)return;
+            if(Border<=0){Round(vh,bounds,Radius,color,color);return;}
+            var depth=Mathf.Min(Depth,bounds.height*.12f);
+            var face=new Rect(bounds.x+1,bounds.y+depth,bounds.width-2,bounds.height-depth-1);
+            var shadow=HarborDesignTokens.Shade(color,.67f);shadow.a=color.a;
+            Round(vh,new Rect(face.x,face.y-depth,face.width,face.height),Radius,shadow,shadow);
+            if(Pressed){face.y-=depth*.65f;face.height+=depth*.25f;}
+            var rim=Selected||Focused?HarborDesignTokens.OceanBlue:Kind==HarborSurfaceKind.Panel?HarborUI.Gold:Edge;rim.a*=color.a;
+            var rimTop=HarborDesignTokens.Tint(rim,.22f);rimTop.a=rim.a;
+            Round(vh,face,Radius,rimTop,rim);
+            var inset=Selected||Focused?2.6f:Kind==HarborSurfaceKind.Panel?Mathf.Max(5,Border):Border;
+            face=new Rect(face.x+inset,face.y+inset,face.width-inset*2,face.height-inset*2);
+            if(face.width<=0||face.height<=0)return;
+            var top=Color.Lerp(color,Color.white,Kind==HarborSurfaceKind.Panel?.28f:.36f);top.a=color.a;
+            Round(vh,face,Mathf.Max(1,Radius-inset),top,color);
+            if(Kind==HarborSurfaceKind.Card)
             {
-                var center = new Vector2(corner == 0 || corner == 3 ? r.xMax-radius : r.xMin+radius,
-                    corner < 2 ? r.yMax-radius : r.yMin+radius);
-                for (var i=0;i<=segments;i++)
-                {
-                    var angle=(corner*90f+i*90f/segments)*Mathf.Deg2Rad;
-                    vh.AddVert(center+new Vector2(Mathf.Cos(angle),Mathf.Sin(angle))*radius,c,Vector2.zero);
-                }
+                var well=new Rect(face.x+3,face.y+face.height*.36f,face.width-6,face.height*.60f);
+                var aqua=Color.Lerp(color,HarborDesignTokens.OceanSoft,.64f);aqua.a=color.a;
+                var light=Color.Lerp(aqua,Color.white,.25f);light.a=color.a;
+                Round(vh,well,Mathf.Max(3,Radius-5),light,aqua);
             }
-            var count=4*(segments+1);
-            for(var i=0;i<count;i++)vh.AddTriangle(start,start+1+i,start+1+(i+1)%count);
+            if(Selected)
+            {
+                var line=new Rect(face.x+face.width*.22f,face.y+2,face.width*.56f,3);
+                var blue=HarborDesignTokens.OceanBlue;blue.a=color.a;Round(vh,line,1.5f,blue,blue);
+            }
         }
+        private static void Round(VertexHelper vh,Rect r,float radius,Color top,Color bottom)
+        {HarborReliefImage.Round(vh,r,radius,top,bottom);}
     }
 }

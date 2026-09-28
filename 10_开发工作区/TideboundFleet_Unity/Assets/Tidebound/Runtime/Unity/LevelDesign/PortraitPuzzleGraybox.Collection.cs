@@ -19,7 +19,11 @@ namespace Tidebound.Unity.LevelDesign
         }
         public void OpenCollection()
         {
-            if(homeNavigation){OpenHomeCollection();return;}
+            if(homeNavigation)
+            {
+                if(!IsHomeOpen)ReturnHome();
+                OpenHomeCollection();return;
+            }
             if(saveService?.IsAvailable!=true || saveService.CurrentLevel<3 || !IsEntryReady || IsEntrySaveBlocked || IsBusy || IsAutoPlaying || IsAcquisitionOpen || IsCollectionOpen || (ResultOwnsInput && !IsResultReadable))return;
             NotifyUserActivity();input.CancelSelection();tools.CancelSelection();
             collectionPauseOwned=session.State==GameState.Playing || IsMenuOpen && menuPauseOwned;
@@ -29,7 +33,7 @@ namespace Tidebound.Unity.LevelDesign
         }
         public void CloseCollection()
         {
-            if(IsHomeCollectionOpen){homeCollectionRoot.gameObject.SetActive(false);homeControls.gameObject.SetActive(true);PresentHome();Tidebound.Unity.UI.HarborUI.Focus(homeControls.Find("Collection").GetComponent<Button>());return;}
+            if(IsHomeCollectionOpen){homeCollectionRoot.gameObject.SetActive(false);SetHomeChrome(true);PresentHome();Tidebound.Unity.UI.HarborUI.Focus(homeCollectionButton);return;}
             if(!IsCollectionOpen)return;collectionPanel.gameObject.SetActive(false);
             if(collectionPauseOwned && IsPaused && SaveCheckpoint(true))movement.Resume();
             collectionPauseOwned=false;world.PresentationPause=false;NotifyUserActivity();SaveCheckpoint(true);UpdateLabels();

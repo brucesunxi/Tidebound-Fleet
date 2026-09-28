@@ -1,0 +1,163 @@
+{
+  "status": "Nonlinear price / staged rarity design candidate; not activated",
+  "priceFormula": "Explicit 13-step table, by successful paid draws in this pool",
+  "rarityRules": {
+    "goldUnlockPaidDraw": 6,
+    "redUnlockPaidDraw": 10,
+    "weights": [
+      48,
+      30,
+      15,
+      6,
+      1
+    ],
+    "method": "Exclude unopened and fully-owned rarities; normalize remaining tier weights; choose uniformly among unowned items in that tier."
+  },
+  "candidateSample": {
+    "profiles": 3000,
+    "firstGoldDrawCounts": {
+      "7": 648,
+      "6": 713,
+      "8": 1639
+    },
+    "firstRedDrawCounts": {
+      "11": 2594,
+      "10": 406
+    }
+  },
+  "prices": [
+    200,
+    300,
+    500,
+    800,
+    1200,
+    1800,
+    2600,
+    3800,
+    5400,
+    7500,
+    10000,
+    13000,
+    16500
+  ],
+  "total": 63600,
+  "freeBlueCountsTowardPrice": false,
+  "assumptions": "Existing 100 layouts; minimum 1 coin per boat; all levels cleared; no ads/payments/retries; fixed tool-spending proxies from level 3; all available nonreserved coins go to this pool; 13 paid new items after the free blue; no additional coins from early high-rarity equipment.",
+  "scenarios": [
+    {
+      "firstClearCapped": false,
+      "toolBudgetPerClear": 0,
+      "reserve": 0,
+      "paidDrawLevels": [
+        2,
+        3,
+        5,
+        8,
+        11,
+        16,
+        21,
+        27,
+        34,
+        42,
+        51,
+        61,
+        72
+      ],
+      "completedLevel": 72
+    },
+    {
+      "firstClearCapped": false,
+      "toolBudgetPerClear": 75,
+      "reserve": 650,
+      "paidDrawLevels": [
+        6,
+        7,
+        9,
+        12,
+        15,
+        19,
+        24,
+        30,
+        37,
+        46,
+        55,
+        65,
+        76
+      ],
+      "completedLevel": 76
+    },
+    {
+      "firstClearCapped": false,
+      "toolBudgetPerClear": 250,
+      "reserve": 650,
+      "paidDrawLevels": [
+        12,
+        14,
+        16,
+        19,
+        23,
+        27,
+        32,
+        39,
+        46,
+        54,
+        63,
+        73,
+        84
+      ],
+      "completedLevel": 84
+    },
+    {
+      "firstClearCapped": true,
+      "toolBudgetPerClear": 0,
+      "reserve": 0,
+      "paidDrawLevels": [
+        2,
+        3,
+        5,
+        8,
+        12,
+        17,
+        24,
+        34,
+        49,
+        70,
+        98
+      ],
+      "completedLevel": null
+    },
+    {
+      "firstClearCapped": true,
+      "toolBudgetPerClear": 75,
+      "reserve": 650,
+      "paidDrawLevels": [
+        6,
+        7,
+        9,
+        12,
+        16,
+        23,
+        32,
+        45,
+        64,
+        90
+      ],
+      "completedLevel": null
+    },
+    {
+      "firstClearCapped": true,
+      "toolBudgetPerClear": 250,
+      "reserve": 650,
+      "paidDrawLevels": [
+        13,
+        15,
+        20,
+        27,
+        38,
+        54,
+        78
+      ],
+      "completedLevel": null
+    }
+  ]
+}

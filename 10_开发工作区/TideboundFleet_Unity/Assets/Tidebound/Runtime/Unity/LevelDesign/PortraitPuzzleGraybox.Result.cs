@@ -26,7 +26,7 @@ namespace Tidebound.Unity.LevelDesign
         private bool ResultOwnsInput => campaign && IsCleared;
         private void BuildResultControls(Transform parent)
         {
-            resultPanel=Panel("VictoryResult",parent,new Rect(),HarborUI.Cream);
+            resultPanel=Panel("VictoryResult",parent,new Rect(),Color.clear);
             resultPanel.GetComponent<Image>().raycastTarget=true;resultCanvas=resultPanel.gameObject.AddComponent<CanvasGroup>();
             resultView=resultPanel.gameObject.AddComponent<VictoryResultPanel>();
             resultView.Initialize(font,ContinueFromResult,()=>{if(homeNavigation)ReturnHome();else ToggleResultOverview();},RetryResultSave,()=>SetReducedResultMotion(!reducedResultMotion,true),homeNavigation);
@@ -43,14 +43,14 @@ namespace Tidebound.Unity.LevelDesign
         {
             if(!campaign || !IsCleared)return;
             TickResult(0);
-            if(result!=null){resultExitTime=.6f;resultRevealTime=1;resultPanel.gameObject.SetActive(true);PaintResult();}
+            if(result!=null){resultExitTime=.6f;resultRevealTime=1;resultPanel.gameObject.SetActive(true);PaintResult();resultView.FinishCelebration();}
         }
         private bool TickResult(float seconds)
         {
             if(!ResultOwnsInput)return false;
             if(!resultStarted)
             {
-                resultStarted=true;demo=null;input.CancelSelection();tools.CancelSelection();NotifyUserActivity();
+                resultStarted=true;status.gameObject.SetActive(false);demo=null;input.CancelSelection();tools.CancelSelection();NotifyUserActivity();
                 menuPanel.gameObject.SetActive(false);menuPauseOwned=false;
             }
             if(PracticeResult){resultPanel.gameObject.SetActive(true);resultCanvas.alpha=1;resultView.Practice();return true;}
@@ -79,6 +79,7 @@ namespace Tidebound.Unity.LevelDesign
             resultCanvas.alpha=Mathf.Clamp01(resultRevealTime/.18f);
             var t=reducedResultMotion ? 1 : Mathf.Clamp01(resultRevealTime/.55f);
             var progress=Mathf.Lerp(result.PreviousProgress,result.Progress,t);
+            resultView.SetShowcase(saveService.SelectedShowcaseId);
             resultView.Present(result,resultOverview,IsResultReadable,progress,reducedResultMotion);
             if(resultNotice!=null)resultView.SetNotice(resultNotice);
         }
@@ -96,7 +97,7 @@ namespace Tidebound.Unity.LevelDesign
         {
             if(PracticeResult && IsResultOpen)
             {resultDispatch=true;try{SelectLevel(LevelIndex);}finally{resultDispatch=false;}return;}
-            if(IsHomeOpen || IsCollectionOpen || !IsResultReadable || (!homeNavigation && !result.HasNext) || IsEntrySaveBlocked || continuingResult)return;
+            if(resultView?.IsSharePreviewOpen==true || IsHomeOpen || IsCollectionOpen || !IsResultReadable || (!homeNavigation && !result.HasNext) || IsEntrySaveBlocked || continuingResult)return;
             continuingResult=true;
             try
             {

@@ -22,6 +22,10 @@ Shader "Tidebound/UI/ShowcaseVolume"
             {
                 float3 n=normalize(i.normal),l=normalize(float3(-.65,.85,-1)),v=normalize(i.view);
                 float metal=i.finish.x,rough=i.finish.y;
+                float3 albedo=i.color.rgb;
+                #ifndef UNITY_COLORSPACE_GAMMA
+                albedo=GammaToLinearSpace(albedo);
+                #endif
                 float nl=saturate(dot(n,l)),nv=saturate(dot(n,v));
                 float3 sky=lerp(float3(.13,.35,.45),float3(.94,.98,1.05),saturate(n.y*.5+.5));
                 float3 ambient=lerp(float3(.25,.36,.43),float3(.50,.59,.62),saturate(-n.z*.5+.5));
@@ -30,7 +34,7 @@ Shader "Tidebound/UI/ShowcaseVolume"
                 float underRoof=(1-smoothstep(-1.30,-1.15,i.local.z))*step(-1.315,i.local.z);
                 cavity-=underRoof*.24;
                 cavity*=lerp(.70,1,saturate((-i.local.z-.04)/.42));
-                float3 base=i.color.rgb*(ambient+nl*float3(.68,.59,.45))*cavity;
+                float3 base=albedo*(ambient+nl*float3(.92,.83,.70))*cavity;
                 if(rough<.16)
                 {
                     float top=saturate((-i.local.z-.88)/.37);
@@ -44,11 +48,13 @@ Shader "Tidebound/UI/ShowcaseVolume"
                 float broad=pow(saturate(dot(n,normalize(float3(.6,.45,-1)+v))),14)*.22;
                 float3 reflection=reflect(-v,n);
                 float stripe=pow(saturate(dot(reflection,normalize(float3(-.25,.6,-.5)))),24);
-                float3 f0=lerp(float3(.055,.055,.055),i.color.rgb,metal);
+                float3 f0=lerp(float3(.055,.055,.055),albedo,metal);
                 float fresnel=pow(1-nv,5);
                 float3 sheen=(f0+(1-f0)*fresnel)*(spec*3.4+broad+stripe*.75);
-                base=lerp(base,base*.28+sky*i.color.rgb*.72,metal);
-                return half4(base+sheen+sky*fresnel*.10,1);
+                base=lerp(base,base*.28+sky*albedo*.72,metal);
+                float rim=pow(1-nv,2.2)*(.12+.16*saturate(dot(n,normalize(float3(.4,.8,-.3)))));
+                float sun=pow(saturate(dot(n,normalize(float3(-.75,.45,-.85)))),34)*.42;
+                return half4(base+sheen+sky*(fresnel*.10+rim*.65)+float3(1,.82,.38)*sun,1);
             }
             ENDHLSL
         }

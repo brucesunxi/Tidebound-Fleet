@@ -1,0 +1,135 @@
+{
+  "external_source_sha256": "2392cfbf84d6a068d5cef10cd64b4fd53c2f3e6f9e47328ddd7b3560c43f5322",
+  "external_source_review": "Standard-library local geometry/BFS only; stdout JSON; no network or filesystem writes. Reviewed before executing.",
+  "reviewed_script_rerun": {
+    "scope": "EXPERIMENTAL_SIMPLIFIED_MODEL_NOT_UNITY_CERTIFIED",
+    "board": {
+      "width": 6,
+      "height": 6,
+      "position": "tail",
+      "origin": "bottom-left"
+    },
+    "prototypes": [
+      {
+        "name": "4-ship prototype",
+        "initial_direct_exits": [],
+        "pure_exit_peeling": [],
+        "remaining_after_peeling": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "shortest_solution_check": {
+          "status": "SOLVED",
+          "minimum_effective_actions": 5,
+          "minimum_partial_moves": 1,
+          "solution": [
+            {
+              "ship": "A",
+              "kind": "partial",
+              "distance": 1
+            },
+            {
+              "ship": "D",
+              "kind": "exit"
+            },
+            {
+              "ship": "C",
+              "kind": "exit"
+            },
+            {
+              "ship": "B",
+              "kind": "exit"
+            },
+            {
+              "ship": "A",
+              "kind": "exit"
+            }
+          ],
+          "states_discovered": 46
+        }
+      },
+      {
+        "name": "8-ship prototype",
+        "initial_direct_exits": [
+          "F"
+        ],
+        "pure_exit_peeling": [
+          "F"
+        ],
+        "remaining_after_peeling": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E",
+          "G",
+          "H"
+        ],
+        "shortest_solution_check": {
+          "status": "SOLVED",
+          "minimum_effective_actions": 10,
+          "minimum_partial_moves": 2,
+          "solution": [
+            {
+              "ship": "A",
+              "kind": "partial",
+              "distance": 1
+            },
+            {
+              "ship": "E",
+              "kind": "exit"
+            },
+            {
+              "ship": "D",
+              "kind": "exit"
+            },
+            {
+              "ship": "F",
+              "kind": "exit"
+            },
+            {
+              "ship": "G",
+              "kind": "exit"
+            },
+            {
+              "ship": "B",
+              "kind": "partial",
+              "distance": 2
+            },
+            {
+              "ship": "A",
+              "kind": "exit"
+            },
+            {
+              "ship": "H",
+              "kind": "exit"
+            },
+            {
+              "ship": "C",
+              "kind": "exit"
+            },
+            {
+              "ship": "B",
+              "kind": "exit"
+            }
+          ],
+          "states_discovered": 289
+        },
+        "wrong_first_move": {
+          "action": {
+            "ship": "H",
+            "kind": "partial",
+            "distance": 2
+          },
+          "verification": {
+            "status": "UNSOLVABLE_EXHAUSTIVE",
+            "states_discovered": 18
+          }
+        }
+      }
+    ]
+  },
+  "current_core_comparison": "Both minimum effective actions and necessary partial moves match; H branch exhaustive 18 states matches; no Unity Editor run."
+}

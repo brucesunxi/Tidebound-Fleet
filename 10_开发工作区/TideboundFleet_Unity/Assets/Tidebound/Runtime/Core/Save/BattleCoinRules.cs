@@ -8,7 +8,10 @@ namespace Tidebound.Save
 {
     public static class BattleCoinRules
     {
-        public const string Version="BattleCoinsV1";
+        public const string Version="BattleCoinsV1",CurrentVersion="BattleCoinsV2_FixedVictory100";
+        public static bool Supports(string version)=>version==Version||version==CurrentVersion;
+        public static int FirstClear(int level,string version)
+        {if(!Supports(version)||level<1||level>10000)throw new ArgumentException("Invalid reward version.");return version==CurrentVersion?100:FirstClear(level);}
         public static int FirstClear(int level) {if(level<1 || level>10000)throw new ArgumentOutOfRangeException(nameof(level));return checked(100+20*(level-1));}
         public static double Probability(int matching,int standardCount)
         {if(matching<1 || standardCount<matching)throw new ArgumentOutOfRangeException(nameof(matching));return Math.Max(.10,Math.Min(.80,.10+.875*(1-(double)matching/standardCount)));}

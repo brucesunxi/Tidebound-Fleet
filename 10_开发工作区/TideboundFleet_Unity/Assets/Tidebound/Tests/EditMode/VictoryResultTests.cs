@@ -1,5 +1,7 @@
 using System;
 using NUnit.Framework;
+using System.Linq;
+using Tidebound.Collection;
 using Tidebound.Save;
 using Tidebound.Ship;
 
@@ -44,6 +46,40 @@ namespace Tidebound.Tests
         [Test]
         public void CollectionCheckpointIsMetadataAndDoesNotGrantOrCreateAnything()
         {var data=Cleared(2);var coins=data.Coins;var result=VictoryResult.FromSaved(data,10);Assert.That(result.IsCollectionCheckpoint,Is.True);Assert.That(data.Coins,Is.EqualTo(coins));Assert.That(data.Attempt.LevelNumber,Is.EqualTo(2));}
+        [TestCase(1)][TestCase(9)][TestCase(10)][TestCase(100)]
+        public void StarsDeriveFromCommittedHistoryAndRepeatedViewsNeverGrant(int level)
+        {
+            var data=Cleared(level);var revision=data.Revision;var coins=data.Coins;
+            for(var i=0;i<3;i++)
+            {
+                var result=VictoryResult.FromSaved(data.Copy(),100);
+                Assert.That(result.TotalStars,Is.EqualTo(level));Assert.That(result.PreviousStars,Is.EqualTo(level-1));
+                Assert.That(result.AwardedStars,Is.EqualTo(1));
+            }
+            Assert.That(data.Revision,Is.EqualTo(revision));Assert.That(data.Coins,Is.EqualTo(coins));
+            Assert.That(data.Settlements.Count(x=>x.Kind=="Victory"),Is.EqualTo(level));
+        }
+        [Test]
+        public void MilestonesMergeRealEntitlementsAndExcludeNonClearSources()
+        {
+            var next=ClearRewardMilestones.Next(9,100);
+            Assert.That(next.Select(x=>x.Stars),Is.EqualTo(new[]{10,15,20}));
+            Assert.That(next[0].Rewards.Select(x=>x.Id),Does.Contain("TF_SKIN_K06"));
+            Assert.That(next[0].Rewards.Select(x=>x.Id),Does.Contain("TF_TRAIL_W02"));
+            var expected=ShowcaseCatalog.All.Count(x=>x.SourceGroup==ShowcaseSourceGroup.Level&&x.TargetClearLevel==10)+
+                AppearanceCatalog.All.Count(x=>x.Source==ShowcaseSourceGroup.Level&&x.Requirement==10);
+            Assert.That(next[0].Rewards.Count,Is.EqualTo(expected));
+            Assert.That(next.SelectMany(x=>x.Rewards).Any(x=>x.Id=="TF_SKIN_K12"),Is.False);
+            Assert.That(VictoryResult.FromSaved(Cleared(9),100).NextRewardProgress,Is.EqualTo(.75f));
+        }
+        [Test]
+        public void RewardPreviewRespectsInstalledBoundaryAndStopsAfterAllRewards()
+        {
+            Assert.That(ClearRewardMilestones.Next(9,10).Select(x=>x.Stars),Is.EqualTo(new[]{10}));
+            Assert.That(ClearRewardMilestones.Next(99,100).Select(x=>x.Stars),Is.EqualTo(new[]{100}));
+            Assert.That(ClearRewardMilestones.Next(100,100),Is.Empty);
+            Assert.That(new PlayerSaveData().ClearStars,Is.Zero);
+        }
         [Test]
         public void InvalidPublishedRangeAndUninstalledResultAreRejected()
         {

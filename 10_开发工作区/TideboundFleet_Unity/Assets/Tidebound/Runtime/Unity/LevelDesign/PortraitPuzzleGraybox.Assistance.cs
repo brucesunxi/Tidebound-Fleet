@@ -37,7 +37,7 @@ namespace Tidebound.Unity.LevelDesign
 
         private void BuildAssistance(Transform parent)
         {
-            assistance = new BoardAssistance();
+            assistance = new BoardAssistance(requireExitOnlySolution: true);
             deadlockPanel = Panel("DeadlockPrompt", parent, new Rect(), new Color(.025f, .055f, .08f, .68f));
             deadlockPanel.GetComponent<Image>().raycastTarget = false;
             deadlockView = deadlockPanel.gameObject.AddComponent<DeadlockPanel>();

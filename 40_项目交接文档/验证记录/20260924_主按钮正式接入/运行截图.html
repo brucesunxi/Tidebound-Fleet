@@ -1,0 +1,16 @@
+<!doctype html><html lang="zh"><meta charset="utf-8"><title>主按钮正式接入 · Unity 实际运行</title><style>
+body{margin:0;background:#102c37;color:#f6ead5;font:16px system-ui}main{max-width:1060px;margin:auto;padding:24px}h1{font-size:26px}p{line-height:1.6;color:#bdd3d7}section{display:flex;gap:28px;flex-wrap:wrap;margin:24px 0}article{max-width:390px}img{display:block;max-width:100%;border-radius:12px}button{padding:10px 20px;margin-right:8px;border:1px solid #f0d391;border-radius:12px;background:#f8dda0;color:#59321c;font-size:16px;cursor:pointer}a{color:#f6d186}.small img{width:360px}select{font-size:16px;padding:8px}</style><main>
+<h1>首页开始／抽奖单抽按钮</h1><p>真实 Unity Game View，非设备实拍。使用正式 UI 代码＋隔离内存存档；图中的金币、关卡和价格是运行时数据。三张新制透明贴图，文字／图标／光效分层。</p>
+<section><article><h2>首页</h2><img id="home" src="Chinese_390x844_Home.png"></article><article><h2>抽奖</h2><img id="draw" src="Chinese_390x844_Draw_Showcase.png"></article></section>
+<p>连续帧预览取自真实 Game View 采样：开始视觉层呼吸，抽奖宝箱轻浮动、局部背光旋转。页面截图序列仅用于查看动作，实际帧率与触感以 Unity 运行结果为准。</p>
+<button id="play">播放运行采样帧</button><button id="stop">静态截图</button>
+<h2>适配与语言</h2><select id="size"><option>360x640</option><option>360x800</option><option>390x844</option></select>
+<select id="lang"><option value="English">English</option><option value="Chinese">中文</option></select>
+<section class="small"><article><img id="a" src="English_360x640_Home.png"></article><article><img id="b" src="English_360x640_Draw_Skin.png"></article></section>
+<h2>状态</h2><section class="small"><article><p>按下：首页仅视觉层下沉／缩小</p><img src="Home_Pressed.png"></article><article><p>禁用：停止强调并降低饱和亮度</p><img src="Draw_Disabled.png"></article></section>
+<p><a href="VALIDATION.md">验证范围与限制</a> · <a href="runtime-checks.txt">运行检查结果</a></p>
+</main><script>
+let timer=null,n=0;const H=document.getElementById('home'),D=document.getElementById('draw');function stop(){clearInterval(timer);timer=null;H.src='Chinese_390x844_Home.png';D.src='Chinese_390x844_Draw_Showcase.png'}document.getElementById('stop').onclick=stop;
+document.getElementById('play').onclick=()=>{stop();n=0;timer=setInterval(()=>{const i=String(n++%20).padStart(2,'0');H.src='HomeMotion_'+i+'.png';D.src='DrawMotion_'+i+'.png'},155)};
+function change(){const s=document.getElementById('size').value,l=document.getElementById('lang').value;document.getElementById('a').src=l+'_'+s+'_Home.png';document.getElementById('b').src=l+'_'+s+'_Draw_Skin.png'}document.getElementById('size').onchange=change;document.getElementById('lang').onchange=change;
+</script></html>

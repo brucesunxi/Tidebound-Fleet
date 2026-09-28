@@ -94,8 +94,8 @@ namespace Tidebound.Tests
                 using(var tools=new ShipToolSystem(game.Session,game.Movement,service.Inventory))Assert.That(tools.Rescue(),Is.EqualTo(ToolUseStatus.Applied));
                 service.Checkpoint();var loaded=new PlayerSaveService(store);
                 Assert.That(loaded.Inventory.Count(ShipTool.Rescue),Is.EqualTo(1));Assert.That(loaded.Inventory.Count(ShipTool.Shuffle),Is.EqualTo(2));Assert.That(loaded.Coins,Is.EqualTo(57));
-                game.Transit.Advance(10);game.Combat.Advance();service.Checkpoint();Assert.That(service.Coins,Is.EqualTo(198));
-                Assert.That(service.Snapshot.Purchases.Length,Is.EqualTo(1));Assert.That(new PlayerSaveService(store).Coins,Is.EqualTo(198));
+                game.Transit.Advance(10);game.Combat.Advance();service.Checkpoint();Assert.That(service.Coins,Is.EqualTo(158));
+                Assert.That(service.Snapshot.Purchases.Length,Is.EqualTo(1));Assert.That(new PlayerSaveService(store).Coins,Is.EqualTo(158));
             }
         }
         [Test]

@@ -1,0 +1,1256 @@
+{
+  "status": "Design candidate only; not activated",
+  "pools": {
+    "skin": {
+      "prices": [
+        200,
+        300,
+        500,
+        800,
+        1200,
+        1800,
+        2600,
+        3800,
+        5400,
+        7500
+      ],
+      "gold": 6,
+      "red": 10,
+      "items": {
+        "TF_SKIN_K03": 0,
+        "TF_SKIN_K04": 3,
+        "TF_SKIN_K09": 0,
+        "TF_SKIN_K11": 1,
+        "TF_SKIN_K13": 1,
+        "TF_SKIN_K15": 1,
+        "TF_SKIN_K16": 2,
+        "TF_SKIN_K19": 3,
+        "TF_SKIN_K21": 3,
+        "TF_SKIN_K24": 2,
+        "TF_SKIN_K26": 2,
+        "TF_SKIN_K28": 4,
+        "TF_SKIN_K29": 4,
+        "TF_SKIN_K31": 4
+      },
+      "free": [
+        "TF_SKIN_K11"
+      ]
+    },
+    "trail": {
+      "prices": [
+        300,
+        600,
+        1200,
+        2200,
+        3600,
+        5000,
+        6500,
+        7500
+      ],
+      "gold": 3,
+      "red": 4,
+      "items": {
+        "TF_TRAIL_W04": 1,
+        "TF_TRAIL_W10": 1,
+        "TF_TRAIL_W11": 2,
+        "TF_TRAIL_W08": 3,
+        "TF_TRAIL_W12": 4
+      },
+      "free": []
+    },
+    "showcase": {
+      "prices": [
+        500,
+        800,
+        1300,
+        2000,
+        2900,
+        4000,
+        5200,
+        6500,
+        7500
+      ],
+      "gold": 6,
+      "red": 10,
+      "items": {
+        "TF_SHOWCASE_H07": 1,
+        "TF_SHOWCASE_H10": 1,
+        "TF_SHOWCASE_H11": 1,
+        "TF_SHOWCASE_H13": 2,
+        "TF_SHOWCASE_H19": 2,
+        "TF_SHOWCASE_H20": 2,
+        "TF_SHOWCASE_H24": 2,
+        "TF_SHOWCASE_H15": 3,
+        "TF_SHOWCASE_H17": 3,
+        "TF_SHOWCASE_H21": 3,
+        "TF_SHOWCASE_H22": 4
+      },
+      "free": []
+    }
+  },
+  "weights": [
+    48,
+    30,
+    15,
+    6,
+    1
+  ],
+  "currentCompletionCost": {
+    "skin": 46600,
+    "trail": 7900,
+    "showcase": 45700
+  },
+  "totalThreePools": 100200,
+  "raritySamples": {
+    "skin": {
+      "firstGold": {
+        "8": 1615,
+        "6": 702,
+        "7": 683
+      },
+      "firstRed": {
+        "11": 2579,
+        "10": 421
+      },
+      "profiles": 3000
+    },
+    "trail": {
+      "firstGold": {
+        "4": 2007,
+        "3": 679,
+        "5": 314
+      },
+      "firstRed": {
+        "5": 2646,
+        "4": 354
+      },
+      "profiles": 3000
+    },
+    "showcase": {
+      "firstGold": {
+        "6": 780,
+        "8": 1595,
+        "7": 625
+      },
+      "firstRed": {
+        "11": 2571,
+        "10": 429
+      },
+      "profiles": 3000
+    }
+  },
+  "budgetAssumptions": "LATEST USER RULE: each white ship yields 1 coin; successful clear grants a fixed approximately 100 additional coins, independent of level. Deadlock exit/restart grants no victory bonus. 180 total is 80 white ships + 100; Red boats remain probabilistic 1-8 coins; 400 is a representative higher-quality mixed-fleet total INCLUDING the fixed 100, not a guaranteed amount or hard cap. 260/340 are sensitivity scenarios. The fixed 100 is not scaled on the 7-ship tutorial. All simulated attempts succeed; deadlock partial battle payouts are not modeled; no ads/payment/retries; fixed tool-spending proxies from level 3; all three proposed channels assumed open after level 2; cheapest next purchase among selected pools. This is a budget screen, not the new per-ship critical-coin implementation or measured behavior.",
+  "budgets": [
+    {
+      "selected": [
+        "skin"
+      ],
+      "normalClearTotalIncome": 180,
+      "toolBudgetPerClear": 0,
+      "reserve": 0,
+      "completedLevel": null,
+      "draws": {
+        "skin": 9
+      },
+      "paidDrawLevels": {
+        "skin": [
+          2,
+          4,
+          6,
+          11,
+          18,
+          28,
+          42,
+          63,
+          93
+        ]
+      },
+      "walletAt100": 1327
+    },
+    {
+      "selected": [
+        "skin"
+      ],
+      "normalClearTotalIncome": 260,
+      "toolBudgetPerClear": 0,
+      "reserve": 0,
+      "completedLevel": null,
+      "draws": {
+        "skin": 10
+      },
+      "paidDrawLevels": {
+        "skin": [
+          2,
+          3,
+          5,
+          8,
+          13,
+          20,
+          30,
+          44,
+          65,
+          94
+        ]
+      },
+      "walletAt100": 1754
+    },
+    {
+      "selected": [
+        "skin"
+      ],
+      "normalClearTotalIncome": 340,
+      "toolBudgetPerClear": 0,
+      "reserve": 0,
+      "completedLevel": null,
+      "draws": {
+        "skin": 11
+      },
+      "paidDrawLevels": {
+        "skin": [
+          2,
+          3,
+          4,
+          6,
+          10,
+          15,
+          23,
+          34,
+          50,
+          72,
+          94
+        ]
+      },
+      "walletAt100": 2181
+    },
+    {
+      "selected": [
+        "skin"
+      ],
+      "normalClearTotalIncome": 400,
+      "toolBudgetPerClear": 0,
+      "reserve": 0,
+      "completedLevel": null,
+      "draws": {
+        "skin": 12
+      },
+      "paidDrawLevels": {
+        "skin": [
+          2,
+          2,
+          4,
+          6,
+          9,
+          13,
+          20,
+          29,
+          43,
+          61,
+          80,
+          99
+        ]
+      },
+      "walletAt100": 626
+    },
+    {
+      "selected": [
+        "skin"
+      ],
+      "normalClearTotalIncome": 180,
+      "toolBudgetPerClear": 75,
+      "reserve": 650,
+      "completedLevel": null,
+      "draws": {
+        "skin": 7
+      },
+      "paidDrawLevels": {
+        "skin": [
+          8,
+          11,
+          15,
+          23,
+          35,
+          52,
+          76
+        ]
+      },
+      "walletAt100": 3177
+    },
+    {
+      "selected": [
+        "skin"
+      ],
+      "normalClearTotalIncome": 260,
+      "toolBudgetPerClear": 75,
+      "reserve": 650,
+      "completedLevel": null,
+      "draws": {
+        "skin": 9
+      },
+      "paidDrawLevels": {
+        "skin": [
+          5,
+          7,
+          9,
+          14,
+          20,
+          30,
+          44,
+          65,
+          94
+        ]
+      },
+      "walletAt100": 1904
+    },
+    {
+      "selected": [
+        "skin"
+      ],
+      "normalClearTotalIncome": 340,
+      "toolBudgetPerClear": 75,
+      "reserve": 650,
+      "completedLevel": null,
+      "draws": {
+        "skin": 10
+      },
+      "paidDrawLevels": {
+        "skin": [
+          4,
+          5,
+          7,
+          10,
+          15,
+          21,
+          31,
+          45,
+          66,
+          94
+        ]
+      },
+      "walletAt100": 2331
+    },
+    {
+      "selected": [
+        "skin"
+      ],
+      "normalClearTotalIncome": 400,
+      "toolBudgetPerClear": 75,
+      "reserve": 650,
+      "completedLevel": null,
+      "draws": {
+        "skin": 11
+      },
+      "paidDrawLevels": {
+        "skin": [
+          3,
+          4,
+          6,
+          8,
+          12,
+          18,
+          26,
+          37,
+          54,
+          77,
+          100
+        ]
+      },
+      "walletAt100": 776
+    },
+    {
+      "selected": [
+        "trail"
+      ],
+      "normalClearTotalIncome": 180,
+      "toolBudgetPerClear": 0,
+      "reserve": 0,
+      "completedLevel": 45,
+      "draws": {
+        "trail": 5
+      },
+      "paidDrawLevels": {
+        "trail": [
+          3,
+          6,
+          13,
+          25,
+          45
+        ]
+      },
+      "walletAt100": 10027
+    },
+    {
+      "selected": [
+        "trail"
+      ],
+      "normalClearTotalIncome": 260,
+      "toolBudgetPerClear": 0,
+      "reserve": 0,
+      "completedLevel": 31,
+      "draws": {
+        "trail": 5
+      },
+      "paidDrawLevels": {
+        "trail": [
+          2,
+          5,
+          9,
+          18,
+          31
+        ]
+      },
+      "walletAt100": 17954
+    },
+    {
+      "selected": [
+        "trail"
+      ],
+      "normalClearTotalIncome": 340,
+      "toolBudgetPerClear": 0,
+      "reserve": 0,
+      "completedLevel": 24,
+      "draws": {
+        "trail": 5
+      },
+      "paidDrawLevels": {
+        "trail": [
+          2,
+          4,
+          7,
+          14,
+          24
+        ]
+      },
+      "walletAt100": 25881
+    },
+    {
+      "selected": [
+        "trail"
+      ],
+      "normalClearTotalIncome": 400,
+      "toolBudgetPerClear": 0,
+      "reserve": 0,
+      "completedLevel": 21,
+      "draws": {
+        "trail": 5
+      },
+      "paidDrawLevels": {
+        "trail": [
+          2,
+          3,
+          6,
+          12,
+          21
+        ]
+      },
+      "walletAt100": 31826
+    },
+    {
+      "selected": [
+        "trail"
+      ],
+      "normalClearTotalIncome": 180,
+      "toolBudgetPerClear": 75,
+      "reserve": 650,
+      "completedLevel": 81,
+      "draws": {
+        "trail": 5
+      },
+      "paidDrawLevels": {
+        "trail": [
+          9,
+          15,
+          26,
+          47,
+          81
+        ]
+      },
+      "walletAt100": 2677
+    },
+    {
+      "selected": [
+        "trail"
+      ],
+      "normalClearTotalIncome": 260,
+      "toolBudgetPerClear": 75,
+      "reserve": 650,
+      "completedLevel": 47,
+      "draws": {
+        "trail": 5
+      },
+      "paidDrawLevels": {
+        "trail": [
+          6,
+          9,
+          15,
+          27,
+          47
+        ]
+      },
+      "walletAt100": 10604
+    },
+    {
+      "selected": [
+        "trail"
+      ],
+      "normalClearTotalIncome": 340,
+      "toolBudgetPerClear": 75,
+      "reserve": 650,
+      "completedLevel": 33,
+      "draws": {
+        "trail": 5
+      },
+      "paidDrawLevels": {
+        "trail": [
+          4,
+          7,
+          11,
+          19,
+          33
+        ]
+      },
+      "walletAt100": 18531
+    },
+    {
+      "selected": [
+        "trail"
+      ],
+      "normalClearTotalIncome": 400,
+      "toolBudgetPerClear": 75,
+      "reserve": 650,
+      "completedLevel": 27,
+      "draws": {
+        "trail": 5
+      },
+      "paidDrawLevels": {
+        "trail": [
+          4,
+          6,
+          9,
+          16,
+          27
+        ]
+      },
+      "walletAt100": 24476
+    },
+    {
+      "selected": [
+        "showcase"
+      ],
+      "normalClearTotalIncome": 180,
+      "toolBudgetPerClear": 0,
+      "reserve": 0,
+      "completedLevel": null,
+      "draws": {
+        "showcase": 7
+      },
+      "paidDrawLevels": {
+        "showcase": [
+          4,
+          8,
+          15,
+          26,
+          43,
+          65,
+          94
+        ]
+      },
+      "walletAt100": 1227
+    },
+    {
+      "selected": [
+        "showcase"
+      ],
+      "normalClearTotalIncome": 260,
+      "toolBudgetPerClear": 0,
+      "reserve": 0,
+      "completedLevel": null,
+      "draws": {
+        "showcase": 8
+      },
+      "paidDrawLevels": {
+        "showcase": [
+          3,
+          6,
+          11,
+          19,
+          30,
+          45,
+          65,
+          90
+        ]
+      },
+      "walletAt100": 2654
+    },
+    {
+      "selected": [
+        "showcase"
+      ],
+      "normalClearTotalIncome": 340,
+      "toolBudgetPerClear": 0,
+      "reserve": 0,
+      "completedLevel": null,
+      "draws": {
+        "showcase": 9
+      },
+      "paidDrawLevels": {
+        "showcase": [
+          3,
+          5,
+          9,
+          15,
+          23,
+          35,
+          50,
+          69,
+          91
+        ]
+      },
+      "walletAt100": 3081
+    },
+    {
+      "selected": [
+        "showcase"
+      ],
+      "normalClearTotalIncome": 400,
+      "toolBudgetPerClear": 0,
+      "reserve": 0,
+      "completedLevel": null,
+      "draws": {
+        "showcase": 10
+      },
+      "paidDrawLevels": {
+        "showcase": [
+          2,
+          4,
+          8,
+          13,
+          20,
+          30,
+          43,
+          59,
+          78,
+          97
+        ]
+      },
+      "walletAt100": 1526
+    },
+    {
+      "selected": [
+        "showcase"
+      ],
+      "normalClearTotalIncome": 180,
+      "toolBudgetPerClear": 75,
+      "reserve": 650,
+      "completedLevel": null,
+      "draws": {
+        "showcase": 5
+      },
+      "paidDrawLevels": {
+        "showcase": [
+          11,
+          18,
+          31,
+          50,
+          77
+        ]
+      },
+      "walletAt100": 3077
+    },
+    {
+      "selected": [
+        "showcase"
+      ],
+      "normalClearTotalIncome": 260,
+      "toolBudgetPerClear": 75,
+      "reserve": 650,
+      "completedLevel": null,
+      "draws": {
+        "showcase": 7
+      },
+      "paidDrawLevels": {
+        "showcase": [
+          7,
+          11,
+          18,
+          29,
+          45,
+          66,
+          94
+        ]
+      },
+      "walletAt100": 1804
+    },
+    {
+      "selected": [
+        "showcase"
+      ],
+      "normalClearTotalIncome": 340,
+      "toolBudgetPerClear": 75,
+      "reserve": 650,
+      "completedLevel": null,
+      "draws": {
+        "showcase": 8
+      },
+      "paidDrawLevels": {
+        "showcase": [
+          5,
+          8,
+          13,
+          21,
+          32,
+          47,
+          66,
+          91
+        ]
+      },
+      "walletAt100": 3231
+    },
+    {
+      "selected": [
+        "showcase"
+      ],
+      "normalClearTotalIncome": 400,
+      "toolBudgetPerClear": 75,
+      "reserve": 650,
+      "completedLevel": null,
+      "draws": {
+        "showcase": 9
+      },
+      "paidDrawLevels": {
+        "showcase": [
+          4,
+          7,
+          11,
+          17,
+          26,
+          38,
+          54,
+          74,
+          97
+        ]
+      },
+      "walletAt100": 1676
+    },
+    {
+      "selected": [
+        "skin",
+        "trail",
+        "showcase"
+      ],
+      "normalClearTotalIncome": 180,
+      "toolBudgetPerClear": 0,
+      "reserve": 0,
+      "completedLevel": null,
+      "draws": {
+        "skin": 7,
+        "trail": 4,
+        "showcase": 4
+      },
+      "paidDrawLevels": {
+        "skin": [
+          2,
+          4,
+          11,
+          23,
+          30,
+          54,
+          91
+        ],
+        "trail": [
+          5,
+          14,
+          36,
+          77
+        ],
+        "showcase": [
+          8,
+          19,
+          44,
+          65
+        ]
+      },
+      "walletAt100": 1627
+    },
+    {
+      "selected": [
+        "skin",
+        "trail",
+        "showcase"
+      ],
+      "normalClearTotalIncome": 260,
+      "toolBudgetPerClear": 0,
+      "reserve": 0,
+      "completedLevel": null,
+      "draws": {
+        "skin": 7,
+        "trail": 5,
+        "showcase": 5
+      },
+      "paidDrawLevels": {
+        "skin": [
+          2,
+          3,
+          8,
+          16,
+          21,
+          38,
+          64
+        ],
+        "trail": [
+          4,
+          10,
+          26,
+          54,
+          89
+        ],
+        "showcase": [
+          6,
+          13,
+          31,
+          45,
+          75
+        ]
+      },
+      "walletAt100": 3054
+    },
+    {
+      "selected": [
+        "skin",
+        "trail",
+        "showcase"
+      ],
+      "normalClearTotalIncome": 340,
+      "toolBudgetPerClear": 0,
+      "reserve": 0,
+      "completedLevel": null,
+      "draws": {
+        "skin": 8,
+        "trail": 5,
+        "showcase": 6
+      },
+      "paidDrawLevels": {
+        "skin": [
+          2,
+          3,
+          6,
+          13,
+          16,
+          29,
+          49,
+          79
+        ],
+        "trail": [
+          3,
+          8,
+          20,
+          41,
+          68
+        ],
+        "showcase": [
+          5,
+          11,
+          24,
+          35,
+          58,
+          91
+        ]
+      },
+      "walletAt100": 3181
+    },
+    {
+      "selected": [
+        "skin",
+        "trail",
+        "showcase"
+      ],
+      "normalClearTotalIncome": 400,
+      "toolBudgetPerClear": 0,
+      "reserve": 0,
+      "completedLevel": null,
+      "draws": {
+        "skin": 8,
+        "trail": 5,
+        "showcase": 7
+      },
+      "paidDrawLevels": {
+        "skin": [
+          2,
+          2,
+          6,
+          11,
+          14,
+          25,
+          42,
+          68
+        ],
+        "trail": [
+          3,
+          7,
+          17,
+          35,
+          58
+        ],
+        "showcase": [
+          4,
+          9,
+          20,
+          30,
+          49,
+          78,
+          91
+        ]
+      },
+      "walletAt100": 3926
+    },
+    {
+      "selected": [
+        "skin",
+        "trail",
+        "showcase"
+      ],
+      "normalClearTotalIncome": 180,
+      "toolBudgetPerClear": 75,
+      "reserve": 650,
+      "completedLevel": null,
+      "draws": {
+        "skin": 6,
+        "trail": 3,
+        "showcase": 3
+      },
+      "paidDrawLevels": {
+        "skin": [
+          8,
+          11,
+          23,
+          44,
+          55,
+          96
+        ],
+        "trail": [
+          14,
+          29,
+          67
+        ],
+        "showcase": [
+          18,
+          36,
+          79
+        ]
+      },
+      "walletAt100": 1077
+    },
+    {
+      "selected": [
+        "skin",
+        "trail",
+        "showcase"
+      ],
+      "normalClearTotalIncome": 260,
+      "toolBudgetPerClear": 75,
+      "reserve": 650,
+      "completedLevel": null,
+      "draws": {
+        "skin": 7,
+        "trail": 4,
+        "showcase": 4
+      },
+      "paidDrawLevels": {
+        "skin": [
+          5,
+          7,
+          14,
+          26,
+          32,
+          55,
+          92
+        ],
+        "trail": [
+          8,
+          17,
+          39,
+          78
+        ],
+        "showcase": [
+          11,
+          21,
+          46,
+          66
+        ]
+      },
+      "walletAt100": 2204
+    },
+    {
+      "selected": [
+        "skin",
+        "trail",
+        "showcase"
+      ],
+      "normalClearTotalIncome": 340,
+      "toolBudgetPerClear": 75,
+      "reserve": 650,
+      "completedLevel": null,
+      "draws": {
+        "skin": 7,
+        "trail": 5,
+        "showcase": 5
+      },
+      "paidDrawLevels": {
+        "skin": [
+          4,
+          5,
+          10,
+          18,
+          23,
+          39,
+          65
+        ],
+        "trail": [
+          6,
+          12,
+          27,
+          55,
+          89
+        ],
+        "showcase": [
+          8,
+          15,
+          32,
+          47,
+          76
+        ]
+      },
+      "walletAt100": 3631
+    },
+    {
+      "selected": [
+        "skin",
+        "trail",
+        "showcase"
+      ],
+      "normalClearTotalIncome": 400,
+      "toolBudgetPerClear": 75,
+      "reserve": 650,
+      "completedLevel": null,
+      "draws": {
+        "skin": 8,
+        "trail": 5,
+        "showcase": 6
+      },
+      "paidDrawLevels": {
+        "skin": [
+          3,
+          4,
+          8,
+          15,
+          19,
+          32,
+          53,
+          85
+        ],
+        "trail": [
+          5,
+          10,
+          23,
+          45,
+          73
+        ],
+        "showcase": [
+          7,
+          13,
+          27,
+          38,
+          62,
+          97
+        ]
+      },
+      "walletAt100": 1776
+    }
+  ],
+  "expansion": {
+    "hypotheticalNewSkins": 5,
+    "priorPaidCount": 13,
+    "cost": 37500,
+    "nextPrice": 7500,
+    "resetPrice": false,
+    "resetRarityAccess": false
+  },
+  "steadySavingClearEquivalents": [
+    {
+      "totalIncomePerClear": 180,
+      "toolBudget": 0,
+      "cappedDraw": 42,
+      "skinPool": 259,
+      "trailPool": 44,
+      "showcasePool": 254,
+      "allThree": 557
+    },
+    {
+      "totalIncomePerClear": 180,
+      "toolBudget": 75,
+      "cappedDraw": 72,
+      "skinPool": 444,
+      "trailPool": 76,
+      "showcasePool": 436,
+      "allThree": 955
+    },
+    {
+      "totalIncomePerClear": 260,
+      "toolBudget": 0,
+      "cappedDraw": 29,
+      "skinPool": 180,
+      "trailPool": 31,
+      "showcasePool": 176,
+      "allThree": 386
+    },
+    {
+      "totalIncomePerClear": 260,
+      "toolBudget": 75,
+      "cappedDraw": 41,
+      "skinPool": 252,
+      "trailPool": 43,
+      "showcasePool": 248,
+      "allThree": 542
+    },
+    {
+      "totalIncomePerClear": 340,
+      "toolBudget": 0,
+      "cappedDraw": 23,
+      "skinPool": 138,
+      "trailPool": 24,
+      "showcasePool": 135,
+      "allThree": 295
+    },
+    {
+      "totalIncomePerClear": 340,
+      "toolBudget": 75,
+      "cappedDraw": 29,
+      "skinPool": 176,
+      "trailPool": 30,
+      "showcasePool": 173,
+      "allThree": 379
+    },
+    {
+      "totalIncomePerClear": 400,
+      "toolBudget": 0,
+      "cappedDraw": 19,
+      "skinPool": 117,
+      "trailPool": 20,
+      "showcasePool": 115,
+      "allThree": 251
+    },
+    {
+      "totalIncomePerClear": 400,
+      "toolBudget": 75,
+      "cappedDraw": 24,
+      "skinPool": 144,
+      "trailPool": 25,
+      "showcasePool": 141,
+      "allThree": 309
+    }
+  ],
+  "steadySavingAssumptions": "Theoretical saving equivalents from zero money at constant income, no initial reserve or gifting, no other pool spending for individual-pool values. NOT predicted first acquisition or completion levels. 400 is a representative higher-quality mixed-fleet total including fixed 100, not a fixed per-boat payout or hard ceiling.",
+  "victoryRewardRule": {
+    "success": 100,
+    "deadlockExit": 0,
+    "restart": 0,
+    "growsWithLevel": false,
+    "sameVictoryPaysOnce": true
+  },
+  "withdrawn": "Earlier linear first-clear, proposed 2080 cap, and intermediate no-separate-bonus/400-total interpretations are withdrawn. Existing runtime still uses legacy rules; this script does not change them.",
+  "equipmentExpectationsWithNewVictoryBonus": [
+    {
+      "name": "white",
+      "standardGroups": [
+        [
+          76,
+          1
+        ]
+      ],
+      "longShips": 4,
+      "expectedTotal": 180.0
+    },
+    {
+      "name": "one_red_skin",
+      "standardGroups": [
+        [
+          76,
+          8
+        ]
+      ],
+      "longShips": 4,
+      "expectedTotal": 233.20000000000002
+    },
+    {
+      "name": "purple_gold_red",
+      "standardGroups": [
+        [
+          26,
+          3
+        ],
+        [
+          25,
+          5
+        ],
+        [
+          25,
+          8
+        ]
+      ],
+      "longShips": 4,
+      "expectedTotal": 404.10625
+    },
+    {
+      "name": "three_red_skins",
+      "standardGroups": [
+        [
+          26,
+          8
+        ],
+        [
+          25,
+          8
+        ],
+        [
+          25,
+          8
+        ]
+      ],
+      "longShips": 4,
+      "expectedTotal": 543.479605263158
+    },
+    {
+      "name": "three_red_two_gold",
+      "standardGroups": [
+        [
+          16,
+          8
+        ],
+        [
+          15,
+          8
+        ],
+        [
+          15,
+          8
+        ],
+        [
+          15,
+          5
+        ],
+        [
+          15,
+          5
+        ]
+      ],
+      "longShips": 4,
+      "expectedTotal": 532.5684210526316
+    }
+  ],
+  "equipmentExpectationMethod": "Analytical expectation of current per-ship caps and Probability formula; 76 standard/4 long ships matches actual level 55, balanced hypothetical equipment. Assumes NEW fixed 100 victory reward, not current live first-clear formula. No sampled SHA rewards.",
+  "sourceSha256": {
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Collection/AppearanceCatalog.cs": "15529ec74a658c4212172f2d455101912bb79e172fdd777ce879768fe9bfe741",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/Collection/ShowcaseCatalog.cs": "bb07730114080ae51b7b9b11889199ac491553ccf5674cbcd65df2dce77a9f57",
+    "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/manifest-100.json": "781c3807d0d53789e9abdf210bbf18fbf398d0674bfeed09ec56fd58d2417b7c",
+    "40_项目交接文档/验证记录/20260924_抽奖生命周期/long_term_collection_budget.py": "deca828e2194986358c6283e421117eb23db248a27bde7500290dca3be59a725"
+  }
+}

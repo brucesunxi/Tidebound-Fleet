@@ -62,7 +62,7 @@ namespace Tidebound.Save
             if(!Guid.TryParseExact(requestId,"N",out _))return CoinPurchaseStatus.InvalidRequest;
             var prior=data.Purchases.SingleOrDefault(p=>p.RequestId==requestId);
             if(prior!=null)return prior.ProductId==productId ? CoinPurchaseStatus.AlreadyPurchased : CoinPurchaseStatus.RequestConflict;
-            if(data.Collection.Receipts.Any(r=>r.RequestId==requestId) || data.Collection.EquipmentReceipts.Any(r=>r.RequestId==requestId))return CoinPurchaseStatus.RequestConflict;
+            if(HasUniqueRequest(requestId)||data.Collection.Receipts.Any(r=>r.RequestId==requestId) || data.Collection.EquipmentReceipts.Any(r=>r.RequestId==requestId)||data.Appearance.DrawReceipts.Any(r=>r.RequestId==requestId))return CoinPurchaseStatus.RequestConflict;
             var product=catalog?.Find(productId);
             if(product==null)return CoinPurchaseStatus.InvalidProduct;
             if(data.CurrentLevel<catalog.UnlockLevel)return CoinPurchaseStatus.Locked;
@@ -110,20 +110,39 @@ namespace Tidebound.Save
             if(next.Attempt.Victory && !next.Settlements.Any(s=>s.AttemptId==next.Attempt.AttemptId))
             {
                 if(next.Attempt.LevelNumber!=next.CurrentLevel)throw new InvalidOperationException("Cannot reward an old or skipped level.");
-                var receipt=Receipt(next.Attempt,"Victory",next.Attempt.PendingCoins,BattleCoinRules.FirstClear(next.CurrentLevel),0);
+                var receipt=Receipt(next.Attempt,"Victory",next.Attempt.PendingCoins,BattleCoinRules.FirstClear(next.CurrentLevel,next.Attempt.EconomyVersion),0);
                 next.Coins=checked(next.Coins+receipt.BattleCoins+receipt.FirstClearCoins);next.Settlements=next.Settlements.Concat(new[]{receipt}).ToArray();
                 next.HighestClearedLevel=next.CurrentLevel;next.CurrentLevel++;
             }
             if(!Commit(next))return false;savedChangeVersion=Runtime.ChangeVersion;return true;
         }
-        public bool Restart(SavedGameRuntime replacement)
+        public bool Restart(SavedGameRuntime replacement,Func<AttemptSaveData,SavedGameRuntime,bool> acceptsRevision=null)
         {
             if(!IsAvailable || Runtime==null || Runtime.Session.State==GameState.Victory || data.Attempt?.AttemptId!=Runtime.Session.SessionId ||
-                replacement.Session.SessionId==Runtime.Session.SessionId || replacement.LevelNumber!=data.CurrentLevel || replacement.Session.LevelId!=Runtime.Session.LevelId ||
+                replacement.Session.SessionId==Runtime.Session.SessionId || replacement.LevelNumber!=data.CurrentLevel ||
+                (replacement.Session.LevelId!=Runtime.Session.LevelId && acceptsRevision?.Invoke(data.Attempt,replacement)!=true) ||
                 data.Settlements.Any(s=>s.AttemptId==Runtime.Session.SessionId))return false;
-            var current=Runtime.Capture();var next=data.Copy();var day=today().ToString("yyyy-MM-dd",CultureInfo.InvariantCulture);
+            return ReplaceAttempt(Runtime.Capture(),Runtime.IsTerminalDeadlock,replacement);
+        }
+        /// <summary>Home always starts the next uncleared level from its initial layout. Account rewards survive.</summary>
+        public bool StartFromHome(SavedGameRuntime replacement,Func<AttemptSaveData,SavedGameRuntime,bool> acceptsRevision=null)
+        {
+            if(!IsAvailable || replacement==null || replacement.LevelNumber!=data.CurrentLevel ||
+                replacement.Session.State!=GameState.Playing || replacement.Capture().Departures.Length!=0 ||
+                replacement.Session.ToolUses!=0 || replacement.PendingMoveId!=null || replacement.Movement.IsBusy)return false;
+            if(data.Attempt==null || data.Attempt.Victory)return Start(replacement);
+            if(replacement.Session.SessionId==data.Attempt.AttemptId ||
+                (replacement.Session.LevelId!=data.Attempt.LevelId && acceptsRevision?.Invoke(data.Attempt,replacement)!=true))return false;
+            // Read the durable attempt even after an application restart. A failed commit preserves it unchanged.
+            // The ordinary restart rules still own deadlock rewards, daily limits and consumed tool inventory.
+            using(var previous=SavedGameRuntime.Restore(data.Attempt))
+                return ReplaceAttempt(data.Attempt,previous.IsTerminalDeadlock,replacement);
+        }
+        private bool ReplaceAttempt(AttemptSaveData current,bool deadlock,SavedGameRuntime replacement)
+        {
+            var next=data.Copy();var day=today().ToString("yyyy-MM-dd",CultureInfo.InvariantCulture);
             if(string.CompareOrdinal(day,next.MaxLocalDay)>0){next.MaxLocalDay=day;next.DailyRestartCount=0;}
-            var ordinal=checked(++next.DailyRestartCount);var deadlock=Runtime.IsTerminalDeadlock;
+            var ordinal=checked(++next.DailyRestartCount);
             var amount=deadlock && ordinal<=10 ? current.PendingCoins : 0;
             var record=Receipt(current,deadlock ? "DeadlockRestart" : "VoluntaryRestart",amount,0,ordinal);record.Day=next.MaxLocalDay;
             next.Coins=checked(next.Coins+amount);next.Settlements=next.Settlements.Concat(new[]{record}).ToArray();next.Attempt=replacement.Capture();

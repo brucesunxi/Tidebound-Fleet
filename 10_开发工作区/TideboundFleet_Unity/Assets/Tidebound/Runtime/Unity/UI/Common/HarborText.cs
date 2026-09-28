@@ -5,6 +5,7 @@ namespace Tidebound.Unity.UI
     /// <summary>Retains the source message key, including while inactive, so locale changes never translate a translation.</summary>
     public sealed class HarborText : Text
     {
+        public bool UseDisplayFont;
         private string source="";
         public string Source => source;
         public override string text
@@ -14,6 +15,6 @@ namespace Tidebound.Unity.UI
         }
         protected override void OnEnable(){base.OnEnable();UILanguage.Changed+=Refresh;Refresh();}
         protected override void OnDisable(){UILanguage.Changed-=Refresh;base.OnDisable();}
-        private void Refresh(){base.text=UILanguage.Translate(source);font=HarborUI.Font;}
+        private void Refresh(){base.text=UILanguage.Translate(source);font=UseDisplayFont?HarborUI.DisplayFont:HarborUI.Font;}
     }
 }

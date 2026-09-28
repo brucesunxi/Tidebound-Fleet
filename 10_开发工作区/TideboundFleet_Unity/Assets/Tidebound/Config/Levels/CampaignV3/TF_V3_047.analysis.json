@@ -1,0 +1,2940 @@
+{
+  "version": "CampaignV3.1",
+  "number": 47,
+  "status": "CoreCertified",
+  "ships": 92,
+  "longShips": 8,
+  "bossHp": 920,
+  "quality": {
+    "adjacentRun": 2,
+    "oneGapRun": 2,
+    "largestEmptyRectangle": 5,
+    "minimumWindowEntropy": 0.67582205757669622,
+    "p10WindowEntropy": 0.75,
+    "initialExits": 7
+  },
+  "edgePenalty": 0.0,
+  "riskPoints": [
+    {
+      "prefix": [
+        "K0A"
+      ],
+      "wrongMove": "K0H",
+      "deadFingerprint": "0A1D40F208B29053170A05556A20C17D9B604F1CEB0FA6D6B708EF5FF7D52360",
+      "method": "ClosedZeroTravelCycle",
+      "safeContinuation": [
+        "K1A",
+        "Z023",
+        "Z025",
+        "K0F",
+        "K0G",
+        "Z032",
+        "Z038",
+        "Z060",
+        "Z075",
+        "Z076",
+        "Z018",
+        "Z066",
+        "Z063",
+        "Z077",
+        "Z089",
+        "Z051",
+        "Z052",
+        "Z042",
+        "K0D",
+        "Z053",
+        "Z091",
+        "Z059",
+        "Z065",
+        "Z072",
+        "Z040",
+        "Z081",
+        "Z036",
+        "Z054",
+        "Z083",
+        "Z084",
+        "Z087",
+        "K0B",
+        "Z048",
+        "Z070",
+        "Z027",
+        "Z034",
+        "Z078",
+        "Z035",
+        "Z030",
+        "Z086",
+        "Z088",
+        "Z044",
+        "Z020",
+        "K1E",
+        "K1D",
+        "K1F",
+        "Z028",
+        "Z033",
+        "Z037",
+        "Z069",
+        "Z090",
+        "Z071",
+        "Z055",
+        "Z050",
+        "Z049",
+        "Z021",
+        "Z046",
+        "Z024",
+        "K1G",
+        "Z061",
+        "Z029",
+        "Z043",
+        "Z085",
+        "Z064",
+        "K0E",
+        "K0B",
+        "K0A",
+        "K0H",
+        "K1B",
+        "K1A",
+        "Z026",
+        "K1H",
+        "K1C",
+        "K1B",
+        "Z017",
+        "Z016",
+        "Z056",
+        "Z041",
+        "Z062",
+        "Z039",
+        "Z057",
+        "Z067",
+        "Z074",
+        "Z080",
+        "Z022",
+        "Z045",
+        "Z047",
+        "Z082",
+        "Z079",
+        "Z068",
+        "Z019",
+        "K0C",
+        "Z031",
+        "K0B",
+        "Z058",
+        "Z073"
+      ],
+      "recovery": {
+        "tool": "Reverse",
+        "target": "K0A",
+        "afterFingerprint": "9DA545F75323B10B3FB8764DDD350FFDF5D62DA01888982785FD16FD72C564BD",
+        "solution": {
+          "proofVersion": 1,
+          "rulesVersion": "ForwardUntilBlockedV1",
+          "exitMode": "AllBoundaryEdges",
+          "levelId": "TF_V3_047",
+          "layoutFingerprint": "9DA545F75323B10B3FB8764DDD350FFDF5D62DA01888982785FD16FD72C564BD",
+          "solutionSteps": [
+            {
+              "shipId": "K1A",
+              "from": {
+                "x": 12,
+                "y": 13
+              },
+              "to": {
+                "x": 12,
+                "y": 14
+              },
+              "outcome": "Blocked",
+              "beforeHash": "9DA545F75323B10B3FB8764DDD350FFDF5D62DA01888982785FD16FD72C564BD",
+              "afterHash": "7BB8603DD7DB8DF87BEEF0A9564CF039A69F80C645B1AC22F2EE49986FB39B8B"
+            },
+            {
+              "shipId": "Z023",
+              "from": {
+                "x": 1,
+                "y": 15
+              },
+              "to": {
+                "x": -1,
+                "y": 15
+              },
+              "outcome": "Exit",
+              "beforeHash": "7BB8603DD7DB8DF87BEEF0A9564CF039A69F80C645B1AC22F2EE49986FB39B8B",
+              "afterHash": "31508770A67DEBE87BD2D7DE6CEFE7C2A1302D706E3F20DEF2148D49962E24B3"
+            },
+            {
+              "shipId": "Z025",
+              "from": {
+                "x": 1,
+                "y": 0
+              },
+              "to": {
+                "x": -1,
+                "y": 0
+              },
+              "outcome": "Exit",
+              "beforeHash": "31508770A67DEBE87BD2D7DE6CEFE7C2A1302D706E3F20DEF2148D49962E24B3",
+              "afterHash": "67D2A6ED2960C65C3A957544C8E095F8C2CBD9AD5F9AF1E5B7151451C5D26FAF"
+            },
+            {
+              "shipId": "K0F",
+              "from": {
+                "x": 0,
+                "y": 4
+              },
+              "to": {
+                "x": 0,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "67D2A6ED2960C65C3A957544C8E095F8C2CBD9AD5F9AF1E5B7151451C5D26FAF",
+              "afterHash": "880B80D29116E11FA89D9BDFB021FD5E4C21D80ACAEFCC8F2F79F8CA3A0F21BE"
+            },
+            {
+              "shipId": "K0A",
+              "from": {
+                "x": 3,
+                "y": 3
+              },
+              "to": {
+                "x": -1,
+                "y": 3
+              },
+              "outcome": "Exit",
+              "beforeHash": "880B80D29116E11FA89D9BDFB021FD5E4C21D80ACAEFCC8F2F79F8CA3A0F21BE",
+              "afterHash": "D5EFF9D1E1C56458B55DBD0F2F21973251A3D21EBCB802A004978D246A9260FF"
+            },
+            {
+              "shipId": "Z038",
+              "from": {
+                "x": 3,
+                "y": 0
+              },
+              "to": {
+                "x": -1,
+                "y": 0
+              },
+              "outcome": "Exit",
+              "beforeHash": "D5EFF9D1E1C56458B55DBD0F2F21973251A3D21EBCB802A004978D246A9260FF",
+              "afterHash": "860A6CB84E62C21BF8F3FE8BAC1E5FEBB4B61F354B0058CC2C197BE992CF7F69"
+            },
+            {
+              "shipId": "Z060",
+              "from": {
+                "x": 3,
+                "y": 2
+              },
+              "to": {
+                "x": 3,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "860A6CB84E62C21BF8F3FE8BAC1E5FEBB4B61F354B0058CC2C197BE992CF7F69",
+              "afterHash": "1C313E9099BD1378CF22C70CEF927EB674FA7E6D78F5B465C88D52E6B46166D0"
+            },
+            {
+              "shipId": "Z075",
+              "from": {
+                "x": 10,
+                "y": 16
+              },
+              "to": {
+                "x": 10,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "1C313E9099BD1378CF22C70CEF927EB674FA7E6D78F5B465C88D52E6B46166D0",
+              "afterHash": "9871B78A50D0D0E07D83A644542E4145086F72FD9D18CB992072A3C2D5F2272C"
+            },
+            {
+              "shipId": "Z076",
+              "from": {
+                "x": 9,
+                "y": 1
+              },
+              "to": {
+                "x": 9,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "9871B78A50D0D0E07D83A644542E4145086F72FD9D18CB992072A3C2D5F2272C",
+              "afterHash": "C148509459A4EE259C157C07DB4FACC7A691E82D0A7391E15F2931735F6D326E"
+            },
+            {
+              "shipId": "Z018",
+              "from": {
+                "x": 11,
+                "y": 0
+              },
+              "to": {
+                "x": -1,
+                "y": 0
+              },
+              "outcome": "Exit",
+              "beforeHash": "C148509459A4EE259C157C07DB4FACC7A691E82D0A7391E15F2931735F6D326E",
+              "afterHash": "7E6217D3EC3A144B722ADEF017E0162BADBBFA295258617EF73D66D8F5EBD64F"
+            },
+            {
+              "shipId": "Z066",
+              "from": {
+                "x": 9,
+                "y": 4
+              },
+              "to": {
+                "x": 9,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "7E6217D3EC3A144B722ADEF017E0162BADBBFA295258617EF73D66D8F5EBD64F",
+              "afterHash": "EA8E89994AA7D238A71FC21755E99FE13E1FB832462184BAC242F0D7566DF969"
+            },
+            {
+              "shipId": "Z063",
+              "from": {
+                "x": 9,
+                "y": 9
+              },
+              "to": {
+                "x": 9,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "EA8E89994AA7D238A71FC21755E99FE13E1FB832462184BAC242F0D7566DF969",
+              "afterHash": "B0036AA880821EA16F2C13442901DE71F0EB2894B4ABA1027F62C74E5F6ACB60"
+            },
+            {
+              "shipId": "Z077",
+              "from": {
+                "x": 8,
+                "y": 4
+              },
+              "to": {
+                "x": 8,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "B0036AA880821EA16F2C13442901DE71F0EB2894B4ABA1027F62C74E5F6ACB60",
+              "afterHash": "46F2BB2A494E12437DDEE14F2F625036409E9DDDD7F7289AF466A3C02E6D88D4"
+            },
+            {
+              "shipId": "Z089",
+              "from": {
+                "x": 13,
+                "y": 1
+              },
+              "to": {
+                "x": 13,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "46F2BB2A494E12437DDEE14F2F625036409E9DDDD7F7289AF466A3C02E6D88D4",
+              "afterHash": "8316FF520630B5635382811B1627E19EB07F1820603893EE8229D8D46ADE65DB"
+            },
+            {
+              "shipId": "Z051",
+              "from": {
+                "x": 10,
+                "y": 1
+              },
+              "to": {
+                "x": 14,
+                "y": 1
+              },
+              "outcome": "Exit",
+              "beforeHash": "8316FF520630B5635382811B1627E19EB07F1820603893EE8229D8D46ADE65DB",
+              "afterHash": "B7146A9787EDA2B64BE720242C19993F90B8290E02C6E280216054DE9429230D"
+            },
+            {
+              "shipId": "Z052",
+              "from": {
+                "x": 5,
+                "y": 1
+              },
+              "to": {
+                "x": 14,
+                "y": 1
+              },
+              "outcome": "Exit",
+              "beforeHash": "B7146A9787EDA2B64BE720242C19993F90B8290E02C6E280216054DE9429230D",
+              "afterHash": "1DB7D46F92FC7CD370D681BF695B951607D046D3885C13B567DC099FB0691C11"
+            },
+            {
+              "shipId": "Z042",
+              "from": {
+                "x": 1,
+                "y": 1
+              },
+              "to": {
+                "x": 14,
+                "y": 1
+              },
+              "outcome": "Exit",
+              "beforeHash": "1DB7D46F92FC7CD370D681BF695B951607D046D3885C13B567DC099FB0691C11",
+              "afterHash": "469A24A91C7EFCBEA364C1C2B5B547C0E64B9843335422B988AA98BF10F7993C"
+            },
+            {
+              "shipId": "K0D",
+              "from": {
+                "x": 1,
+                "y": 7
+              },
+              "to": {
+                "x": 1,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "469A24A91C7EFCBEA364C1C2B5B547C0E64B9843335422B988AA98BF10F7993C",
+              "afterHash": "8D85BC2105D71466ED265CFDE1E7B81C928D7A56CF8A109C12D198D1E58C428D"
+            },
+            {
+              "shipId": "K0H",
+              "from": {
+                "x": 2,
+                "y": 5
+              },
+              "to": {
+                "x": 2,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "8D85BC2105D71466ED265CFDE1E7B81C928D7A56CF8A109C12D198D1E58C428D",
+              "afterHash": "95BDCD1450E4F00A9C159159324FC623221A01E1BBF138172F1245F470DC9DD3"
+            },
+            {
+              "shipId": "K0G",
+              "from": {
+                "x": 4,
+                "y": 4
+              },
+              "to": {
+                "x": -1,
+                "y": 4
+              },
+              "outcome": "Exit",
+              "beforeHash": "95BDCD1450E4F00A9C159159324FC623221A01E1BBF138172F1245F470DC9DD3",
+              "afterHash": "4FD106023816BF478F3EFD595931E15790543EC9ADA4998173687E1D9949EE8E"
+            },
+            {
+              "shipId": "Z032",
+              "from": {
+                "x": 7,
+                "y": 4
+              },
+              "to": {
+                "x": -1,
+                "y": 4
+              },
+              "outcome": "Exit",
+              "beforeHash": "4FD106023816BF478F3EFD595931E15790543EC9ADA4998173687E1D9949EE8E",
+              "afterHash": "CAF56134AE39A9EBF5B1EDEB6B5CECDFABEFF144196D61BAE93602D2EDD617C1"
+            },
+            {
+              "shipId": "Z053",
+              "from": {
+                "x": 5,
+                "y": 3
+              },
+              "to": {
+                "x": 5,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "CAF56134AE39A9EBF5B1EDEB6B5CECDFABEFF144196D61BAE93602D2EDD617C1",
+              "afterHash": "70BD05EB7019708C42C2D0C40B7D4A2CA3D2BD1BEBA0AE8DC4D3F8B1E0A85D4C"
+            },
+            {
+              "shipId": "Z091",
+              "from": {
+                "x": 0,
+                "y": 16
+              },
+              "to": {
+                "x": 0,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "70BD05EB7019708C42C2D0C40B7D4A2CA3D2BD1BEBA0AE8DC4D3F8B1E0A85D4C",
+              "afterHash": "8F36132790149109BB62178C6F1CCC6D9370760D5B001920FD982CC0F94706B1"
+            },
+            {
+              "shipId": "Z059",
+              "from": {
+                "x": 3,
+                "y": 16
+              },
+              "to": {
+                "x": -1,
+                "y": 16
+              },
+              "outcome": "Exit",
+              "beforeHash": "8F36132790149109BB62178C6F1CCC6D9370760D5B001920FD982CC0F94706B1",
+              "afterHash": "79757C55EA07537470CFF8333F4DC6ECBD68579017D3E8022558CAE5EFBE0F74"
+            },
+            {
+              "shipId": "Z065",
+              "from": {
+                "x": 0,
+                "y": 12
+              },
+              "to": {
+                "x": 0,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "79757C55EA07537470CFF8333F4DC6ECBD68579017D3E8022558CAE5EFBE0F74",
+              "afterHash": "65A8DB5F167EB79E02B8E934A9FFE1962A6E56DA07010AC9378371AE1A263A9F"
+            },
+            {
+              "shipId": "Z072",
+              "from": {
+                "x": 2,
+                "y": 14
+              },
+              "to": {
+                "x": 2,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "65A8DB5F167EB79E02B8E934A9FFE1962A6E56DA07010AC9378371AE1A263A9F",
+              "afterHash": "3E817840877C1545FC252B20C0323F068999419C4C09590E9C4A953F2CB27D86"
+            },
+            {
+              "shipId": "Z040",
+              "from": {
+                "x": 5,
+                "y": 15
+              },
+              "to": {
+                "x": -1,
+                "y": 15
+              },
+              "outcome": "Exit",
+              "beforeHash": "3E817840877C1545FC252B20C0323F068999419C4C09590E9C4A953F2CB27D86",
+              "afterHash": "601F331D1F14BCDDA0BE040C0E345369B6F4A3DFE80E4A133E3C95EF3928E2AD"
+            },
+            {
+              "shipId": "Z081",
+              "from": {
+                "x": 0,
+                "y": 10
+              },
+              "to": {
+                "x": 0,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "601F331D1F14BCDDA0BE040C0E345369B6F4A3DFE80E4A133E3C95EF3928E2AD",
+              "afterHash": "648A262C796571A4F7DF29028E94DE61B816F0E17A07ECB2BCC4A3550DFF8D4C"
+            },
+            {
+              "shipId": "Z036",
+              "from": {
+                "x": 2,
+                "y": 11
+              },
+              "to": {
+                "x": -1,
+                "y": 11
+              },
+              "outcome": "Exit",
+              "beforeHash": "648A262C796571A4F7DF29028E94DE61B816F0E17A07ECB2BCC4A3550DFF8D4C",
+              "afterHash": "046EABF576DA11AFD8864EDDCB57DFDE38A6B6D50942CF1660C3BDE2E75221F4"
+            },
+            {
+              "shipId": "Z054",
+              "from": {
+                "x": 4,
+                "y": 11
+              },
+              "to": {
+                "x": -1,
+                "y": 11
+              },
+              "outcome": "Exit",
+              "beforeHash": "046EABF576DA11AFD8864EDDCB57DFDE38A6B6D50942CF1660C3BDE2E75221F4",
+              "afterHash": "044EA0A34931CBFA6DCAE6AFEDECEADA07271C4FFF08C3C525F144FC27813E40"
+            },
+            {
+              "shipId": "Z083",
+              "from": {
+                "x": 3,
+                "y": 12
+              },
+              "to": {
+                "x": -1,
+                "y": 12
+              },
+              "outcome": "Exit",
+              "beforeHash": "044EA0A34931CBFA6DCAE6AFEDECEADA07271C4FFF08C3C525F144FC27813E40",
+              "afterHash": "307179A439E9434EE5D93D83DD282CEE03C9EE50CC149E853AFE8CE6E76EC5D4"
+            },
+            {
+              "shipId": "Z084",
+              "from": {
+                "x": 7,
+                "y": 12
+              },
+              "to": {
+                "x": -1,
+                "y": 12
+              },
+              "outcome": "Exit",
+              "beforeHash": "307179A439E9434EE5D93D83DD282CEE03C9EE50CC149E853AFE8CE6E76EC5D4",
+              "afterHash": "09244D62CA5071606EA7E4885CA71EABC4B21A39BDF13DBABDC32EC1844CC80B"
+            },
+            {
+              "shipId": "Z087",
+              "from": {
+                "x": 5,
+                "y": 16
+              },
+              "to": {
+                "x": -1,
+                "y": 16
+              },
+              "outcome": "Exit",
+              "beforeHash": "09244D62CA5071606EA7E4885CA71EABC4B21A39BDF13DBABDC32EC1844CC80B",
+              "afterHash": "16E33088095643FF7F7004724BAF91205B4734460472369D1C81D83CF2432181"
+            },
+            {
+              "shipId": "K0B",
+              "from": {
+                "x": 4,
+                "y": 2
+              },
+              "to": {
+                "x": 4,
+                "y": 3
+              },
+              "outcome": "Blocked",
+              "beforeHash": "16E33088095643FF7F7004724BAF91205B4734460472369D1C81D83CF2432181",
+              "afterHash": "C0EC46F358028BF11228486E621FB46870450072E0E650EA30C6264988548522"
+            },
+            {
+              "shipId": "Z048",
+              "from": {
+                "x": 7,
+                "y": 2
+              },
+              "to": {
+                "x": -1,
+                "y": 2
+              },
+              "outcome": "Exit",
+              "beforeHash": "C0EC46F358028BF11228486E621FB46870450072E0E650EA30C6264988548522",
+              "afterHash": "6938D748C7B49E17F5809B1CBF97A1EFC105B45F1F9FF5C676E2AC2BCD4519B0"
+            },
+            {
+              "shipId": "Z070",
+              "from": {
+                "x": 11,
+                "y": 2
+              },
+              "to": {
+                "x": -1,
+                "y": 2
+              },
+              "outcome": "Exit",
+              "beforeHash": "6938D748C7B49E17F5809B1CBF97A1EFC105B45F1F9FF5C676E2AC2BCD4519B0",
+              "afterHash": "859D3A696DDE438B8A5824DF42F9DA33078B9C078FEB5D87E2296E8C030FFC2E"
+            },
+            {
+              "shipId": "Z027",
+              "from": {
+                "x": 13,
+                "y": 2
+              },
+              "to": {
+                "x": -1,
+                "y": 2
+              },
+              "outcome": "Exit",
+              "beforeHash": "859D3A696DDE438B8A5824DF42F9DA33078B9C078FEB5D87E2296E8C030FFC2E",
+              "afterHash": "7EA0710C2E97B33DAA6DA2D0AE8BB9C4921309AD4BDA4515773133A50F36CB4D"
+            },
+            {
+              "shipId": "Z034",
+              "from": {
+                "x": 12,
+                "y": 4
+              },
+              "to": {
+                "x": 12,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "7EA0710C2E97B33DAA6DA2D0AE8BB9C4921309AD4BDA4515773133A50F36CB4D",
+              "afterHash": "5C6335E569ADEAEAB9A9E0CF56D8EB958373EFD14E1B80B1365EFA28398D02F9"
+            },
+            {
+              "shipId": "Z078",
+              "from": {
+                "x": 10,
+                "y": 3
+              },
+              "to": {
+                "x": 14,
+                "y": 3
+              },
+              "outcome": "Exit",
+              "beforeHash": "5C6335E569ADEAEAB9A9E0CF56D8EB958373EFD14E1B80B1365EFA28398D02F9",
+              "afterHash": "8FF8284B9380F6F4CED21BB494DADC97FDB7A9E58DCF22C28074DCC0F75919B0"
+            },
+            {
+              "shipId": "Z035",
+              "from": {
+                "x": 6,
+                "y": 3
+              },
+              "to": {
+                "x": 14,
+                "y": 3
+              },
+              "outcome": "Exit",
+              "beforeHash": "8FF8284B9380F6F4CED21BB494DADC97FDB7A9E58DCF22C28074DCC0F75919B0",
+              "afterHash": "D626742C77AB560F5F05946E0498A6215F306C80E6AA411222123DAA3CEBB2BD"
+            },
+            {
+              "shipId": "Z030",
+              "from": {
+                "x": 6,
+                "y": 6
+              },
+              "to": {
+                "x": 6,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "D626742C77AB560F5F05946E0498A6215F306C80E6AA411222123DAA3CEBB2BD",
+              "afterHash": "798FFE410C81BDA4F6C8AC5D164CD203C28CDA6D93C03283511F098A039585BB"
+            },
+            {
+              "shipId": "Z086",
+              "from": {
+                "x": 12,
+                "y": 6
+              },
+              "to": {
+                "x": 12,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "798FFE410C81BDA4F6C8AC5D164CD203C28CDA6D93C03283511F098A039585BB",
+              "afterHash": "47FD4F01C41DF419996EC4EC5EEE606FA9C2E1828B6B3751D41AB6E01A449519"
+            },
+            {
+              "shipId": "Z088",
+              "from": {
+                "x": 13,
+                "y": 5
+              },
+              "to": {
+                "x": 13,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "47FD4F01C41DF419996EC4EC5EEE606FA9C2E1828B6B3751D41AB6E01A449519",
+              "afterHash": "CA4C0C10EE54CAF79FD4823C015CFA7A3F22D1BB5D7F0A65EAF31F535810CA15"
+            },
+            {
+              "shipId": "Z044",
+              "from": {
+                "x": 13,
+                "y": 11
+              },
+              "to": {
+                "x": 13,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "CA4C0C10EE54CAF79FD4823C015CFA7A3F22D1BB5D7F0A65EAF31F535810CA15",
+              "afterHash": "128FFC5E40B9B66359B9B3D065C529765FD2042698807513689345227D22CFCB"
+            },
+            {
+              "shipId": "Z020",
+              "from": {
+                "x": 13,
+                "y": 13
+              },
+              "to": {
+                "x": 13,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "128FFC5E40B9B66359B9B3D065C529765FD2042698807513689345227D22CFCB",
+              "afterHash": "FC38B53FF6356EDB8D3698485501298EDA235F6CDE35DD79149A9314BADEB40A"
+            },
+            {
+              "shipId": "K1E",
+              "from": {
+                "x": 10,
+                "y": 13
+              },
+              "to": {
+                "x": 14,
+                "y": 13
+              },
+              "outcome": "Exit",
+              "beforeHash": "FC38B53FF6356EDB8D3698485501298EDA235F6CDE35DD79149A9314BADEB40A",
+              "afterHash": "A8758F81C36A0792258A2FD3E12B65C7A80F61958F6FB6A3085368BAD40B3444"
+            },
+            {
+              "shipId": "K1D",
+              "from": {
+                "x": 8,
+                "y": 13
+              },
+              "to": {
+                "x": 14,
+                "y": 13
+              },
+              "outcome": "Exit",
+              "beforeHash": "A8758F81C36A0792258A2FD3E12B65C7A80F61958F6FB6A3085368BAD40B3444",
+              "afterHash": "44886984DB66711420FCD0E7B5747FFB1BF79D75C397625A1F547AE5DEE3D9D7"
+            },
+            {
+              "shipId": "K1F",
+              "from": {
+                "x": 11,
+                "y": 12
+              },
+              "to": {
+                "x": 14,
+                "y": 12
+              },
+              "outcome": "Exit",
+              "beforeHash": "44886984DB66711420FCD0E7B5747FFB1BF79D75C397625A1F547AE5DEE3D9D7",
+              "afterHash": "8C3F05AF842DAF1A219ACFD0A0D44F691336C43329B894431A58480DE679283F"
+            },
+            {
+              "shipId": "Z028",
+              "from": {
+                "x": 10,
+                "y": 11
+              },
+              "to": {
+                "x": 10,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "8C3F05AF842DAF1A219ACFD0A0D44F691336C43329B894431A58480DE679283F",
+              "afterHash": "15E9BEA534C5BDCD64C5EF037930BA049355491F028C2A2757736D051389A374"
+            },
+            {
+              "shipId": "Z033",
+              "from": {
+                "x": 8,
+                "y": 10
+              },
+              "to": {
+                "x": 14,
+                "y": 10
+              },
+              "outcome": "Exit",
+              "beforeHash": "15E9BEA534C5BDCD64C5EF037930BA049355491F028C2A2757736D051389A374",
+              "afterHash": "68F0C0F307646EBFCC57C472FA3A94B9CECD65DA67A0A23B087D74718E13DA22"
+            },
+            {
+              "shipId": "Z037",
+              "from": {
+                "x": 10,
+                "y": 9
+              },
+              "to": {
+                "x": 14,
+                "y": 9
+              },
+              "outcome": "Exit",
+              "beforeHash": "68F0C0F307646EBFCC57C472FA3A94B9CECD65DA67A0A23B087D74718E13DA22",
+              "afterHash": "9B9270CD79F876EA8E24C6A1A06132CE3941A7AB6873EA32F8802B11194713A5"
+            },
+            {
+              "shipId": "Z069",
+              "from": {
+                "x": 10,
+                "y": 7
+              },
+              "to": {
+                "x": 10,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "9B9270CD79F876EA8E24C6A1A06132CE3941A7AB6873EA32F8802B11194713A5",
+              "afterHash": "DA3D285A76D46EDC848408FE98C7431F1E55C266CF6E3271D4E2F0A2EEA59514"
+            },
+            {
+              "shipId": "Z090",
+              "from": {
+                "x": 10,
+                "y": 6
+              },
+              "to": {
+                "x": 14,
+                "y": 6
+              },
+              "outcome": "Exit",
+              "beforeHash": "DA3D285A76D46EDC848408FE98C7431F1E55C266CF6E3271D4E2F0A2EEA59514",
+              "afterHash": "4377E524B007B12B9CD7237ABE487FFB0E0D63F1A1979A43B87C83A8492D352D"
+            },
+            {
+              "shipId": "Z071",
+              "from": {
+                "x": 11,
+                "y": 8
+              },
+              "to": {
+                "x": 11,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "4377E524B007B12B9CD7237ABE487FFB0E0D63F1A1979A43B87C83A8492D352D",
+              "afterHash": "E7C67BF01CBFD1FD334E80F758765A21CE4EE4F31AA0BC597FEE79052BB2C986"
+            },
+            {
+              "shipId": "Z055",
+              "from": {
+                "x": 6,
+                "y": 7
+              },
+              "to": {
+                "x": 14,
+                "y": 7
+              },
+              "outcome": "Exit",
+              "beforeHash": "E7C67BF01CBFD1FD334E80F758765A21CE4EE4F31AA0BC597FEE79052BB2C986",
+              "afterHash": "6BE6FF5C763B60F5E24F7B77AE3D14D95DD4E49AE7FBE3DF0B28BD55E81201F2"
+            },
+            {
+              "shipId": "Z050",
+              "from": {
+                "x": 6,
+                "y": 9
+              },
+              "to": {
+                "x": 6,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "6BE6FF5C763B60F5E24F7B77AE3D14D95DD4E49AE7FBE3DF0B28BD55E81201F2",
+              "afterHash": "BEC917DCC921C3AC41AFD2532A67F4A402F7B6F7EA817BF02C221F3C166F3447"
+            },
+            {
+              "shipId": "Z049",
+              "from": {
+                "x": 6,
+                "y": 11
+              },
+              "to": {
+                "x": 6,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "BEC917DCC921C3AC41AFD2532A67F4A402F7B6F7EA817BF02C221F3C166F3447",
+              "afterHash": "AF1C89A19B9291BB9F6365AF9940C68908EE8B88DE16700ED7ED5555F82AF321"
+            },
+            {
+              "shipId": "Z021",
+              "from": {
+                "x": 6,
+                "y": 14
+              },
+              "to": {
+                "x": 6,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "AF1C89A19B9291BB9F6365AF9940C68908EE8B88DE16700ED7ED5555F82AF321",
+              "afterHash": "437215E5DE395C14EA69C5F3D6E865CD65026A07A4ED974342DCECD275F0E95B"
+            },
+            {
+              "shipId": "Z046",
+              "from": {
+                "x": 9,
+                "y": 11
+              },
+              "to": {
+                "x": -1,
+                "y": 11
+              },
+              "outcome": "Exit",
+              "beforeHash": "437215E5DE395C14EA69C5F3D6E865CD65026A07A4ED974342DCECD275F0E95B",
+              "afterHash": "4F9567653116FCBF0766474449403BF6BCA219231E65C8BDB24EC75C65E55E9C"
+            },
+            {
+              "shipId": "Z024",
+              "from": {
+                "x": 12,
+                "y": 11
+              },
+              "to": {
+                "x": -1,
+                "y": 11
+              },
+              "outcome": "Exit",
+              "beforeHash": "4F9567653116FCBF0766474449403BF6BCA219231E65C8BDB24EC75C65E55E9C",
+              "afterHash": "E1A4757EC8E78C9F6CE5EEC180E1F956EEC33FE0E994B63748C639BA703DD045"
+            },
+            {
+              "shipId": "K1G",
+              "from": {
+                "x": 11,
+                "y": 17
+              },
+              "to": {
+                "x": 11,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "E1A4757EC8E78C9F6CE5EEC180E1F956EEC33FE0E994B63748C639BA703DD045",
+              "afterHash": "482A8717C9A03805C4AE10A54877897B04CDE15FF79D7C872909C6E663372F8C"
+            },
+            {
+              "shipId": "Z061",
+              "from": {
+                "x": 6,
+                "y": 16
+              },
+              "to": {
+                "x": 6,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "482A8717C9A03805C4AE10A54877897B04CDE15FF79D7C872909C6E663372F8C",
+              "afterHash": "FE112F907962DFF432EA81C9A4D8A518E771D2940E996242F5E1125AC3858680"
+            },
+            {
+              "shipId": "Z029",
+              "from": {
+                "x": 9,
+                "y": 15
+              },
+              "to": {
+                "x": -1,
+                "y": 15
+              },
+              "outcome": "Exit",
+              "beforeHash": "FE112F907962DFF432EA81C9A4D8A518E771D2940E996242F5E1125AC3858680",
+              "afterHash": "E18BD2215BEC558D9E43098FEFC34EE5043C1CCD8E1762852C33C522BA33A969"
+            },
+            {
+              "shipId": "Z043",
+              "from": {
+                "x": 8,
+                "y": 16
+              },
+              "to": {
+                "x": -1,
+                "y": 16
+              },
+              "outcome": "Exit",
+              "beforeHash": "E18BD2215BEC558D9E43098FEFC34EE5043C1CCD8E1762852C33C522BA33A969",
+              "afterHash": "8013BAC88CB65A88B610BC143EF9B39D5C9879A7171182025C4FDA8A1E772B31"
+            },
+            {
+              "shipId": "Z085",
+              "from": {
+                "x": 10,
+                "y": 4
+              },
+              "to": {
+                "x": 10,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "8013BAC88CB65A88B610BC143EF9B39D5C9879A7171182025C4FDA8A1E772B31",
+              "afterHash": "0E5E6845A41DD5DFA5730031991FDE8197750A467063E2CE5C8B41A1C8DC8C80"
+            },
+            {
+              "shipId": "Z064",
+              "from": {
+                "x": 7,
+                "y": 5
+              },
+              "to": {
+                "x": 14,
+                "y": 5
+              },
+              "outcome": "Exit",
+              "beforeHash": "0E5E6845A41DD5DFA5730031991FDE8197750A467063E2CE5C8B41A1C8DC8C80",
+              "afterHash": "57CA44F61D21067C8A0E9A4B88FC405CC6DBB2A31D75D1814AC464A41A661374"
+            },
+            {
+              "shipId": "K0E",
+              "from": {
+                "x": 3,
+                "y": 5
+              },
+              "to": {
+                "x": 14,
+                "y": 5
+              },
+              "outcome": "Exit",
+              "beforeHash": "57CA44F61D21067C8A0E9A4B88FC405CC6DBB2A31D75D1814AC464A41A661374",
+              "afterHash": "F951F308F1475DDB33D62624C9F530B96A9E58AE1C3A06EF119E5C949C6A699D"
+            },
+            {
+              "shipId": "K0B",
+              "from": {
+                "x": 4,
+                "y": 3
+              },
+              "to": {
+                "x": 4,
+                "y": 4
+              },
+              "outcome": "Blocked",
+              "beforeHash": "F951F308F1475DDB33D62624C9F530B96A9E58AE1C3A06EF119E5C949C6A699D",
+              "afterHash": "C6FC02CEC5F7D1409F4776F90CE0D37D90CE2CED065604F6E72CFB52588AACA4"
+            },
+            {
+              "shipId": "K1B",
+              "from": {
+                "x": 13,
+                "y": 16
+              },
+              "to": {
+                "x": 11,
+                "y": 16
+              },
+              "outcome": "Blocked",
+              "beforeHash": "C6FC02CEC5F7D1409F4776F90CE0D37D90CE2CED065604F6E72CFB52588AACA4",
+              "afterHash": "BAF3163420550EE7424214F377F1EAFC683CBB72C7C9A389770C57737361C2FE"
+            },
+            {
+              "shipId": "K1A",
+              "from": {
+                "x": 12,
+                "y": 14
+              },
+              "to": {
+                "x": 12,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "BAF3163420550EE7424214F377F1EAFC683CBB72C7C9A389770C57737361C2FE",
+              "afterHash": "79EAD2D173E3B1C267A3D75CBE31E14E189E621D97F4CE962F69521D1F2957D3"
+            },
+            {
+              "shipId": "Z026",
+              "from": {
+                "x": 13,
+                "y": 14
+              },
+              "to": {
+                "x": 13,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "79EAD2D173E3B1C267A3D75CBE31E14E189E621D97F4CE962F69521D1F2957D3",
+              "afterHash": "930BE624890FE8C2B26B15E5F2F68B837455DD9916A2EFA3266AAC7E34E447B6"
+            },
+            {
+              "shipId": "K1H",
+              "from": {
+                "x": 8,
+                "y": 14
+              },
+              "to": {
+                "x": 14,
+                "y": 14
+              },
+              "outcome": "Exit",
+              "beforeHash": "930BE624890FE8C2B26B15E5F2F68B837455DD9916A2EFA3266AAC7E34E447B6",
+              "afterHash": "B01F7F1D3394A044F5595DCB26246D50C18426D7FEC516DC09EECBC52925759A"
+            },
+            {
+              "shipId": "K1C",
+              "from": {
+                "x": 9,
+                "y": 17
+              },
+              "to": {
+                "x": 9,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "B01F7F1D3394A044F5595DCB26246D50C18426D7FEC516DC09EECBC52925759A",
+              "afterHash": "A21C80C89BF4895CCC628087A26DC80A35B2E0609E274FA5757B07BAF61853DA"
+            },
+            {
+              "shipId": "K1B",
+              "from": {
+                "x": 11,
+                "y": 16
+              },
+              "to": {
+                "x": -1,
+                "y": 16
+              },
+              "outcome": "Exit",
+              "beforeHash": "A21C80C89BF4895CCC628087A26DC80A35B2E0609E274FA5757B07BAF61853DA",
+              "afterHash": "F0E71503B7750B51F43807AE9CAC7D2CC078AC92564EA80742F470887DEFBD2C"
+            },
+            {
+              "shipId": "Z017",
+              "from": {
+                "x": 7,
+                "y": 17
+              },
+              "to": {
+                "x": 14,
+                "y": 17
+              },
+              "outcome": "Exit",
+              "beforeHash": "F0E71503B7750B51F43807AE9CAC7D2CC078AC92564EA80742F470887DEFBD2C",
+              "afterHash": "B8695A568F167A5D4B3F735EBEE9F6B02CA0754C1DA54BCAFD3810695B73A581"
+            },
+            {
+              "shipId": "Z016",
+              "from": {
+                "x": 7,
+                "y": 13
+              },
+              "to": {
+                "x": 7,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "B8695A568F167A5D4B3F735EBEE9F6B02CA0754C1DA54BCAFD3810695B73A581",
+              "afterHash": "7ADFE17DEF9D032ED73E6D00AF3CFEF0D81078176B1849D296DC2973D4E0C85A"
+            },
+            {
+              "shipId": "Z056",
+              "from": {
+                "x": 8,
+                "y": 8
+              },
+              "to": {
+                "x": 8,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "7ADFE17DEF9D032ED73E6D00AF3CFEF0D81078176B1849D296DC2973D4E0C85A",
+              "afterHash": "E7EB3ABFDF082B35C1B353DA48CDE7F62B542D29C77BAF9C2E8F73AE96AAFA27"
+            },
+            {
+              "shipId": "Z041",
+              "from": {
+                "x": 4,
+                "y": 8
+              },
+              "to": {
+                "x": 14,
+                "y": 8
+              },
+              "outcome": "Exit",
+              "beforeHash": "E7EB3ABFDF082B35C1B353DA48CDE7F62B542D29C77BAF9C2E8F73AE96AAFA27",
+              "afterHash": "D8785761F9B5D64592B0C377924936F8DD69273694259CE2F98C671449704E79"
+            },
+            {
+              "shipId": "Z062",
+              "from": {
+                "x": 4,
+                "y": 17
+              },
+              "to": {
+                "x": 14,
+                "y": 17
+              },
+              "outcome": "Exit",
+              "beforeHash": "D8785761F9B5D64592B0C377924936F8DD69273694259CE2F98C671449704E79",
+              "afterHash": "56005519309BFA189B72CA27140AE33F986ED4B857615C77013807B5A3B3BA29"
+            },
+            {
+              "shipId": "Z039",
+              "from": {
+                "x": 5,
+                "y": 13
+              },
+              "to": {
+                "x": 5,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "56005519309BFA189B72CA27140AE33F986ED4B857615C77013807B5A3B3BA29",
+              "afterHash": "8BB55EC6750325CBB9FFD793B4EC1B2897C2BC6BAF14B01AFBB4414FAE60B324"
+            },
+            {
+              "shipId": "Z057",
+              "from": {
+                "x": 2,
+                "y": 13
+              },
+              "to": {
+                "x": 14,
+                "y": 13
+              },
+              "outcome": "Exit",
+              "beforeHash": "8BB55EC6750325CBB9FFD793B4EC1B2897C2BC6BAF14B01AFBB4414FAE60B324",
+              "afterHash": "4E5318F9B654B8B716A4235E24B21982335962F0C6831A79F70B8ADB0DE72165"
+            },
+            {
+              "shipId": "Z067",
+              "from": {
+                "x": 3,
+                "y": 14
+              },
+              "to": {
+                "x": 14,
+                "y": 14
+              },
+              "outcome": "Exit",
+              "beforeHash": "4E5318F9B654B8B716A4235E24B21982335962F0C6831A79F70B8ADB0DE72165",
+              "afterHash": "02A1B95173DD8DC3B80D24EA7C7C66920823A41B2BDC306661BD6ECDCA5EB960"
+            },
+            {
+              "shipId": "Z074",
+              "from": {
+                "x": 7,
+                "y": 9
+              },
+              "to": {
+                "x": 7,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "02A1B95173DD8DC3B80D24EA7C7C66920823A41B2BDC306661BD6ECDCA5EB960",
+              "afterHash": "3DD4BC6128F306A54675FCB421153A06C835AA89B705EF001ED2322FD7268B66"
+            },
+            {
+              "shipId": "Z080",
+              "from": {
+                "x": 3,
+                "y": 9
+              },
+              "to": {
+                "x": 3,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "3DD4BC6128F306A54675FCB421153A06C835AA89B705EF001ED2322FD7268B66",
+              "afterHash": "E9FA6D9F81C169971A15E7BD52D07A89CB80EAEE073ABCE63BABBFF1937D3989"
+            },
+            {
+              "shipId": "Z022",
+              "from": {
+                "x": 3,
+                "y": 6
+              },
+              "to": {
+                "x": 3,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "E9FA6D9F81C169971A15E7BD52D07A89CB80EAEE073ABCE63BABBFF1937D3989",
+              "afterHash": "AFF8A23412E1CC864A228A96648E93C70184025EA356D29E790967C75FA7FA6B"
+            },
+            {
+              "shipId": "Z045",
+              "from": {
+                "x": 1,
+                "y": 8
+              },
+              "to": {
+                "x": 14,
+                "y": 8
+              },
+              "outcome": "Exit",
+              "beforeHash": "AFF8A23412E1CC864A228A96648E93C70184025EA356D29E790967C75FA7FA6B",
+              "afterHash": "5DD4B08D20E1F8BE6AA1D6B4AF345D051C5EF9F35DE564DE005FFC91075B30AA"
+            },
+            {
+              "shipId": "Z047",
+              "from": {
+                "x": 2,
+                "y": 10
+              },
+              "to": {
+                "x": 2,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "5DD4B08D20E1F8BE6AA1D6B4AF345D051C5EF9F35DE564DE005FFC91075B30AA",
+              "afterHash": "1349EED36E9BCA5C388071C1DEDCAE046A9E648A233D1EDB6D0B9923884A9C36"
+            },
+            {
+              "shipId": "Z082",
+              "from": {
+                "x": 5,
+                "y": 9
+              },
+              "to": {
+                "x": 5,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "1349EED36E9BCA5C388071C1DEDCAE046A9E648A233D1EDB6D0B9923884A9C36",
+              "afterHash": "43634CC6F2A2B0DF8D4F5F76848B7A4DA7427149628C31C67045DA67A4BC7ACE"
+            },
+            {
+              "shipId": "Z079",
+              "from": {
+                "x": 0,
+                "y": 9
+              },
+              "to": {
+                "x": 14,
+                "y": 9
+              },
+              "outcome": "Exit",
+              "beforeHash": "43634CC6F2A2B0DF8D4F5F76848B7A4DA7427149628C31C67045DA67A4BC7ACE",
+              "afterHash": "FB1F8C4FFA493B1E71B100D981A75F148E508B9B3921CB69150A58B83BD16CB6"
+            },
+            {
+              "shipId": "Z068",
+              "from": {
+                "x": 0,
+                "y": 7
+              },
+              "to": {
+                "x": 0,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "FB1F8C4FFA493B1E71B100D981A75F148E508B9B3921CB69150A58B83BD16CB6",
+              "afterHash": "7A2AD6A11F08700107A7C73E48BC43DB54FB7E748774932AC923EC4E5F3CE7DA"
+            },
+            {
+              "shipId": "Z019",
+              "from": {
+                "x": 0,
+                "y": 5
+              },
+              "to": {
+                "x": 0,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "7A2AD6A11F08700107A7C73E48BC43DB54FB7E748774932AC923EC4E5F3CE7DA",
+              "afterHash": "CDA1B6A093E24C5103F1CC9292BFB9D33D7A4FD85D72176C868EC7BDAE468558"
+            },
+            {
+              "shipId": "K0C",
+              "from": {
+                "x": 5,
+                "y": 6
+              },
+              "to": {
+                "x": -1,
+                "y": 6
+              },
+              "outcome": "Exit",
+              "beforeHash": "CDA1B6A093E24C5103F1CC9292BFB9D33D7A4FD85D72176C868EC7BDAE468558",
+              "afterHash": "1DEAC85BC2EDFF13C732AD568DA331E6DD3930A66A556637B3A6CAA0336C65DF"
+            },
+            {
+              "shipId": "Z031",
+              "from": {
+                "x": 5,
+                "y": 7
+              },
+              "to": {
+                "x": -1,
+                "y": 7
+              },
+              "outcome": "Exit",
+              "beforeHash": "1DEAC85BC2EDFF13C732AD568DA331E6DD3930A66A556637B3A6CAA0336C65DF",
+              "afterHash": "A7127300270E8C28084051FA1B58C22EDBF7F16F39AD3E480926C20DBCA2E056"
+            },
+            {
+              "shipId": "K0B",
+              "from": {
+                "x": 4,
+                "y": 4
+              },
+              "to": {
+                "x": 4,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "A7127300270E8C28084051FA1B58C22EDBF7F16F39AD3E480926C20DBCA2E056",
+              "afterHash": "050F3E27904E5AB14944103BB027D9A8638703475437E82DF0D77CDAD5282B52"
+            },
+            {
+              "shipId": "Z058",
+              "from": {
+                "x": 8,
+                "y": 6
+              },
+              "to": {
+                "x": -1,
+                "y": 6
+              },
+              "outcome": "Exit",
+              "beforeHash": "050F3E27904E5AB14944103BB027D9A8638703475437E82DF0D77CDAD5282B52",
+              "afterHash": "341C0B2E652E5E9659215803BEA3473B79BE7FA68FF21C7568E1AB87D79FA71C"
+            },
+            {
+              "shipId": "Z073",
+              "from": {
+                "x": 1,
+                "y": 14
+              },
+              "to": {
+                "x": 1,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "341C0B2E652E5E9659215803BEA3473B79BE7FA68FF21C7568E1AB87D79FA71C",
+              "afterHash": "A31DEC1EBC6BB20CD73E61A070CFA9B9F55E6B37E05978E441A2CC7D7BCC2939"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "prefix": [
+        "K1A"
+      ],
+      "wrongMove": "K1H",
+      "deadFingerprint": "C05C62A3430E0B525C62896B8D60D6C7413FD3D5CBCA3E20C7E952A29799D057",
+      "method": "ClosedZeroTravelCycle",
+      "safeContinuation": [
+        "K0A",
+        "Z023",
+        "Z025",
+        "K0F",
+        "K0G",
+        "Z032",
+        "Z038",
+        "Z060",
+        "Z075",
+        "Z076",
+        "Z018",
+        "Z066",
+        "Z063",
+        "Z077",
+        "Z089",
+        "Z051",
+        "Z052",
+        "Z042",
+        "K0D",
+        "Z053",
+        "Z091",
+        "Z059",
+        "Z065",
+        "Z072",
+        "Z040",
+        "Z081",
+        "Z036",
+        "Z054",
+        "Z083",
+        "Z084",
+        "Z087",
+        "K0B",
+        "Z048",
+        "Z070",
+        "Z027",
+        "Z034",
+        "Z078",
+        "Z035",
+        "Z030",
+        "Z086",
+        "Z088",
+        "Z044",
+        "Z020",
+        "K1E",
+        "K1D",
+        "K1F",
+        "Z028",
+        "Z033",
+        "Z037",
+        "Z069",
+        "Z090",
+        "Z071",
+        "Z055",
+        "Z050",
+        "Z049",
+        "Z021",
+        "Z046",
+        "Z024",
+        "K1G",
+        "Z061",
+        "Z029",
+        "Z043",
+        "Z085",
+        "Z064",
+        "K0E",
+        "K0B",
+        "K0A",
+        "K0H",
+        "K1B",
+        "K1A",
+        "Z026",
+        "K1H",
+        "K1C",
+        "K1B",
+        "Z017",
+        "Z016",
+        "Z056",
+        "Z041",
+        "Z062",
+        "Z039",
+        "Z057",
+        "Z067",
+        "Z074",
+        "Z080",
+        "Z022",
+        "Z045",
+        "Z047",
+        "Z082",
+        "Z079",
+        "Z068",
+        "Z019",
+        "K0C",
+        "Z031",
+        "K0B",
+        "Z058",
+        "Z073"
+      ],
+      "recovery": {
+        "tool": "Reverse",
+        "target": "K1B",
+        "afterFingerprint": "1EA122D72E3D04D71D3C848854AFC9A2911FC343CC4E4DD59AE5D433BAB84691",
+        "solution": {
+          "proofVersion": 1,
+          "rulesVersion": "ForwardUntilBlockedV1",
+          "exitMode": "AllBoundaryEdges",
+          "levelId": "TF_V3_047",
+          "layoutFingerprint": "1EA122D72E3D04D71D3C848854AFC9A2911FC343CC4E4DD59AE5D433BAB84691",
+          "solutionSteps": [
+            {
+              "shipId": "K0A",
+              "from": {
+                "x": 1,
+                "y": 3
+              },
+              "to": {
+                "x": 2,
+                "y": 3
+              },
+              "outcome": "Blocked",
+              "beforeHash": "1EA122D72E3D04D71D3C848854AFC9A2911FC343CC4E4DD59AE5D433BAB84691",
+              "afterHash": "53631AC32B0761416EA76F83D5CA87104682F9EAB2EEDB9B17B3C5D581604E25"
+            },
+            {
+              "shipId": "K1B",
+              "from": {
+                "x": 12,
+                "y": 16
+              },
+              "to": {
+                "x": 14,
+                "y": 16
+              },
+              "outcome": "Exit",
+              "beforeHash": "53631AC32B0761416EA76F83D5CA87104682F9EAB2EEDB9B17B3C5D581604E25",
+              "afterHash": "C7D0846962C88A096B3B47905858C25B0695EDB7CD14D519812B2DFDE5E7625F"
+            },
+            {
+              "shipId": "K1A",
+              "from": {
+                "x": 12,
+                "y": 14
+              },
+              "to": {
+                "x": 12,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "C7D0846962C88A096B3B47905858C25B0695EDB7CD14D519812B2DFDE5E7625F",
+              "afterHash": "54DF04D0E13631AE39F65D260BF0CCF70BED5CF913D64E3F0836020A15B69257"
+            },
+            {
+              "shipId": "Z023",
+              "from": {
+                "x": 1,
+                "y": 15
+              },
+              "to": {
+                "x": -1,
+                "y": 15
+              },
+              "outcome": "Exit",
+              "beforeHash": "54DF04D0E13631AE39F65D260BF0CCF70BED5CF913D64E3F0836020A15B69257",
+              "afterHash": "618ADBE3017990117191F3D3A0EF331F41823AC93E4ABD309CC6FC877B131E3A"
+            },
+            {
+              "shipId": "Z025",
+              "from": {
+                "x": 1,
+                "y": 0
+              },
+              "to": {
+                "x": -1,
+                "y": 0
+              },
+              "outcome": "Exit",
+              "beforeHash": "618ADBE3017990117191F3D3A0EF331F41823AC93E4ABD309CC6FC877B131E3A",
+              "afterHash": "09B6A25DA8DF910E6B2E821FDD5A16C763AE41295FF5F703A8171A9BABDA6EB7"
+            },
+            {
+              "shipId": "K0F",
+              "from": {
+                "x": 0,
+                "y": 4
+              },
+              "to": {
+                "x": 0,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "09B6A25DA8DF910E6B2E821FDD5A16C763AE41295FF5F703A8171A9BABDA6EB7",
+              "afterHash": "FDF3083AE0C8535E44DEFDAA3D9EA2D66F20578121F0F0C838FB8BE69E6EA612"
+            },
+            {
+              "shipId": "K0G",
+              "from": {
+                "x": 4,
+                "y": 4
+              },
+              "to": {
+                "x": -1,
+                "y": 4
+              },
+              "outcome": "Exit",
+              "beforeHash": "FDF3083AE0C8535E44DEFDAA3D9EA2D66F20578121F0F0C838FB8BE69E6EA612",
+              "afterHash": "9E3568011A361402436D8AFD072D4CC3D9EEE1A10FFAF6C680A1150B326EAA90"
+            },
+            {
+              "shipId": "Z026",
+              "from": {
+                "x": 13,
+                "y": 14
+              },
+              "to": {
+                "x": 13,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "9E3568011A361402436D8AFD072D4CC3D9EEE1A10FFAF6C680A1150B326EAA90",
+              "afterHash": "F19A46EC867D565D9E56A9DF0047507F753C51E258E5D4D48D7DA6DA0D6D2C63"
+            },
+            {
+              "shipId": "K1H",
+              "from": {
+                "x": 10,
+                "y": 14
+              },
+              "to": {
+                "x": 14,
+                "y": 14
+              },
+              "outcome": "Exit",
+              "beforeHash": "F19A46EC867D565D9E56A9DF0047507F753C51E258E5D4D48D7DA6DA0D6D2C63",
+              "afterHash": "C092B7D6943DD6812493F8401706635E5157419E5829338EB7A4C546A1CDA03A"
+            },
+            {
+              "shipId": "Z032",
+              "from": {
+                "x": 7,
+                "y": 4
+              },
+              "to": {
+                "x": -1,
+                "y": 4
+              },
+              "outcome": "Exit",
+              "beforeHash": "C092B7D6943DD6812493F8401706635E5157419E5829338EB7A4C546A1CDA03A",
+              "afterHash": "1D394620B6F5A83C607B2866D4A36989925F51C4DEA04B25CE1DA4F265841332"
+            },
+            {
+              "shipId": "Z038",
+              "from": {
+                "x": 3,
+                "y": 0
+              },
+              "to": {
+                "x": -1,
+                "y": 0
+              },
+              "outcome": "Exit",
+              "beforeHash": "1D394620B6F5A83C607B2866D4A36989925F51C4DEA04B25CE1DA4F265841332",
+              "afterHash": "E54032393B9719CE820D07CECB035C70CCDA31B57D00BD97740509062B03401C"
+            },
+            {
+              "shipId": "Z060",
+              "from": {
+                "x": 3,
+                "y": 2
+              },
+              "to": {
+                "x": 3,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "E54032393B9719CE820D07CECB035C70CCDA31B57D00BD97740509062B03401C",
+              "afterHash": "81D0205A2952864626A1FE33D3B9751FC46E83223FE3ADE62714CF14F10FC0AB"
+            },
+            {
+              "shipId": "Z075",
+              "from": {
+                "x": 10,
+                "y": 16
+              },
+              "to": {
+                "x": 10,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "81D0205A2952864626A1FE33D3B9751FC46E83223FE3ADE62714CF14F10FC0AB",
+              "afterHash": "777A357299C9ACE1DC811CA70FA9D4E9C79D0DD7F1D37980704CD331223325A7"
+            },
+            {
+              "shipId": "Z076",
+              "from": {
+                "x": 9,
+                "y": 1
+              },
+              "to": {
+                "x": 9,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "777A357299C9ACE1DC811CA70FA9D4E9C79D0DD7F1D37980704CD331223325A7",
+              "afterHash": "DE9B37E7AE528DF8F2F7C80106486DFECE5A49C39AE8614001E4318A65673EB2"
+            },
+            {
+              "shipId": "Z018",
+              "from": {
+                "x": 11,
+                "y": 0
+              },
+              "to": {
+                "x": -1,
+                "y": 0
+              },
+              "outcome": "Exit",
+              "beforeHash": "DE9B37E7AE528DF8F2F7C80106486DFECE5A49C39AE8614001E4318A65673EB2",
+              "afterHash": "89B0C0D7B65EF051D2F0789F74B90F5F4DE2EFBA97C6B922633C7D08A254F8D0"
+            },
+            {
+              "shipId": "Z066",
+              "from": {
+                "x": 9,
+                "y": 4
+              },
+              "to": {
+                "x": 9,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "89B0C0D7B65EF051D2F0789F74B90F5F4DE2EFBA97C6B922633C7D08A254F8D0",
+              "afterHash": "36288668D4AB507B44CD85B91ADE867A332D8F4AFF94D3F4751BC6A74A4268D0"
+            },
+            {
+              "shipId": "Z063",
+              "from": {
+                "x": 9,
+                "y": 9
+              },
+              "to": {
+                "x": 9,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "36288668D4AB507B44CD85B91ADE867A332D8F4AFF94D3F4751BC6A74A4268D0",
+              "afterHash": "11F3D9193FC4470BFB117FA6095B2358099DA496E643C96E8F1B8A9FCD0297AF"
+            },
+            {
+              "shipId": "Z077",
+              "from": {
+                "x": 8,
+                "y": 4
+              },
+              "to": {
+                "x": 8,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "11F3D9193FC4470BFB117FA6095B2358099DA496E643C96E8F1B8A9FCD0297AF",
+              "afterHash": "0EEFE0DBAEC847E209F9E5ADC841B0D5045E562C1367D99B5DDB8668BD7068F4"
+            },
+            {
+              "shipId": "Z089",
+              "from": {
+                "x": 13,
+                "y": 1
+              },
+              "to": {
+                "x": 13,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "0EEFE0DBAEC847E209F9E5ADC841B0D5045E562C1367D99B5DDB8668BD7068F4",
+              "afterHash": "C920A5F7308E2EB0F851E182B2F6131E844DEE0C09C9FE08317297936F2E0008"
+            },
+            {
+              "shipId": "Z051",
+              "from": {
+                "x": 10,
+                "y": 1
+              },
+              "to": {
+                "x": 14,
+                "y": 1
+              },
+              "outcome": "Exit",
+              "beforeHash": "C920A5F7308E2EB0F851E182B2F6131E844DEE0C09C9FE08317297936F2E0008",
+              "afterHash": "FF937563ABBD8495F1090ACE8164195B006E95CD4305355929011FEB252DDB2E"
+            },
+            {
+              "shipId": "Z052",
+              "from": {
+                "x": 5,
+                "y": 1
+              },
+              "to": {
+                "x": 14,
+                "y": 1
+              },
+              "outcome": "Exit",
+              "beforeHash": "FF937563ABBD8495F1090ACE8164195B006E95CD4305355929011FEB252DDB2E",
+              "afterHash": "24A7B4BC66B031297A3F387D3E447C32983A56D0BD14EA7696E8861876F33368"
+            },
+            {
+              "shipId": "Z042",
+              "from": {
+                "x": 1,
+                "y": 1
+              },
+              "to": {
+                "x": 14,
+                "y": 1
+              },
+              "outcome": "Exit",
+              "beforeHash": "24A7B4BC66B031297A3F387D3E447C32983A56D0BD14EA7696E8861876F33368",
+              "afterHash": "A0044FBBA3DC0B52049E90CD76CEC86B2C888C2CB04E9F7E1FB48D21F5E36F44"
+            },
+            {
+              "shipId": "K0D",
+              "from": {
+                "x": 1,
+                "y": 7
+              },
+              "to": {
+                "x": 1,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "A0044FBBA3DC0B52049E90CD76CEC86B2C888C2CB04E9F7E1FB48D21F5E36F44",
+              "afterHash": "D9FD7321C174D130B19952B2B0CF758F3F333CF1B3F728F3DA098D162B425D82"
+            },
+            {
+              "shipId": "Z053",
+              "from": {
+                "x": 5,
+                "y": 3
+              },
+              "to": {
+                "x": 5,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "D9FD7321C174D130B19952B2B0CF758F3F333CF1B3F728F3DA098D162B425D82",
+              "afterHash": "80A935EAA6A0C288F6FA1C24545FFA70B1BE4179EFACECBBB6EF40E8BB706837"
+            },
+            {
+              "shipId": "Z091",
+              "from": {
+                "x": 0,
+                "y": 16
+              },
+              "to": {
+                "x": 0,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "80A935EAA6A0C288F6FA1C24545FFA70B1BE4179EFACECBBB6EF40E8BB706837",
+              "afterHash": "7728641F533351DB546FF96049C849D777D8FE8A077BE1AB5C8F2355A683D6AE"
+            },
+            {
+              "shipId": "Z059",
+              "from": {
+                "x": 3,
+                "y": 16
+              },
+              "to": {
+                "x": -1,
+                "y": 16
+              },
+              "outcome": "Exit",
+              "beforeHash": "7728641F533351DB546FF96049C849D777D8FE8A077BE1AB5C8F2355A683D6AE",
+              "afterHash": "EBE46E41FD81B4442B547FB020A5F0E3D22882C3BF5025AB075D205216FF601F"
+            },
+            {
+              "shipId": "Z065",
+              "from": {
+                "x": 0,
+                "y": 12
+              },
+              "to": {
+                "x": 0,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "EBE46E41FD81B4442B547FB020A5F0E3D22882C3BF5025AB075D205216FF601F",
+              "afterHash": "8AC69E7D71EE640E4D8AAA5EDA9F13A8D8EAB25492A578F995778B3F2F47D137"
+            },
+            {
+              "shipId": "Z072",
+              "from": {
+                "x": 2,
+                "y": 14
+              },
+              "to": {
+                "x": 2,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "8AC69E7D71EE640E4D8AAA5EDA9F13A8D8EAB25492A578F995778B3F2F47D137",
+              "afterHash": "90F61319D96A05E1466BD729FB132FAC21C3098C7CBAA5794AE51901602C2455"
+            },
+            {
+              "shipId": "Z040",
+              "from": {
+                "x": 5,
+                "y": 15
+              },
+              "to": {
+                "x": -1,
+                "y": 15
+              },
+              "outcome": "Exit",
+              "beforeHash": "90F61319D96A05E1466BD729FB132FAC21C3098C7CBAA5794AE51901602C2455",
+              "afterHash": "0358B8CEC6E6484E62B7706B406ECC1C6F577E821818DF3E4C9E83D9A2E95EF4"
+            },
+            {
+              "shipId": "Z081",
+              "from": {
+                "x": 0,
+                "y": 10
+              },
+              "to": {
+                "x": 0,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "0358B8CEC6E6484E62B7706B406ECC1C6F577E821818DF3E4C9E83D9A2E95EF4",
+              "afterHash": "95A277B60798106A26615C2E0D12EFBA0CF248D2F5D23F202724F7EA56F501E8"
+            },
+            {
+              "shipId": "Z036",
+              "from": {
+                "x": 2,
+                "y": 11
+              },
+              "to": {
+                "x": -1,
+                "y": 11
+              },
+              "outcome": "Exit",
+              "beforeHash": "95A277B60798106A26615C2E0D12EFBA0CF248D2F5D23F202724F7EA56F501E8",
+              "afterHash": "0FCE2345B0889E972B05F5B765D78399F8022C6FB52FC31F8ED957CDE3956AFD"
+            },
+            {
+              "shipId": "Z054",
+              "from": {
+                "x": 4,
+                "y": 11
+              },
+              "to": {
+                "x": -1,
+                "y": 11
+              },
+              "outcome": "Exit",
+              "beforeHash": "0FCE2345B0889E972B05F5B765D78399F8022C6FB52FC31F8ED957CDE3956AFD",
+              "afterHash": "FDDA641C8DC223B9475FA2E423630156334690A8F23E172E19D120D9718A161C"
+            },
+            {
+              "shipId": "Z083",
+              "from": {
+                "x": 3,
+                "y": 12
+              },
+              "to": {
+                "x": -1,
+                "y": 12
+              },
+              "outcome": "Exit",
+              "beforeHash": "FDDA641C8DC223B9475FA2E423630156334690A8F23E172E19D120D9718A161C",
+              "afterHash": "F7365E8801699C048FB0D48361B2E26958C4BD257B82A41A5EB3A95B05D95C68"
+            },
+            {
+              "shipId": "Z084",
+              "from": {
+                "x": 7,
+                "y": 12
+              },
+              "to": {
+                "x": -1,
+                "y": 12
+              },
+              "outcome": "Exit",
+              "beforeHash": "F7365E8801699C048FB0D48361B2E26958C4BD257B82A41A5EB3A95B05D95C68",
+              "afterHash": "7B886E8B51D02BD2BE221B796C756D6AB73266FA4E00245F87FC77D4AD775541"
+            },
+            {
+              "shipId": "Z087",
+              "from": {
+                "x": 5,
+                "y": 16
+              },
+              "to": {
+                "x": -1,
+                "y": 16
+              },
+              "outcome": "Exit",
+              "beforeHash": "7B886E8B51D02BD2BE221B796C756D6AB73266FA4E00245F87FC77D4AD775541",
+              "afterHash": "684FC914C0CA63988A0CEECF11A90A8B2E5F79356BE6142E4D074B309D5EA96A"
+            },
+            {
+              "shipId": "K0B",
+              "from": {
+                "x": 4,
+                "y": 2
+              },
+              "to": {
+                "x": 4,
+                "y": 3
+              },
+              "outcome": "Blocked",
+              "beforeHash": "684FC914C0CA63988A0CEECF11A90A8B2E5F79356BE6142E4D074B309D5EA96A",
+              "afterHash": "C3E8D3882656D456233F6C174E1936867C35DFAEF12C2F410CB459495D20CEA3"
+            },
+            {
+              "shipId": "Z048",
+              "from": {
+                "x": 7,
+                "y": 2
+              },
+              "to": {
+                "x": -1,
+                "y": 2
+              },
+              "outcome": "Exit",
+              "beforeHash": "C3E8D3882656D456233F6C174E1936867C35DFAEF12C2F410CB459495D20CEA3",
+              "afterHash": "0F3CF99A6092D77F06684029856D5A0A8E37317487EA694385C1EB1D25B3FE98"
+            },
+            {
+              "shipId": "Z070",
+              "from": {
+                "x": 11,
+                "y": 2
+              },
+              "to": {
+                "x": -1,
+                "y": 2
+              },
+              "outcome": "Exit",
+              "beforeHash": "0F3CF99A6092D77F06684029856D5A0A8E37317487EA694385C1EB1D25B3FE98",
+              "afterHash": "BF21E69184D812CBDE85E168D8D1A32DC62F940CBB5F1C964E4B3F4E9B2F6B3E"
+            },
+            {
+              "shipId": "Z027",
+              "from": {
+                "x": 13,
+                "y": 2
+              },
+              "to": {
+                "x": -1,
+                "y": 2
+              },
+              "outcome": "Exit",
+              "beforeHash": "BF21E69184D812CBDE85E168D8D1A32DC62F940CBB5F1C964E4B3F4E9B2F6B3E",
+              "afterHash": "4FAC8712FEA099DEC50D7AC042BC9386AD0DD8FB3E82515A2EBF143E9C0A9017"
+            },
+            {
+              "shipId": "Z034",
+              "from": {
+                "x": 12,
+                "y": 4
+              },
+              "to": {
+                "x": 12,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "4FAC8712FEA099DEC50D7AC042BC9386AD0DD8FB3E82515A2EBF143E9C0A9017",
+              "afterHash": "156F01D7F90591A3E8301C291A47B7AE6B7399FC59E829897C3C3C688B52F8C7"
+            },
+            {
+              "shipId": "Z078",
+              "from": {
+                "x": 10,
+                "y": 3
+              },
+              "to": {
+                "x": 14,
+                "y": 3
+              },
+              "outcome": "Exit",
+              "beforeHash": "156F01D7F90591A3E8301C291A47B7AE6B7399FC59E829897C3C3C688B52F8C7",
+              "afterHash": "0FD27F70CAEEF63DB750B2393139071183CF8BC2BCCD5FFCE33352C663E4002E"
+            },
+            {
+              "shipId": "Z035",
+              "from": {
+                "x": 6,
+                "y": 3
+              },
+              "to": {
+                "x": 14,
+                "y": 3
+              },
+              "outcome": "Exit",
+              "beforeHash": "0FD27F70CAEEF63DB750B2393139071183CF8BC2BCCD5FFCE33352C663E4002E",
+              "afterHash": "F51CE23E19C275C5105B8CFB4F94907FE2AA8CA704D16EE858A073086968DF08"
+            },
+            {
+              "shipId": "Z030",
+              "from": {
+                "x": 6,
+                "y": 6
+              },
+              "to": {
+                "x": 6,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "F51CE23E19C275C5105B8CFB4F94907FE2AA8CA704D16EE858A073086968DF08",
+              "afterHash": "6DDBEF063E1CC66F5BC97CCD7D2E567536FE668300D951E76AE210972345D188"
+            },
+            {
+              "shipId": "Z086",
+              "from": {
+                "x": 12,
+                "y": 6
+              },
+              "to": {
+                "x": 12,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "6DDBEF063E1CC66F5BC97CCD7D2E567536FE668300D951E76AE210972345D188",
+              "afterHash": "75B02FF20044E03FE807AD2EE5647FD1B06C7D228AB7EB0F90FD0DC87F3B1DCA"
+            },
+            {
+              "shipId": "Z088",
+              "from": {
+                "x": 13,
+                "y": 5
+              },
+              "to": {
+                "x": 13,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "75B02FF20044E03FE807AD2EE5647FD1B06C7D228AB7EB0F90FD0DC87F3B1DCA",
+              "afterHash": "B8E2D60417BDBD7D9FF73D62FBBA52847AAB4757D8333C6A4B61352183B6B473"
+            },
+            {
+              "shipId": "Z044",
+              "from": {
+                "x": 13,
+                "y": 11
+              },
+              "to": {
+                "x": 13,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "B8E2D60417BDBD7D9FF73D62FBBA52847AAB4757D8333C6A4B61352183B6B473",
+              "afterHash": "43D61F3693E139EB66810FD56C55EB81A06FDA177A2DCAA434C57069F1DF9CA4"
+            },
+            {
+              "shipId": "Z020",
+              "from": {
+                "x": 13,
+                "y": 13
+              },
+              "to": {
+                "x": 13,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "43D61F3693E139EB66810FD56C55EB81A06FDA177A2DCAA434C57069F1DF9CA4",
+              "afterHash": "E4953EB3CE576644728D15BEF96C8BD6D7DB06414391A219014687DABF9BFC74"
+            },
+            {
+              "shipId": "K1E",
+              "from": {
+                "x": 10,
+                "y": 13
+              },
+              "to": {
+                "x": 14,
+                "y": 13
+              },
+              "outcome": "Exit",
+              "beforeHash": "E4953EB3CE576644728D15BEF96C8BD6D7DB06414391A219014687DABF9BFC74",
+              "afterHash": "4BEDCF5C3B398F9804920B2607B2E63870349C1A3248773BD15AAD98FC2BA3E2"
+            },
+            {
+              "shipId": "K1D",
+              "from": {
+                "x": 8,
+                "y": 13
+              },
+              "to": {
+                "x": 14,
+                "y": 13
+              },
+              "outcome": "Exit",
+              "beforeHash": "4BEDCF5C3B398F9804920B2607B2E63870349C1A3248773BD15AAD98FC2BA3E2",
+              "afterHash": "193BAFC6621157E36F3CB8C6B117DF70EE86834D32B38B1C5343476C82C09849"
+            },
+            {
+              "shipId": "K1F",
+              "from": {
+                "x": 11,
+                "y": 12
+              },
+              "to": {
+                "x": 14,
+                "y": 12
+              },
+              "outcome": "Exit",
+              "beforeHash": "193BAFC6621157E36F3CB8C6B117DF70EE86834D32B38B1C5343476C82C09849",
+              "afterHash": "1F6977D4330147894562C743013497AAD6B12651008A718E17D1F7DD1A7102C5"
+            },
+            {
+              "shipId": "Z028",
+              "from": {
+                "x": 10,
+                "y": 11
+              },
+              "to": {
+                "x": 10,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "1F6977D4330147894562C743013497AAD6B12651008A718E17D1F7DD1A7102C5",
+              "afterHash": "C72F00403ED1A664C8B0542B9FA8E7F83892F654EFECE2D4E8C9C5D653EC86E5"
+            },
+            {
+              "shipId": "Z033",
+              "from": {
+                "x": 8,
+                "y": 10
+              },
+              "to": {
+                "x": 14,
+                "y": 10
+              },
+              "outcome": "Exit",
+              "beforeHash": "C72F00403ED1A664C8B0542B9FA8E7F83892F654EFECE2D4E8C9C5D653EC86E5",
+              "afterHash": "FC09EA716A16F6D6578293B261AA38010D558526E0F7A39800641C1B2DC166B5"
+            },
+            {
+              "shipId": "Z037",
+              "from": {
+                "x": 10,
+                "y": 9
+              },
+              "to": {
+                "x": 14,
+                "y": 9
+              },
+              "outcome": "Exit",
+              "beforeHash": "FC09EA716A16F6D6578293B261AA38010D558526E0F7A39800641C1B2DC166B5",
+              "afterHash": "BFF7B645A7954BDA221374537E2C1AC1AF6203D7D8DD490B51F16996FAC82E12"
+            },
+            {
+              "shipId": "Z069",
+              "from": {
+                "x": 10,
+                "y": 7
+              },
+              "to": {
+                "x": 10,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "BFF7B645A7954BDA221374537E2C1AC1AF6203D7D8DD490B51F16996FAC82E12",
+              "afterHash": "9C7BBDD12322D058B09125588E29E7A69D8F82F4CA85EA3D4A5938760AA35441"
+            },
+            {
+              "shipId": "Z090",
+              "from": {
+                "x": 10,
+                "y": 6
+              },
+              "to": {
+                "x": 14,
+                "y": 6
+              },
+              "outcome": "Exit",
+              "beforeHash": "9C7BBDD12322D058B09125588E29E7A69D8F82F4CA85EA3D4A5938760AA35441",
+              "afterHash": "CA2ABA0F97DC7BF5A978FED22A0AAFA65FD5657B1D929B4B4E670C164D3B59C0"
+            },
+            {
+              "shipId": "Z071",
+              "from": {
+                "x": 11,
+                "y": 8
+              },
+              "to": {
+                "x": 11,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "CA2ABA0F97DC7BF5A978FED22A0AAFA65FD5657B1D929B4B4E670C164D3B59C0",
+              "afterHash": "C5B8DC5862719C05A7AA4812FD434AAA6B0B642EFD06B504C15E8346CCFA4795"
+            },
+            {
+              "shipId": "Z055",
+              "from": {
+                "x": 6,
+                "y": 7
+              },
+              "to": {
+                "x": 14,
+                "y": 7
+              },
+              "outcome": "Exit",
+              "beforeHash": "C5B8DC5862719C05A7AA4812FD434AAA6B0B642EFD06B504C15E8346CCFA4795",
+              "afterHash": "83F660E71CC44F4A5518ACDDD37F7A8204AC7C1614003B5A8D01DE3711CC9D83"
+            },
+            {
+              "shipId": "Z050",
+              "from": {
+                "x": 6,
+                "y": 9
+              },
+              "to": {
+                "x": 6,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "83F660E71CC44F4A5518ACDDD37F7A8204AC7C1614003B5A8D01DE3711CC9D83",
+              "afterHash": "BC671142A3A33CBB08EB3A7D9B9CAEFFD91DB99641025F1C9AB947B228A788BB"
+            },
+            {
+              "shipId": "Z049",
+              "from": {
+                "x": 6,
+                "y": 11
+              },
+              "to": {
+                "x": 6,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "BC671142A3A33CBB08EB3A7D9B9CAEFFD91DB99641025F1C9AB947B228A788BB",
+              "afterHash": "73EC1A1900C4729AB798E4C297354F80C5096E3B4E30DD118BA164E29BFDE567"
+            },
+            {
+              "shipId": "Z021",
+              "from": {
+                "x": 6,
+                "y": 14
+              },
+              "to": {
+                "x": 6,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "73EC1A1900C4729AB798E4C297354F80C5096E3B4E30DD118BA164E29BFDE567",
+              "afterHash": "C1A8E1A0783F92290225B497320E8CBE02D829D7B5196A4882EC2574E69AF0C1"
+            },
+            {
+              "shipId": "Z046",
+              "from": {
+                "x": 9,
+                "y": 11
+              },
+              "to": {
+                "x": -1,
+                "y": 11
+              },
+              "outcome": "Exit",
+              "beforeHash": "C1A8E1A0783F92290225B497320E8CBE02D829D7B5196A4882EC2574E69AF0C1",
+              "afterHash": "3B22347FB6EE082127A5A1DE0416E9FDB8739A36FB4015627E6FEF7410935ED9"
+            },
+            {
+              "shipId": "Z024",
+              "from": {
+                "x": 12,
+                "y": 11
+              },
+              "to": {
+                "x": -1,
+                "y": 11
+              },
+              "outcome": "Exit",
+              "beforeHash": "3B22347FB6EE082127A5A1DE0416E9FDB8739A36FB4015627E6FEF7410935ED9",
+              "afterHash": "6246B133E8749201FA9F68AC8C984D6838A5699DF938E49232C09F528175E1C8"
+            },
+            {
+              "shipId": "K1G",
+              "from": {
+                "x": 11,
+                "y": 17
+              },
+              "to": {
+                "x": 11,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "6246B133E8749201FA9F68AC8C984D6838A5699DF938E49232C09F528175E1C8",
+              "afterHash": "82A48641AABB639EB65EAB6C01B494AE4A4A21444D4788D70B123DC4105115D9"
+            },
+            {
+              "shipId": "Z061",
+              "from": {
+                "x": 6,
+                "y": 16
+              },
+              "to": {
+                "x": 6,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "82A48641AABB639EB65EAB6C01B494AE4A4A21444D4788D70B123DC4105115D9",
+              "afterHash": "41177FEBB0D96A9DB28DE6F5E6C65694E1F8893A719DFC9615A417347C876FD5"
+            },
+            {
+              "shipId": "Z029",
+              "from": {
+                "x": 9,
+                "y": 15
+              },
+              "to": {
+                "x": -1,
+                "y": 15
+              },
+              "outcome": "Exit",
+              "beforeHash": "41177FEBB0D96A9DB28DE6F5E6C65694E1F8893A719DFC9615A417347C876FD5",
+              "afterHash": "CD9CA4CA4948ADF5E1BE2FBAE40E4863412FF3C42241A8B5C9EF4CCA075989B9"
+            },
+            {
+              "shipId": "K1C",
+              "from": {
+                "x": 9,
+                "y": 17
+              },
+              "to": {
+                "x": 9,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "CD9CA4CA4948ADF5E1BE2FBAE40E4863412FF3C42241A8B5C9EF4CCA075989B9",
+              "afterHash": "01DF807D769D657158770D6BFBD6FB404BC49D887E56BC3A2769ECAE74D037EC"
+            },
+            {
+              "shipId": "Z017",
+              "from": {
+                "x": 7,
+                "y": 17
+              },
+              "to": {
+                "x": 14,
+                "y": 17
+              },
+              "outcome": "Exit",
+              "beforeHash": "01DF807D769D657158770D6BFBD6FB404BC49D887E56BC3A2769ECAE74D037EC",
+              "afterHash": "D15DA0DFC7B2030EC3F754A49C35CA4F5119A4B36EE110CBEA0D919A21A50C08"
+            },
+            {
+              "shipId": "Z043",
+              "from": {
+                "x": 8,
+                "y": 16
+              },
+              "to": {
+                "x": -1,
+                "y": 16
+              },
+              "outcome": "Exit",
+              "beforeHash": "D15DA0DFC7B2030EC3F754A49C35CA4F5119A4B36EE110CBEA0D919A21A50C08",
+              "afterHash": "6291CBF6B4011EC5652215FA36EC8DCB6B86D9C383646AC01064432CE82EF7EA"
+            },
+            {
+              "shipId": "Z016",
+              "from": {
+                "x": 7,
+                "y": 13
+              },
+              "to": {
+                "x": 7,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "6291CBF6B4011EC5652215FA36EC8DCB6B86D9C383646AC01064432CE82EF7EA",
+              "afterHash": "A0149D37CDCF868D77C8A2197639C79581FD461EE5D84CA8D28939305ADE3C24"
+            },
+            {
+              "shipId": "Z056",
+              "from": {
+                "x": 8,
+                "y": 8
+              },
+              "to": {
+                "x": 8,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "A0149D37CDCF868D77C8A2197639C79581FD461EE5D84CA8D28939305ADE3C24",
+              "afterHash": "E78537E58AC6B7CA41221EA69E19C6913A52195E37869F23A2320C4D2836A631"
+            },
+            {
+              "shipId": "Z041",
+              "from": {
+                "x": 4,
+                "y": 8
+              },
+              "to": {
+                "x": 14,
+                "y": 8
+              },
+              "outcome": "Exit",
+              "beforeHash": "E78537E58AC6B7CA41221EA69E19C6913A52195E37869F23A2320C4D2836A631",
+              "afterHash": "CE5622E442234230D8CC028D43AD987C78221807AC5AE4ED49729D26D51FD4E0"
+            },
+            {
+              "shipId": "Z062",
+              "from": {
+                "x": 4,
+                "y": 17
+              },
+              "to": {
+                "x": 14,
+                "y": 17
+              },
+              "outcome": "Exit",
+              "beforeHash": "CE5622E442234230D8CC028D43AD987C78221807AC5AE4ED49729D26D51FD4E0",
+              "afterHash": "1320F2C355F2D7D240C7D0AA92E2D1CB2B57C1C8078D2195A73C6F8B82ABB6CC"
+            },
+            {
+              "shipId": "Z039",
+              "from": {
+                "x": 5,
+                "y": 13
+              },
+              "to": {
+                "x": 5,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "1320F2C355F2D7D240C7D0AA92E2D1CB2B57C1C8078D2195A73C6F8B82ABB6CC",
+              "afterHash": "92F421A518035A91A258FD1C15231BF671B59E2DC14AC2587BB5A208B5CA31FA"
+            },
+            {
+              "shipId": "Z057",
+              "from": {
+                "x": 2,
+                "y": 13
+              },
+              "to": {
+                "x": 14,
+                "y": 13
+              },
+              "outcome": "Exit",
+              "beforeHash": "92F421A518035A91A258FD1C15231BF671B59E2DC14AC2587BB5A208B5CA31FA",
+              "afterHash": "2AD93581DC44A68EFA0F8C5C9971DD7E1450AFC3A16A6E3BCC981A2B5A48A658"
+            },
+            {
+              "shipId": "Z067",
+              "from": {
+                "x": 3,
+                "y": 14
+              },
+              "to": {
+                "x": 14,
+                "y": 14
+              },
+              "outcome": "Exit",
+              "beforeHash": "2AD93581DC44A68EFA0F8C5C9971DD7E1450AFC3A16A6E3BCC981A2B5A48A658",
+              "afterHash": "1D697E3C72BEEC8EBE04D6BCD56CEFFC8E135FE87742728AA1ACC2FCE510EF82"
+            },
+            {
+              "shipId": "Z074",
+              "from": {
+                "x": 7,
+                "y": 9
+              },
+              "to": {
+                "x": 7,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "1D697E3C72BEEC8EBE04D6BCD56CEFFC8E135FE87742728AA1ACC2FCE510EF82",
+              "afterHash": "CDE2473E39B97F239674FF3C322C35E790D31F3AAE403FA0BB044657201DEAC2"
+            },
+            {
+              "shipId": "Z080",
+              "from": {
+                "x": 3,
+                "y": 9
+              },
+              "to": {
+                "x": 3,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "CDE2473E39B97F239674FF3C322C35E790D31F3AAE403FA0BB044657201DEAC2",
+              "afterHash": "9831E63F8CA081C7DA92D73F0F3B88DD76AEB10FBE70F1F2BB73A2D95F840035"
+            },
+            {
+              "shipId": "Z022",
+              "from": {
+                "x": 3,
+                "y": 6
+              },
+              "to": {
+                "x": 3,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "9831E63F8CA081C7DA92D73F0F3B88DD76AEB10FBE70F1F2BB73A2D95F840035",
+              "afterHash": "7B60A50549FD375444C5CC97B95401947564BC25EF02875CEC31B26C42A7F551"
+            },
+            {
+              "shipId": "Z045",
+              "from": {
+                "x": 1,
+                "y": 8
+              },
+              "to": {
+                "x": 14,
+                "y": 8
+              },
+              "outcome": "Exit",
+              "beforeHash": "7B60A50549FD375444C5CC97B95401947564BC25EF02875CEC31B26C42A7F551",
+              "afterHash": "EC6775ECD23168C56B2CD40D55ACF7132E46099DBFF953053AC76D9A70D3C551"
+            },
+            {
+              "shipId": "Z082",
+              "from": {
+                "x": 5,
+                "y": 9
+              },
+              "to": {
+                "x": 5,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "EC6775ECD23168C56B2CD40D55ACF7132E46099DBFF953053AC76D9A70D3C551",
+              "afterHash": "4EC538C7B42FEAF089236F8608267D43E6EA2237A96DB67B16B54884D97DB35D"
+            },
+            {
+              "shipId": "Z085",
+              "from": {
+                "x": 10,
+                "y": 4
+              },
+              "to": {
+                "x": 10,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "4EC538C7B42FEAF089236F8608267D43E6EA2237A96DB67B16B54884D97DB35D",
+              "afterHash": "DF02542B2B9C86DE6D6165E877E9F7B1D03BFAD9CBD83B72D64DBB45E9E32183"
+            },
+            {
+              "shipId": "Z064",
+              "from": {
+                "x": 7,
+                "y": 5
+              },
+              "to": {
+                "x": 14,
+                "y": 5
+              },
+              "outcome": "Exit",
+              "beforeHash": "DF02542B2B9C86DE6D6165E877E9F7B1D03BFAD9CBD83B72D64DBB45E9E32183",
+              "afterHash": "E6632491CD092518BAC614354EE8E8DEB22C9D9124CD273C97EDE3512649A9A5"
+            },
+            {
+              "shipId": "K0E",
+              "from": {
+                "x": 3,
+                "y": 5
+              },
+              "to": {
+                "x": 14,
+                "y": 5
+              },
+              "outcome": "Exit",
+              "beforeHash": "E6632491CD092518BAC614354EE8E8DEB22C9D9124CD273C97EDE3512649A9A5",
+              "afterHash": "26B314DF945A0FCD428E1D574D6C3D7D5BF31169050C660F6DFF7A112B82667B"
+            },
+            {
+              "shipId": "K0B",
+              "from": {
+                "x": 4,
+                "y": 3
+              },
+              "to": {
+                "x": 4,
+                "y": 4
+              },
+              "outcome": "Blocked",
+              "beforeHash": "26B314DF945A0FCD428E1D574D6C3D7D5BF31169050C660F6DFF7A112B82667B",
+              "afterHash": "ED05CEF03459D5E55437500CA51310C834B34E3C7E5DE1A4151AEE29ABE7E839"
+            },
+            {
+              "shipId": "K0A",
+              "from": {
+                "x": 2,
+                "y": 3
+              },
+              "to": {
+                "x": 14,
+                "y": 3
+              },
+              "outcome": "Exit",
+              "beforeHash": "ED05CEF03459D5E55437500CA51310C834B34E3C7E5DE1A4151AEE29ABE7E839",
+              "afterHash": "43A62E394EC389A05A57CEEAA6547A79DCC156BC4E868B7FF270733B7947D71B"
+            },
+            {
+              "shipId": "K0H",
+              "from": {
+                "x": 2,
+                "y": 7
+              },
+              "to": {
+                "x": 2,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "43A62E394EC389A05A57CEEAA6547A79DCC156BC4E868B7FF270733B7947D71B",
+              "afterHash": "0D3377465958D533EC869D460C8980BF65394A9F646BE9A907DDF7565B9921E0"
+            },
+            {
+              "shipId": "Z047",
+              "from": {
+                "x": 2,
+                "y": 10
+              },
+              "to": {
+                "x": 2,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "0D3377465958D533EC869D460C8980BF65394A9F646BE9A907DDF7565B9921E0",
+              "afterHash": "43634CC6F2A2B0DF8D4F5F76848B7A4DA7427149628C31C67045DA67A4BC7ACE"
+            },
+            {
+              "shipId": "Z079",
+              "from": {
+                "x": 0,
+                "y": 9
+              },
+              "to": {
+                "x": 14,
+                "y": 9
+              },
+              "outcome": "Exit",
+              "beforeHash": "43634CC6F2A2B0DF8D4F5F76848B7A4DA7427149628C31C67045DA67A4BC7ACE",
+              "afterHash": "FB1F8C4FFA493B1E71B100D981A75F148E508B9B3921CB69150A58B83BD16CB6"
+            },
+            {
+              "shipId": "Z068",
+              "from": {
+                "x": 0,
+                "y": 7
+              },
+              "to": {
+                "x": 0,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "FB1F8C4FFA493B1E71B100D981A75F148E508B9B3921CB69150A58B83BD16CB6",
+              "afterHash": "7A2AD6A11F08700107A7C73E48BC43DB54FB7E748774932AC923EC4E5F3CE7DA"
+            },
+            {
+              "shipId": "Z019",
+              "from": {
+                "x": 0,
+                "y": 5
+              },
+              "to": {
+                "x": 0,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "7A2AD6A11F08700107A7C73E48BC43DB54FB7E748774932AC923EC4E5F3CE7DA",
+              "afterHash": "CDA1B6A093E24C5103F1CC9292BFB9D33D7A4FD85D72176C868EC7BDAE468558"
+            },
+            {
+              "shipId": "K0C",
+              "from": {
+                "x": 5,
+                "y": 6
+              },
+              "to": {
+                "x": -1,
+                "y": 6
+              },
+              "outcome": "Exit",
+              "beforeHash": "CDA1B6A093E24C5103F1CC9292BFB9D33D7A4FD85D72176C868EC7BDAE468558",
+              "afterHash": "1DEAC85BC2EDFF13C732AD568DA331E6DD3930A66A556637B3A6CAA0336C65DF"
+            },
+            {
+              "shipId": "Z031",
+              "from": {
+                "x": 5,
+                "y": 7
+              },
+              "to": {
+                "x": -1,
+                "y": 7
+              },
+              "outcome": "Exit",
+              "beforeHash": "1DEAC85BC2EDFF13C732AD568DA331E6DD3930A66A556637B3A6CAA0336C65DF",
+              "afterHash": "A7127300270E8C28084051FA1B58C22EDBF7F16F39AD3E480926C20DBCA2E056"
+            },
+            {
+              "shipId": "K0B",
+              "from": {
+                "x": 4,
+                "y": 4
+              },
+              "to": {
+                "x": 4,
+                "y": 18
+              },
+              "outcome": "Exit",
+              "beforeHash": "A7127300270E8C28084051FA1B58C22EDBF7F16F39AD3E480926C20DBCA2E056",
+              "afterHash": "050F3E27904E5AB14944103BB027D9A8638703475437E82DF0D77CDAD5282B52"
+            },
+            {
+              "shipId": "Z058",
+              "from": {
+                "x": 8,
+                "y": 6
+              },
+              "to": {
+                "x": -1,
+                "y": 6
+              },
+              "outcome": "Exit",
+              "beforeHash": "050F3E27904E5AB14944103BB027D9A8638703475437E82DF0D77CDAD5282B52",
+              "afterHash": "341C0B2E652E5E9659215803BEA3473B79BE7FA68FF21C7568E1AB87D79FA71C"
+            },
+            {
+              "shipId": "Z073",
+              "from": {
+                "x": 1,
+                "y": 14
+              },
+              "to": {
+                "x": 1,
+                "y": -1
+              },
+              "outcome": "Exit",
+              "beforeHash": "341C0B2E652E5E9659215803BEA3473B79BE7FA68FF21C7568E1AB87D79FA71C",
+              "afterHash": "A31DEC1EBC6BB20CD73E61A070CFA9B9F55E6B37E05978E441A2CC7D7BCC2939"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "coreVariants": [
+    "Crossing17",
+    "Crossing04"
+  ],
+  "witnessSteps": 97,
+  "humanPlaytest": "Pending",
+  "deviceValidation": "Pending"
+}

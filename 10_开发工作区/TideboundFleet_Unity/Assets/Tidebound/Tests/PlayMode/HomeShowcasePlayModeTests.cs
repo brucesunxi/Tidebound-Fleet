@@ -1,5 +1,6 @@
 using System.Collections;
 using NUnit.Framework;
+using Tidebound.Collection;
 using Tidebound.Unity.LevelDesign;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -9,12 +10,30 @@ namespace Tidebound.Tests
     public sealed class HomeShowcasePlayModeTests
     {
         [UnityTest]
+        public IEnumerator EveryShowcaseVariantFitsCameraAndReleasesPreviousModel()
+        {
+            var root=new GameObject("ShowcaseVariants",typeof(RectTransform));var preview=root.AddComponent<CollectionShipPreview>();preview.Initialize(true,640,false);
+            try
+            {
+                foreach(var item in ShowcaseCatalog.All)
+                {
+                    preview.PresentShowcase(item.Id);yield return null;
+                    var model=root.GetComponentInChildren<HarborShowcaseModel>();var mesh=model.GetComponent<MeshFilter>().sharedMesh;var camera=root.GetComponentInChildren<Camera>();
+                    Assert.That(root.GetComponentsInChildren<HarborShowcaseModel>(true).Length,Is.EqualTo(1));
+                    Assert.That(mesh.vertexCount,Is.LessThan(65000),item.Name);
+                    foreach(var n in mesh.normals)Assert.That(n.sqrMagnitude,Is.InRange(.99f,1.01f),item.Name);
+                    foreach(var v in mesh.vertices){var point=camera.WorldToViewportPoint(model.transform.TransformPoint(v));Assert.That(point.x,Is.InRange(.005f,.995f),item.Name);Assert.That(point.y,Is.InRange(.005f,.995f),item.Name);}
+                }
+            }
+            finally{Object.Destroy(root);}yield return null;
+        }
+        [UnityTest]
         public IEnumerator DisplayMeshFitsCameraAndKeepsExplicitSurfaceMaterials()
         {
             var root=new GameObject("ShowcaseGeometryTest",typeof(RectTransform));
             try
             {
-                var preview=root.AddComponent<CollectionShipPreview>();preview.Initialize(true);preview.AllowMotion=()=>false;
+                var preview=root.AddComponent<CollectionShipPreview>();preview.Initialize(true,640,false);preview.AllowMotion=()=>false;
                 yield return null;
                 var ship=root.GetComponentInChildren<HarborShowcaseModel>();var filter=ship.GetComponent<MeshFilter>();var mesh=filter.sharedMesh;
                 var lens=root.GetComponentInChildren<Camera>();
@@ -39,7 +58,7 @@ namespace Tidebound.Tests
         public IEnumerator ReducedMotionAndHiddenPreviewFreezeWaterAndReleaseOwnedResources()
         {
             var root=new GameObject("ShowcaseLifecycleTest",typeof(RectTransform));
-            var preview=root.AddComponent<CollectionShipPreview>();preview.Initialize(true);var motion=true;preview.AllowMotion=()=>motion;
+            var preview=root.AddComponent<CollectionShipPreview>();preview.Initialize(true,640,false);var motion=true;preview.AllowMotion=()=>motion;
             var model=root.GetComponentInChildren<HarborShowcaseModel>();var lens=root.GetComponentInChildren<Camera>();
             var rt=lens.targetTexture;var mesh=model.GetComponent<MeshFilter>().sharedMesh;
             var material=model.GetComponent<Renderer>().sharedMaterial;

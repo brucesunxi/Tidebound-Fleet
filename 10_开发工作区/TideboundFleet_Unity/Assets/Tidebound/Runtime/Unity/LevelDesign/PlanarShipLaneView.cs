@@ -11,6 +11,7 @@ namespace Tidebound.Unity.LevelDesign
         public Vector3 VisualCenter => transform.TransformPoint(visualCenterOffset);
         public string ShipId { get; private set; }
         public Vector3 CurrentPosition => VisualCenter;
+        public bool HasEnteredLane {get;private set;}
         public void Configure(string id, Vector3 centerOffset)
         {
             ShipId = id ?? throw new ArgumentNullException(nameof(id));
@@ -18,6 +19,7 @@ namespace Tidebound.Unity.LevelDesign
         }
         public void ApplyLanePose(Vector3 position, Vector3 forward, float scale)
         {
+            HasEnteredLane=true;
             if (forward.sqrMagnitude > .000001f)
                 transform.rotation = Quaternion.Euler(0, 0, Mathf.Atan2(forward.y, forward.x) * Mathf.Rad2Deg - 90);
             transform.localScale = Vector3.one * scale;

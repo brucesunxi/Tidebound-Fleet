@@ -57,6 +57,25 @@ namespace Tidebound.Tests
             {Assert.That(service.Start(game),Is.True);CompleteModel(game);Assert.That(service.Checkpoint(),Is.True);}return store;
         }
         [UnityTest]
+        public IEnumerator SharePreviewBlocksContinueAndNeverGrantsOrWritesRewards()
+        {
+            var store=Won(1);var game=Create(store);
+            try
+            {
+                yield return null;var writes=store.Writes;var coins=game.SaveService.Coins;var attempt=game.Session.SessionId;
+                game.ResultView.ShowSharePreview();Assert.That(game.ResultView.IsSharePreviewOpen,Is.True);
+                game.ContinueFromResult();Assert.That(game.Session.SessionId,Is.EqualTo(attempt));
+                Assert.That(game.ResultView.transform.Find("RewardPreview").gameObject.activeSelf,Is.True);
+                var preview=game.ResultView.GetComponentInChildren<CollectionShipPreview>();Assert.That(preview.AllowMotion(),Is.False);
+                game.ResultView.CloseSharePreview();game.SetReducedResultMotion(true);Assert.That(preview.AllowMotion(),Is.False);
+                game.SetReducedResultMotion(false);Assert.That(preview.AllowMotion(),Is.True);
+                Assert.That(store.Writes,Is.EqualTo(writes));Assert.That(game.SaveService.Coins,Is.EqualTo(coins));
+                game.ResultView.Pending(true);Assert.That(game.ResultView.transform.Find("Share").gameObject.activeSelf,Is.False);
+                game.ResultView.ShowSharePreview();Assert.That(game.ResultView.IsSharePreviewOpen,Is.False);
+            }
+            finally{UnityEngine.Object.Destroy(game.gameObject);}yield return null;
+        }
+        [UnityTest]
         public IEnumerator FullVictoryBarrierThenReadableResultWaitsForExplicitContinue()
         {
             var store=new Store();var g=Create(store);
@@ -139,11 +158,11 @@ namespace Tidebound.Tests
             try
             {
                 g.SaveService.Collect(Guid.NewGuid().ToString("N"),"FirstBlue");
-                var id=g.Session.SessionId;var allow=false;var calls=0;
+                var id=g.Session.SessionId;var balance=g.SaveService.Coins;var allow=false;var calls=0;
                 g.BeforeNextLevel=result=>{calls++;Assert.That(result.IsCollectionCheckpoint,Is.True);Assert.That(g.Session.SessionId,Is.EqualTo(id));return allow;};
                 g.ContinueFromResult();g.SelectLevel(2);Assert.That(g.Session.SessionId,Is.EqualTo(id));Assert.That(calls,Is.EqualTo(1));
                 allow=true;g.ContinueFromResult();g.ContinueFromResult();Assert.That(calls,Is.EqualTo(2));Assert.That(g.LevelIndex,Is.EqualTo(2));
-                Assert.That(g.SaveService.Coins,Is.EqualTo(307));Assert.That(g.Tools.UsesLeft,Is.EqualTo(5));
+                Assert.That(g.SaveService.Coins,Is.EqualTo(balance),"The collection gate must not change the committed coin balance.");Assert.That(g.Tools.UsesLeft,Is.EqualTo(5));
             }
             finally{UnityEngine.Object.Destroy(g.gameObject);}yield return null;
         }

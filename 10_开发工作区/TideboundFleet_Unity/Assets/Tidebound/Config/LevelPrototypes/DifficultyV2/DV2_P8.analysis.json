@@ -1,0 +1,152 @@
+{
+  "version": "DifficultyPrototypeV2.1",
+  "levelId": "DV2_P8",
+  "role": "mechanism",
+  "kind": "RequiresPartial",
+  "fingerprint": "B1E181D319F36929748D731349F22D6BB88D0EC435BE592E9FA16949D7AEA631",
+  "ships": 8,
+  "longShips": 0,
+  "occupiedCells": 16,
+  "boardCells": 36,
+  "placementMask": null,
+  "maskMeaning": "Initial placement only; all board cells remain traversable.",
+  "pureExitResidual": 7,
+  "minimumPartialLowerBound": 2,
+  "minimumPartialUpperBound": 2,
+  "minimumPartialExact": true,
+  "analysisMethod": "BreadthFirstSearch",
+  "releaseTraces": [
+    {
+      "strategy": "verified-witness",
+      "shipIds": [
+        "A",
+        "E",
+        "D",
+        "F",
+        "G",
+        "B",
+        "A",
+        "H",
+        "C",
+        "B"
+      ],
+      "steps": [
+        {
+          "ShipId": "A",
+          "Outcome": 0,
+          "RemainingBefore": 8,
+          "ExitsBefore": 1,
+          "PartialBefore": 4,
+          "ExitShare": 0.125,
+          "NewExits": 1,
+          "LostExits": 0
+        },
+        {
+          "ShipId": "E",
+          "Outcome": 1,
+          "RemainingBefore": 8,
+          "ExitsBefore": 2,
+          "PartialBefore": 3,
+          "ExitShare": 0.25,
+          "NewExits": 1,
+          "LostExits": 0
+        },
+        {
+          "ShipId": "D",
+          "Outcome": 1,
+          "RemainingBefore": 7,
+          "ExitsBefore": 2,
+          "PartialBefore": 3,
+          "ExitShare": 0.2857142857142857,
+          "NewExits": 0,
+          "LostExits": 0
+        },
+        {
+          "ShipId": "F",
+          "Outcome": 1,
+          "RemainingBefore": 6,
+          "ExitsBefore": 1,
+          "PartialBefore": 3,
+          "ExitShare": 0.16666666666666666,
+          "NewExits": 1,
+          "LostExits": 0
+        },
+        {
+          "ShipId": "G",
+          "Outcome": 1,
+          "RemainingBefore": 5,
+          "ExitsBefore": 1,
+          "PartialBefore": 2,
+          "ExitShare": 0.2,
+          "NewExits": 0,
+          "LostExits": 0
+        },
+        {
+          "ShipId": "B",
+          "Outcome": 0,
+          "RemainingBefore": 4,
+          "ExitsBefore": 0,
+          "PartialBefore": 3,
+          "ExitShare": 0.0,
+          "NewExits": 1,
+          "LostExits": 0
+        },
+        {
+          "ShipId": "A",
+          "Outcome": 1,
+          "RemainingBefore": 4,
+          "ExitsBefore": 1,
+          "PartialBefore": 2,
+          "ExitShare": 0.25,
+          "NewExits": 1,
+          "LostExits": 0
+        },
+        {
+          "ShipId": "H",
+          "Outcome": 1,
+          "RemainingBefore": 3,
+          "ExitsBefore": 1,
+          "PartialBefore": 1,
+          "ExitShare": 0.33333333333333331,
+          "NewExits": 1,
+          "LostExits": 0
+        },
+        {
+          "ShipId": "C",
+          "Outcome": 1,
+          "RemainingBefore": 2,
+          "ExitsBefore": 1,
+          "PartialBefore": 0,
+          "ExitShare": 0.5,
+          "NewExits": 1,
+          "LostExits": 0
+        },
+        {
+          "ShipId": "B",
+          "Outcome": 1,
+          "RemainingBefore": 1,
+          "ExitsBefore": 1,
+          "PartialBefore": 0,
+          "ExitShare": 1.0,
+          "NewExits": 0,
+          "LostExits": 0
+        }
+      ],
+      "first60MeanExits": 1.4,
+      "first60MeanExitShare": 0.20547619047619045,
+      "first60PeakExits": 2
+    }
+  ],
+  "structure": {
+    "InitialExits": 1,
+    "DeepShips": 0,
+    "CrossAxisRatio": 0.90909090909090906,
+    "CrossRegionRatio": 0.81818181818181823,
+    "MaximumInitialUnlock": 0,
+    "BridgingLongShips": 0
+  },
+  "humanPlaytest": "Pending",
+  "sourceLevelId": null,
+  "sourceLayoutFingerprint": null,
+  "sourceGeometryOverlap": null
+}

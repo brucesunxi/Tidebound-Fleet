@@ -60,6 +60,8 @@ namespace Tidebound.Unity.LevelDesign
         private readonly List<string> entered = new List<string>();
         private GameObject presentation;
         private bool useVolumeShips = true;
+        private bool gameplayArt;
+        public bool UsesGameplayArt=>gameplayArt;
         public bool UsesVolumeShips => useVolumeShips;
         public void SetShipPrototypeMode(bool volume)
         {useVolumeShips=volume;foreach(var view in shipViews.Values)view.GetComponentInChildren<ShipPrototypeAppearance>(true).SetMode(volume);}
@@ -128,18 +130,18 @@ namespace Tidebound.Unity.LevelDesign
         { manifest = manifestAsset; layouts = levelAssets; proofs = proofAssets; }
 
         public void Initialize(IPlayableLevelCatalog source, ShipMovementTiming timing = null, LaneTransitTiming laneTiming = null, CombatTiming combatTiming = null, ToolInventory inventory = null,
-            PlayerSaveService saveService = null, bool campaign = false, bool animateEntry = false, bool useHomeNavigation = false)
+            PlayerSaveService saveService = null, bool campaign = false, bool animateEntry = false, bool useHomeNavigation = false, bool useGameplayArt = false)
         {
             FlushSave();ClearSession();ClearHome();
             catalog = source ?? throw new ArgumentNullException(nameof(source));
-            this.saveService=saveService;this.campaign=campaign;this.animateEntry=animateEntry;homeNavigation=useHomeNavigation;
+            this.saveService=saveService;this.campaign=campaign;this.animateEntry=animateEntry;homeNavigation=useHomeNavigation;gameplayArt=useHomeNavigation||useGameplayArt;
             toolInventory=saveService?.Inventory ?? inventory ?? new ToolInventory();
             movementTiming = timing ?? new ShipMovementTiming();
             transitTiming = laneTiming ?? new LaneTransitTiming();
             this.combatTiming = combatTiming ?? new CombatTiming();
             font = HarborUI.Font;
             initialized = true;
-            if(homeNavigation){BuildHome();return;}
+            if(homeNavigation){harborAudio=GetComponent<HarborAudio>() ?? gameObject.AddComponent<HarborAudio>();BuildHome();return;}
             var saved=saveService?.Snapshot.Attempt;
             if(saveService?.IsAvailable==true && saved!=null)
             {
@@ -147,7 +149,7 @@ namespace Tidebound.Unity.LevelDesign
                 {
                     // Validate against the shipped catalog before attaching a persisted run.
                     var index=saved.LevelNumber-1;
-                    using(var reference=SavedGameRuntime.Create(catalog.Load(index),saved.LevelNumber))
+                    using(var reference=SavedGameRuntime.Create(PlayableLevelCatalog.LoadForAttempt(catalog,index,saved.LevelId),saved.LevelNumber))
                         if(reference.Capture().LayoutFingerprint!=saved.LayoutFingerprint)
                             throw new InvalidOperationException("Saved level differs from the installed catalog.");
                     var restored=SavedGameRuntime.Restore(saved);saveService.AttachRestored(restored);
@@ -189,8 +191,9 @@ namespace Tidebound.Unity.LevelDesign
             progress = new BoardProgressMonitor(session,world.Movement);
             transit=world.Transit;combat=world.Combat;
             BuildControls();
-            lane = new LaneTransitController(transit, new PortraitLanePathProvider(session.Width, session.Height),
-                shipViews.Values.Select(v => (ILaneTransitView)v.GetComponent<PlanarShipLaneView>()));
+            lane = new LaneTransitController(transit, new PortraitLanePathProvider(session.Width, session.Height,gameplayArt),
+                shipViews.Values.Select(v => (ILaneTransitView)v.GetComponent<PlanarShipLaneView>()),
+                gameplayArt?new LanePresentationTiming(.4f,.2f):null);
             exited.AddRange(world.Capture().Departures.Select(d=>d.Id));
             entered.AddRange(combat.Attacks.Select(t=>t.Ship.ShipId));
             subscriptions.Add(session.Events.Subscribe<ShipExitBoardEvent>(e => exited.Add(e.Ship.ShipId)));
@@ -257,7 +260,13 @@ namespace Tidebound.Unity.LevelDesign
             if(tools.Enabled && session.State==GameState.Playing && !IsBusy && toolInventory.IsAvailable && tools.Remaining(tool)==0)
             { ShowAcquisition(tool);return; }
             input.CancelSelection();
-            ApplyToolResult(tool==ShipTool.Rescue ? tools.Rescue() : tool==ShipTool.Shuffle ? tools.Shuffle() : tools.Select(tool));
+            var directions=tool==ShipTool.Shuffle?session.Board.Ships.ToDictionary(s=>s.Id,s=>s.Direction):null;
+            var result=tool==ShipTool.Rescue ? tools.Rescue() : tool==ShipTool.Shuffle ? tools.Shuffle() : tools.Select(tool);
+            ApplyToolResult(result);
+            if(result==ToolUseStatus.Applied&&directions!=null)
+                foreach(var ship in session.Board.Ships)
+                    if(directions[ship.Id]!=ship.Direction)
+                        shipViews[ship.Id].GetComponentInChildren<ShipFloatPresentation>()?.HighlightShuffle();
         }
         public void OpenShop() { if(homeNavigation){if(IsHomeOpen)OpenHomeShop();return;} ShowAcquisition(ShipTool.None); }
         private void ShowAcquisition(ShipTool tool)
@@ -274,7 +283,7 @@ namespace Tidebound.Unity.LevelDesign
         }
         public void CloseAcquisition()
         {
-            if(IsHomeShopOpen){homeShopRoot.gameObject.SetActive(false);homeControls.gameObject.SetActive(true);PresentHome();HarborUI.Focus(homeControls.Find("Supplies").GetComponent<Button>());return;}
+            if(IsHomeShopOpen){homeShopRoot.gameObject.SetActive(false);if(homeReturnToDraw){homeReturnToDraw=false;homeCollectionRoot.gameObject.SetActive(true);SetHomeChrome(false);return;}SetHomeChrome(true);PresentHome();HarborUI.Focus(homeShopButton);return;}
             if(acquisitionPanel==null)return;
             acquisitionPanel.gameObject.SetActive(false);
             if(acquisitionPauseOwned && IsPaused && SaveCheckpoint(true))movement.Resume();
@@ -307,15 +316,17 @@ namespace Tidebound.Unity.LevelDesign
             input.CancelSelection();tools.CancelSelection();
             menuPauseOwned=session.State==GameState.Playing;
             if(menuPauseOwned)movement.Pause();
-            menuPanel.gameObject.SetActive(true);UpdateLabels();
+            if(homeNavigation)world.PresentationPause=menuPauseOwned;
+            pauseSettingsView?.ShowSaveRetry(false);menuPanel.gameObject.SetActive(true);UpdateLabels();
         }
         public void CloseMenu()
         {
             NotifyUserActivity();
             if(menuPanel==null)return;
+            if(homeNavigation && IsMenuOpen && !SaveCheckpoint(true)) { pauseSettingsView?.ShowSaveRetry(true);UpdateLabels();return; }
             menuPanel.gameObject.SetActive(false);
             if(menuPauseOwned && IsPaused)movement.Resume();
-            menuPauseOwned=false;UpdateLabels();
+            menuPauseOwned=false;if(homeNavigation)world.PresentationPause=false;UpdateLabels();
         }
 
         public LevelSolverResult SolveCurrent()
@@ -387,7 +398,7 @@ namespace Tidebound.Unity.LevelDesign
                 throw new ArgumentException("Invalid viewport.");
             NotifyUserActivity();input.CancelSelection();
             var safe = new Rect(safePixels.position / pixelsPerUnit, safePixels.size / pixelsPerUnit);
-            Layout = PortraitBoardLayout.Calculate(safe, session.Width, session.Height);
+            Layout = PortraitBoardLayout.Calculate(safe, session.Width, session.Height,gameplayArt);
             overlay.scaleFactor = pixelsPerUnit;
             Place(topPanel, Layout.Top); Place(toolsPanel, Layout.Tools);
             LayoutControls();
@@ -395,7 +406,16 @@ namespace Tidebound.Unity.LevelDesign
             boardCamera.aspect = Layout.Middle.width / Layout.Middle.height;
             boardCamera.orthographicSize = Layout.Middle.height / Layout.CellSize / 2;
             boardCamera.transform.position = new Vector3(session.Width / 2f, session.Height / 2f, -10);
-            var thickness = PortraitBoardLayout.LaneWidthInCells;
+            if(gameplayArt)
+            {
+                // One camera avoids render-pipeline-dependent viewport clears breaking the continuous sea.
+                boardCamera.pixelRect=new Rect(0,0,Screen.width,Screen.height);
+                boardCamera.aspect=(float)Screen.width/Screen.height;
+                boardCamera.orthographicSize=Screen.height/pixelsPerUnit/Layout.CellSize/2;
+                var offset=(new Vector2(Screen.width,Screen.height)/pixelsPerUnit/2-Layout.Middle.center)/Layout.CellSize;
+                boardCamera.transform.position+=new Vector3(offset.x,offset.y,0);
+            }
+            var thickness = Layout.LaneCells;
             Place(lanePanel, new Rect(-thickness, -thickness, session.Width + 2*thickness, session.Height + 2*thickness));
         }
 
@@ -403,7 +423,10 @@ namespace Tidebound.Unity.LevelDesign
         {
             lastScreen = new Vector2Int(Screen.width, Screen.height); lastSafe = Screen.safeArea;
             // Reference width only normalizes presentation; it is not a physical dp measurement.
-            ApplyViewport(lastSafe, Mathf.Max(1, Screen.width) / 390f);
+            var pixels=lastSafe;
+            if(pixels.width<=0||pixels.height<=0||pixels.xMin<0||pixels.yMin<0||pixels.xMax>Screen.width+1||pixels.yMax>Screen.height+1)
+                pixels=new Rect(0,0,Screen.width,Screen.height);
+            ApplyViewport(pixels, Mathf.Max(1, Screen.width) / 390f);
         }
 
         private void BuildBoard()
@@ -415,6 +438,7 @@ namespace Tidebound.Unity.LevelDesign
             boardCamera = cameraObject.GetComponent<Camera>(); boardCamera.orthographic = true;
             boardCamera.clearFlags = CameraClearFlags.SolidColor; boardCamera.backgroundColor = new Color(.035f,.09f,.13f);
             boardCamera.cullingMask = 1 << 30; boardCamera.nearClipPlane = .1f; boardCamera.farClipPlane = 50;
+            if(gameplayArt){boardCamera.cullingMask=(1<<29)|(1<<30);BuildOcean(boardCamera);}
             var resources=presentation.AddComponent<ShipPrototypeResources>();resources.Initialize();
             var canvasRect = Rect("BoardCanvas", presentation.transform);
             var canvas = canvasRect.gameObject.AddComponent<Canvas>(); canvas.renderMode = RenderMode.WorldSpace;
@@ -424,15 +448,16 @@ namespace Tidebound.Unity.LevelDesign
             lanePanel = Panel("Lane", canvasRect, new Rect(-.5f,-.5f,session.Width+1,session.Height+1), new Color(.09f,.29f,.36f));
             lanePanel.GetComponent<Image>().color=Color.clear;
             var thickness=PortraitBoardLayout.LaneWidthInCells;
-            resources.AddSurface(canvasRect,new Rect(-thickness,-thickness,session.Width+2*thickness,session.Height+2*thickness),new Color(.09f,.29f,.36f));
+            if(!gameplayArt)resources.AddSurface(canvasRect,new Rect(-thickness,-thickness,session.Width+2*thickness,session.Height+2*thickness),new Color(.09f,.29f,.36f));
             var grid = Panel("GridInput", canvasRect, new Rect(0,0,session.Width,session.Height), Color.clear);
-            resources.AddSurface(grid,new Rect(0,0,session.Width,session.Height),new Color(.055f,.15f,.21f));
-            grid.Find("SeaSurface").localPosition+=Vector3.back*.01f;
+            if(!gameplayArt){resources.AddSurface(grid,new Rect(0,0,session.Width,session.Height),new Color(.055f,.15f,.21f));grid.Find("SeaSurface").localPosition+=Vector3.back*.01f;}
+            else {var water=Rect("FoamAndFlow",lanePanel);GameplayArt.Stretch(water);water.pivot=Vector2.zero;water.offsetMin=water.offsetMax=Vector2.zero;var foam=water.gameObject.AddComponent<HarborLaneGraphic>();foam.Columns=session.Width;foam.Rows=session.Height;foam.raycastTarget=false;foam.Paused=()=>IsPaused||!IsEntryReady;}
             grid.GetComponent<Image>().raycastTarget = true;
             input = grid.gameObject.AddComponent<BoardGridInputRouter>();
             var origin = new GameObject("GridOrigin"); origin.transform.SetParent(presentation.transform); origin.transform.position = new Vector3(.5f,.5f,0);
             mapper = origin.AddComponent<GridWorldMapper>(); mapper.Configure(origin.transform,1,Vector3.right,Vector3.up);
             input.ConfigureMapping(boardCamera,mapper);
+            var wakeLayer=Rect("ActualWakeHistory",canvasRect);wakeLayer.sizeDelta=Vector2.one;
             foreach (var ship in session.Ships)
             {
                 var root = Rect("Ship_"+ship.Id, canvasRect); root.sizeDelta = Vector2.one;
@@ -443,9 +468,14 @@ namespace Tidebound.Unity.LevelDesign
                 var arrow = Rect("Direction", body); Place(arrow,new Rect(.09f,ship.Length-1.00f,.58f,.7f));
                 var graphic = arrow.gameObject.AddComponent<GrayboxArrowGraphic>(); graphic.color = Color.white; graphic.raycastTarget = false;
                 var slot=ship.Length==3 ? -1 : world.Combat.Fleet.StandardGroups.Single(g=>g.SkinId==ship.SkinId).SlotIndex;
-                body.gameObject.AddComponent<ShipPrototypeAppearance>().Initialize(resources,ship.Length,slot,useVolumeShips);
+                body.gameObject.AddComponent<ShipPrototypeAppearance>().Initialize(resources,ship.Length,slot,useVolumeShips,ship.SkinId,gameplayArt,()=>IsPaused||!IsEntryReady);
                 var view = root.gameObject.AddComponent<ShipMovementView>(); view.ConfigureShipId(ship.Id);
                 root.gameObject.AddComponent<PlanarShipLaneView>().Configure(ship.Id, Vector3.up * ((ship.Length - 1) * .5f)); shipViews.Add(ship.Id,view);
+                if(ship.Length==2)
+                {
+                    var wake=Rect("Wake_"+ship.Id,wakeLayer);wake.sizeDelta=Vector2.one;
+                    wake.gameObject.AddComponent<ShipWakePresentation>().Initialize(root,saveService?.SelectedTrailId,()=>world==null||world.PresentationPause||IsPaused||!IsEntryReady);
+                }
                 root.gameObject.SetActive(ship.State!=ShipState.InFleet);
             }
             foreach (var child in canvasRect.GetComponentsInChildren<Transform>(true)) child.gameObject.layer = 30;
@@ -460,12 +490,12 @@ namespace Tidebound.Unity.LevelDesign
             toolsPanel = Panel("Tools", canvasRect, new Rect(), HarborUI.Cream);
             Button("Menu",topPanel,"Menu",ToggleMenu);
             Button("Next",topPanel,">",() => SelectLevel((LevelIndex+1)%catalog.Count));
-            pause = Button("Pause",topPanel,"Pause",TogglePause);
+            pause = Button("Pause",topPanel,"Pause",()=>{if(homeNavigation)ToggleMenu();else TogglePause();});
             title = Label("Title",topPanel,"",19);
             wallet=Label("Wallet",topPanel,"",12);
             battlePanel = Panel("Battle",topPanel,new Rect(),HarborUI.Cream);
             combatView = battlePanel.gameObject.AddComponent<FleetCombatGrayboxView>();
-            combatView.Initialize(session,combat,font);
+            combatView.Initialize(session,combat,font,gameplayArt?LevelIndex+1:0);
             Button("Restart",toolsPanel,"Restart",Restart);
             hint = Button("Hint",toolsPanel,"Hint",ShowHint);
             auto = Button("Auto",toolsPanel,"Auto",ToggleAuto);
@@ -502,7 +532,12 @@ namespace Tidebound.Unity.LevelDesign
                 Button("Home",menuPanel,"Return home",ReturnHome);
                 foreach(var name in new[]{"Shop","Collection","Auto","Previous","Next"})menuPanel.Find(name).gameObject.SetActive(false);
                 auto.gameObject.SetActive(false);
+                // Keep diagnostic controls available to greybox callers, outside the product UI.
+                foreach(Transform child in menuPanel)child.gameObject.SetActive(false);
+                pauseSettingsView=menuPanel.gameObject.AddComponent<HarborSettingsPanel>();
+                pauseSettingsView.Initialize(true,harborAudio,CloseMenu,Restart,ReturnHome);
             }
+            if(gameplayArt)BuildGameplayControls();
             if (FindObjectOfType<EventSystem>() == null)
             {
                 var events = new GameObject("GrayboxEventSystem",typeof(EventSystem),typeof(StandaloneInputModule));
@@ -525,11 +560,12 @@ namespace Tidebound.Unity.LevelDesign
             for (var i=0;i<3;i++) Place((RectTransform)toolsPanel.Find(names[i]),new Rect(8+i*(buttonWidth+8),4,buttonWidth,Mathf.Max(48,Layout.Tools.height-40)));
             var toolNames=new[]{"Rescue","Shuffle","Reverse"};
             for(var i=0;i<3;i++)Place((RectTransform)toolsPanel.Find(toolNames[i]),new Rect(8+i*(buttonWidth+8),4,buttonWidth,Mathf.Max(48,Layout.Tools.height-40)));
-            Place(menuPanel,Layout.Safe);Place(acquisitionPanel,Layout.Safe);
+            Place(menuPanel,Layout.Safe);pauseSettingsView?.Layout(Layout.Safe);Place(acquisitionPanel,Layout.Safe);
             collectionView?.Layout(Layout.Safe);
             shopPanel.Layout(Layout.Safe);deadlockView.Layout(Layout.Safe);LayoutEntryControls();resultView.Layout(Layout.Safe);PaintResult();
             Place((RectTransform)resultPanel.Find("OpenCollection"),new Rect(24,Layout.Safe.height/2+94,108,44));
             if(homeNavigation)Place((RectTransform)menuPanel.Find("Home"),new Rect(16,Layout.Safe.height/2+84,w-32,48));
+            if(gameplayArt)LayoutGameplayControls();
             var menuWidth=(w-40)/2;var menuY=Layout.Safe.height/2-84;
             Place((RectTransform)menuPanel.Find("MenuTitle"),new Rect(8,menuY+176,w-16,32));
             Place((RectTransform)menuPanel.Find("Shop"),new Rect(16,menuY-56,w-32,48));
@@ -559,6 +595,8 @@ namespace Tidebound.Unity.LevelDesign
             if(homeNavigation)menuPanel.Find("Home").GetComponent<Button>().interactable=!IsBusy && world.PendingMoveId==null && IsEntryReady && !IsEntrySaveBlocked;
             menuPanel.Find("Shop").GetComponent<Button>().interactable=IsEntryReady && !IsEntrySaveBlocked && tools.Enabled && !IsBusy && demo==null && (session.State==GameState.Playing || IsPaused);
             menuPanel.Find("Collection").GetComponent<Button>().interactable=saveService?.IsAvailable==true && saveService.CurrentLevel>=3 && !IsBusy && demo==null;
+            pauseSettingsView?.SetActionsAvailable(IsEntryReady && !IsEntrySaveBlocked && !IsBusy && world.PendingMoveId==null,
+                IsEntryReady && !IsEntrySaveBlocked && !IsBusy && world.PendingMoveId==null);
             if(IsAcquisitionOpen)shopPanel.Present();
             combatView.Present();
             status.text = IsCleared ? "VICTORY - all ships fired." : combat.FaultReason!=null ? "Combat error: "+combat.FaultReason : IsPaused ? "Paused" :
@@ -576,10 +614,11 @@ namespace Tidebound.Unity.LevelDesign
             for(var i=0;i<3;i++)
             {
                 var selected=tools.Selection==toolKinds[i];
-                buttons[i].GetComponentInChildren<Text>(true).text=selected ? "Cancel" : labels[i]+" ("+tools.Remaining(toolKinds[i])+")";
-                buttons[i].interactable=IsEntryReady && !IsEntrySaveBlocked && tools.Enabled && tools.UsesLeft>0 && session.State==GameState.Playing && !IsBusy && demo==null && session.Board.ShipCount>0;
+                buttons[i].transform.Find("Label").GetComponent<Text>().text=selected ? "Cancel" : labels[i]+" ("+tools.Remaining(toolKinds[i])+")";
+                buttons[i].interactable=IsEntryReady && !IsEntrySaveBlocked && tools.Enabled && tools.UsesLeft>0 && session.State==GameState.Playing && demo==null && session.Board.ShipCount>0;
             }
             UpdateAssistanceLabels();UpdateEntryLabels();
+            if(gameplayArt)PresentGameplayControls();
         }
 
         private void ResetBodyColors()
@@ -620,7 +659,7 @@ namespace Tidebound.Unity.LevelDesign
         {
             collectionView=null;collectionPanel=null;collectionPauseOwned=false;ClearResult();ClearEntry();ClearAutoHighlight();assistance=null;deadlockPanel=null;deadlockView=null;deadlockNoticeTime=0;inputSinceTick=false;
             demo=null; input?.CancelSelection(); movement?.Dispose(); movement=null;
-            tools?.Dispose();tools=null;progress=null;menuPanel=null;menuPauseOwned=false;acquisitionPanel=null;shopPanel=null;acquisitionPauseOwned=false;
+            tools?.Dispose();tools=null;progress=null;menuPanel=null;pauseSettingsView=null;menuPauseOwned=false;acquisitionPanel=null;shopPanel=null;acquisitionPauseOwned=false;
             combat=null; combatView=null;
             lane?.Dispose(); lane=null; transit=null;
             foreach (var subscription in subscriptions) subscription.Dispose(); subscriptions.Clear();

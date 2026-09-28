@@ -15,11 +15,13 @@ namespace Tidebound.Unity.LevelDesign
         private static readonly Color Cream=new Color(1,.95f,.80f), White=new Color(1,.99f,.94f),
             Navy=new Color(.025f,.22f,.43f), Blue=new Color(.035f,.38f,.64f), Red=new Color(.97f,.12f,.055f),
             Gold=new Color(1,.67f,.075f), Glass=new Color(.035f,.49f,.73f);
-        public void Build()
+        public void Build(int style=0)
         {
             var b=new Model();const float deck=-.57f;
+            var hullPaint=style==1?White:style==3?new Color(.27f,.15f,.09f):Navy;
+            var roofPaint=style==1||style==2?Blue:Red;
             var hull=Outline(.63f,1.02f,48);
-            b.Loft(hull,new[]{.60f,.73f,.87f,.96f,1f,.99f},new[]{-.035f,-.09f,-.20f,-.36f,-.48f,deck},Navy,true);
+            b.Loft(hull,new[]{.60f,.73f,.87f,.96f,1f,.99f},new[]{-.035f,-.09f,-.20f,-.36f,-.48f,deck},hullPaint,true);
             b.Loft(hull,new[]{.994f,1.015f,1.015f,.992f},new[]{-.41f,-.425f,-.47f,-.485f},Blue,true);
             b.Loft(hull,new[]{.98f,1f,1f,.975f},new[]{deck,-.62f,-.69f,-.74f},Cream,true);b.Cap(hull,.98f,-.741f,Cream);
             var inset=Outline(.50f,.85f,48);b.Cap(inset,1,-.747f,new Color(.58f,.32f,.12f));
@@ -32,24 +34,70 @@ namespace Tidebound.Unity.LevelDesign
             foreach(var x in new[]{-.413f,.413f})foreach(var y in new[]{-.45f,-.14f})
                 Window(b,new Vector3(x,y,-1.075f),Vector3.up,new Vector3(-Mathf.Sign(x)*.065f,0,-1).normalized,.12f,.175f);
             foreach(var x in new[]{-.215f,.215f})Window(b,new Vector3(x,.169f,-1.075f),Vector3.right,new Vector3(0,-.05f,-1).normalized,.16f,.175f);
-            var roof=RoundBox(.48f,.49f,.13f,new Vector2(0,-.24f));
-            b.Loft(roof,new[]{.91f,.99f,1.015f,1.01f,.975f,.86f,.48f,.02f},new[]{-1.30f,-1.33f,-1.37f,-1.41f,-1.455f,-1.48f,-1.495f,-1.50f},Red,true);
-            b.Cap(roof,.02f,-1.50f,Red);
+            var roof=RoundBox(.455f,.465f,.15f,new Vector2(0,-.24f));
+            b.Loft(roof,new[]{.91f,.99f,1.015f,1.01f,.975f,.86f,.48f,.02f},new[]{-1.30f,-1.33f,-1.37f,-1.41f,-1.455f,-1.48f,-1.495f,-1.50f},roofPaint,true);
+            b.Cap(roof,.02f,-1.50f,roofPaint);
             // Rounded chimney, cap, mast and pennant.
+            if(style==1)
+            {
+                b.Sphere(new Vector3(.15f,-.42f,-1.59f),new Vector3(.15f,.15f,.17f),White);
+                b.Sphere(new Vector3(-.18f,-.42f,-1.60f),new Vector3(.10f,.10f,.13f),White);
+                b.Cylinder(new Vector3(0,-.15f,-1.5f),new Vector3(0,-.15f,-1.95f),.023f,Gold);
+                b.Sphere(new Vector3(0,-.15f,-1.96f),new Vector3(.055f,.055f,.055f),Gold);
+                b.Torus(new Vector3(0,.40f,-.91f),Vector3.right,Vector3.up,.37f,.024f,Gold);
+            }
+            else
+            {
             b.Cylinder(new Vector3(.18f,-.44f,-1.46f),new Vector3(.18f,-.44f,-1.82f),.105f,Navy);
             b.Cylinder(new Vector3(.18f,-.44f,-1.79f),new Vector3(.18f,-.44f,-1.87f),.128f,Cream);
             b.Cylinder(new Vector3(-.19f,-.31f,-1.44f),new Vector3(-.19f,-.31f,-2.18f),.025f,Gold);
             b.Sphere(new Vector3(-.19f,-.31f,-2.20f),new Vector3(.058f,.058f,.058f),Gold);
             var flagOrigin=new Vector3(-.19f,-.31f,-2.13f);
-            for(var i=0;i<16;i++)
+            // A continuous cloth grid removes the old staircase edge between disconnected strips.
+            for(var i=0;i<24;i++)for(var j=0;j<4;j++)
+                b.Quad(FlagPoint(flagOrigin,i/24f,j/4f),FlagPoint(flagOrigin,(i+1)/24f,j/4f),
+                    FlagPoint(flagOrigin,(i+1)/24f,(j+1)/4f),FlagPoint(flagOrigin,i/24f,(j+1)/4f),style==3?Navy:style==2?Gold:Red);
+            b.Torus(new Vector3(.18f,-.44f,-1.79f),Vector3.right,Vector3.up,.108f,.015f,Gold);
+            b.Torus(new Vector3(.18f,-.44f,-1.85f),Vector3.right,Vector3.up,.112f,.017f,White);
+            b.Torus(new Vector3(-.19f,-.31f,-1.53f),Vector3.right,Vector3.up,.039f,.016f,Gold);
+            }
+            if(style==2)
             {
-                var x=-i*.035f;var nx=-(i+1)*.035f;var wave=Mathf.Sin(i*.32f)*.08f;var nw=Mathf.Sin((i+1)*.32f)*.08f;
-                b.Quad(flagOrigin+new Vector3(x,wave,0),flagOrigin+new Vector3(nx,nw,-.02f),flagOrigin+new Vector3(nx,nw,.29f),flagOrigin+new Vector3(x,wave,.29f),Red);
+                var crown=new Vector3(0,-.24f,-1.53f);
+                b.Torus(crown,Vector3.right,Vector3.up,.19f,.045f,Gold);
+                for(var i=0;i<5;i++)
+                {
+                    var a=i*Mathf.PI*2/5;var foot=crown+new Vector3(Mathf.Cos(a)*.16f,Mathf.Sin(a)*.16f,0);
+                    b.Cylinder(foot,foot+Vector3.back*.22f,.027f,Gold);b.Sphere(foot+Vector3.back*.23f,new Vector3(.045f,.045f,.045f),Gold);
+                }
+                foreach(var side in new[]{-1,1})
+                {b.Cylinder(new Vector3(side*.48f,.32f,-.9f),new Vector3(side*.67f,.45f,-.9f),.08f,Blue);}
+            }
+            if(style==3)
+            {
+                foreach(var side in new[]{-1,1})
+                {b.Cylinder(new Vector3(side*.40f,.44f,-.85f),new Vector3(side*.58f,.69f,-.85f),.095f,Navy);
+                 b.Torus(new Vector3(side*.58f,.69f,-.85f),Vector3.right,Vector3.back,.096f,.017f,Gold);}
+                var emblem=new Vector3(-.51f,-.155f,-2.04f);
+                b.Sphere(emblem,new Vector3(.065f,.018f,.07f),White);
+                foreach(var side in new[]{-1,1})b.Sphere(emblem+new Vector3(side*.022f,.022f,-.01f),new Vector3(.014f,.008f,.02f),Navy);
             }
             // Life rings sit on each side of the hull and remain separate from the white rail.
             foreach(var side in new[]{-1,1})foreach(var y in new[]{-.40f,.06f})
             {
                 var center=new Vector3(side*.635f,y,-.63f);b.Torus(center,Vector3.up,Vector3.back,.157f,.051f,White,true);
+            }
+            // Large hull portholes, rubber fenders and rope mounts give the silhouette a crafted finish.
+            foreach(var side in new[]{-1,1})
+            {
+                var p=new Vector3(side*.51f,.45f,-.54f);
+                b.Torus(p,Vector3.up,Vector3.back,.080f,.023f,Gold);
+                b.Disc(p+Vector3.right*side*.01f,Vector3.up,Vector3.back,.061f,Glass);
+                foreach(var y in new[]{-.70f,.69f})
+                {
+                    b.Sphere(new Vector3(side*(Mathf.Sqrt(1-y*y)*.63f*(1-.28f*Mathf.Max(0,y))+.015f),y,-.38f),new Vector3(.068f,.06f,.15f),Navy);
+                    b.Cylinder(new Vector3(side*(Mathf.Sqrt(1-y*y)*.63f*(1-.28f*Mathf.Max(0,y))+.015f),y,-.52f),new Vector3(side*(Mathf.Sqrt(1-y*y)*.63f*(1-.28f*Mathf.Max(0,y))+.015f),y,-.72f),.014f,Cream);
+                }
             }
             // Gold portholes and a deck spotlight.
             foreach(var side in new[]{-1,1})foreach(var y in new[]{-.52f,-.1f})
@@ -71,6 +119,9 @@ namespace Tidebound.Unity.LevelDesign
                 var a=i*Mathf.PI/16;var c=(i+1)*Mathf.PI/16;
                 b.Cylinder(anchor+new Vector3(Mathf.Cos(a)*.15f,0,Mathf.Sin(a)*.17f),anchor+new Vector3(Mathf.Cos(c)*.15f,0,Mathf.Sin(c)*.17f),.017f,Gold);
             }
+            // Subtle foredeck plank seams sit on the deck, never on the logical board geometry.
+            foreach(var x in new[]{-.36f,-.24f,-.12f,0f,.12f,.24f,.36f})
+                b.Cylinder(new Vector3(x,.29f,-.753f),new Vector3(x,.70f,-.753f),.005f,new Color(.43f,.24f,.09f));
             // Wooden foredeck steps, rail posts and a gold rope line give the silhouette readable depth.
             foreach(var y in new[]{.33f,.47f,.61f})
             {
@@ -86,6 +137,12 @@ namespace Tidebound.Unity.LevelDesign
             material=new Material(Resources.Load<Shader>("TideboundUI/ShowcaseVolume")){name="HomeFlagshipLacquer"};
             var renderer=gameObject.AddComponent<MeshRenderer>();renderer.sharedMaterial=material;renderer.shadowCastingMode=ShadowCastingMode.Off;renderer.receiveShadows=false;
             BuildWater();
+        }
+        private static Vector3 FlagPoint(Vector3 origin,float t,float v)
+        {
+            var notch=.13f*(1-Mathf.Abs(v*2-1))*Mathf.Pow(t,6);
+            return origin+new Vector3(-.59f*t+notch,Mathf.Sin(t*4.3f)*.075f+Mathf.Sin(v*Mathf.PI)*.035f*t,
+                v*.28f-Mathf.Sin(t*Mathf.PI)*.045f);
         }
         private void BuildWater()
         {
@@ -169,7 +226,12 @@ namespace Tidebound.Unity.LevelDesign
             public void Cap(Vector2[] shape,float scale,float z,Color color)
             {var c=Vector2.zero;foreach(var v in shape)c+=v;c/=shape.Length;for(var i=0;i<shape.Length;i++){var a=c+(shape[i]-c)*scale;var b=c+(shape[(i+1)%shape.Length]-c)*scale;Tri(new Vector3(c.x,c.y,z),new Vector3(b.x,b.y,z),new Vector3(a.x,a.y,z),color,Vector3.back,Vector3.back,Vector3.back);}}
             public void Disc(Vector3 c,Vector3 u,Vector3 v,float r,Color color)
-            {for(var i=0;i<32;i++){var a=i*Mathf.PI*2/32;var b=(i+1)*Mathf.PI*2/32;Quad(c,c+(u*Mathf.Cos(a)+v*Mathf.Sin(a))*r,c+(u*Mathf.Cos(b)+v*Mathf.Sin(b))*r,c,color);}}
+            {
+                // Basis normal remains unit-length for tiny deck seams; area-scaled normalization can collapse to zero.
+                var normal=Vector3.Cross(u,v).normalized;
+                for(var i=0;i<32;i++){var a=i*Mathf.PI*2/32;var b=(i+1)*Mathf.PI*2/32;
+                    Tri(c,c+(u*Mathf.Cos(a)+v*Mathf.Sin(a))*r,c+(u*Mathf.Cos(b)+v*Mathf.Sin(b))*r,color,normal,normal,normal);}
+            }
             public void Cylinder(Vector3 a,Vector3 b,float radius,Color color)
             {
                 var n=(b-a).normalized;var u=Vector3.Cross(n,Mathf.Abs(n.z)<.9f?Vector3.forward:Vector3.up).normalized;var v=Vector3.Cross(n,u);
@@ -180,7 +242,7 @@ namespace Tidebound.Unity.LevelDesign
             }
             public void Torus(Vector3 center,Vector3 u,Vector3 v,float radius,float tube,Color color,bool rescue=false)
             {
-                var axis=Vector3.Cross(u,v);const int count=48,section=10;
+                var axis=Vector3.Cross(u,v);const int count=32,section=8;
                 for(var i=0;i<count;i++)for(var j=0;j<section;j++)
                 {
                     var p=new Vector3[4];var n=new Vector3[4];for(var k=0;k<4;k++)
@@ -190,8 +252,8 @@ namespace Tidebound.Unity.LevelDesign
             }
             public void Sphere(Vector3 c,Vector3 scale,Color color)
             {
-                for(var i=0;i<24;i++)for(var j=0;j<12;j++)
-                {var p=new Vector3[4];for(var k=0;k<4;k++){var a=(i+(k==1||k==2?1:0))*Mathf.PI*2/24;var t=(j+(k>=2?1:0))*Mathf.PI/12;p[k]=new Vector3(Mathf.Cos(a)*Mathf.Sin(t),Mathf.Sin(a)*Mathf.Sin(t),Mathf.Cos(t));}
+                for(var i=0;i<16;i++)for(var j=0;j<8;j++)
+                {var p=new Vector3[4];for(var k=0;k<4;k++){var a=(i+(k==1||k==2?1:0))*Mathf.PI*2/16;var t=(j+(k>=2?1:0))*Mathf.PI/8;p[k]=new Vector3(Mathf.Cos(a)*Mathf.Sin(t),Mathf.Sin(a)*Mathf.Sin(t),Mathf.Cos(t));}
                     Tri(c+Vector3.Scale(p[0],scale),c+Vector3.Scale(p[1],scale),c+Vector3.Scale(p[2],scale),color,p[0],p[1],p[2]);Tri(c+Vector3.Scale(p[0],scale),c+Vector3.Scale(p[2],scale),c+Vector3.Scale(p[3],scale),color,p[0],p[2],p[3]);}
             }
             public Mesh Finish(){var m=new Mesh{name="HomeFlagship_Original",indexFormat=IndexFormat.UInt32};m.SetVertices(vertices);m.SetNormals(normals);m.SetColors(colors);m.SetUVs(0,materials);m.SetTriangles(triangles,0);m.RecalculateBounds();return m;}

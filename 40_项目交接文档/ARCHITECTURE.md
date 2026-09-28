@@ -1,5 +1,31 @@
 # Tidebound Fleet — Unity 架构与关卡体系基础
 
+**2026-09-28 连击／抽奖／道具反馈：** `HarborDrawPanel.BeginDraw`从奖池直接调用既有原子交易；结果页拦截重复点击，保存失败保留同一request重试，不足走已有充值导航。`PortraitPuzzleGraybox`在洗牌前后对比方向，仅成功且实际转向的船启动`ShipFloatPresentation`的3秒Alpha轮廓；`ShipHighlight`材质保留Alpha、以纯红替代RGB，避免深色船体把描边染暗。出船时按钮保持交互及正常颜色，Core的Busy互斥继续拒绝并发道具变更，界面给出等待提示。连击徽章移至血条左下方并恢复完整火焰及星饰。Core、Config、场景、经济数值及存档格式未改。
+
+**2026-09-28 关卡版本切换：** 新增CampaignV3独立目录／100份布局与证明；场景仅替换关卡引用，保留最新新海面／窄航道／五海怪界面。PlayableLevelCatalog的100个活跃关位另带previousRevisions，旧尝试按关号、ID、文件hash与布局指纹验证恢复。PlayerSaveService只有目录验证回调通过才允许同关跨内容版本重开／首页新开，保存失败保持旧attempt、库存和结算原子性。BoardAssistance在动态局抑制未经完整纯出海验证的闲置提示。V3生成、质量／死局／真实道具／战斗／恢复验证独立于旧A型CampaignPackValidator。实现、100项EditMode及9130步真实回放见[本轮记录](验证记录/20260928_新版百关映射/VALIDATION.md)。
+
+**2026-09-28 最新展示层：**`PortraitBoardLayout`保留旧灰盒分支，正式美术分支采用窄航道和紧凑道具区；`GameplayBattleLayout`统一血条、海怪水线、五槽舰队、计数与连击坐标。`PortraitLanePathProvider`只对正式美术采用0.46格外围中心线，配合`LanePresentationTiming(.4,.2)`，保留既有外围折线和FIFO。
+
+`FleetBattleArtView`从`Resources/TideboundUI/Gameplay/BossWide/`读取15张三态PNG，`art_catalog.json`提供Alpha包围盒UV和真实宽高比；不修改原始图像，不把三态拉伸为统一高度。过渡使用Combat.Time，炮弹目标按各怪物脸部相对位置计算。`ComboBattleView`将舰队火焰与血条右侧提示分层，图形不拦截输入。新增背景为同目录`Open_Ocean_v1.png`；旧Boss素材保留兼容历史审查。`WideBossLayoutTests`与`WideBossReview`提供自动测试和独立内存账号截图，见[验证记录](验证记录/20260928_横向海怪布局接入/VALIDATION.md)。
+
+**2026-09-28 可变船数与战斗预算：** 新版百关目标已改为80～92艘浮动（第1关7艘），见[百关v3](CAMPAIGN_100_V3_PLAN_20260928.md)。运行时`LevelSessionFactory`本已按实际初始船伤害求和，无需增加HP字段或修改每船10伤害。Level Studio新增通过同一Factory计算的只读初始船数／攻击次数／HP预览，棋盘试玩不把剩余船数误作剩余血量。7／80／84／88／90／92船、救援攻击、最后命中胜利及编辑器等63项针对性EditMode通过，见[验证](验证记录/20260928_可变船数与战斗预算/VALIDATION.md)；90船难度、真机和新版百关认证尚未完成。旧`Campaign100V1`配方不变，继续校验旧关包。
+
+**2026-09-26 完整游戏界面正式接入：** 用户要求把当前整套设计接入Unity并可正常从首页进入100关。已实现指定海面与自然航道、五海域Boss及实际五装备席、放大船体、阴影轻摇与受阻眩晕，A01长船同席显示；Core规则和关卡数据不变。正式入口仍沿用 `Phase5R_PortraitGraybox.unity` 文件身份，构建列表仅启用此场景，并提供“Tidebound/打开完整游戏（100关）”菜单；本条覆盖早期“只开独立灰盒、不换启动/构建入口”的阶段状态。40/40相关EditMode、24/24针对性PlayMode、100关7927船回放通过；真机未验收，旧测试遗留7项失败另列。见[本轮验证](验证记录/20260926_完整游戏接入/VALIDATION.md)。
+
+**2026-09-24 百关内容授权与实施：** 用户设定100关目标，先完成并验证前30关，再扩展到100关。保留前十关内容身份，沿用现有战斗、道具、收藏与存档；当前已完成100关并接入原竖屏场景，135/135相关EditMode及100关7927船真实动画回放通过；详见[百关计划](CAMPAIGN_100_PLAN.md)与[验证记录](验证记录/20260924_百关内容/VALIDATION.md)。本次覆盖旧暂缓量产限制，真人／设备验收和移动端规格冻结仍独立待办。
+
+**2026-09-24 正式外观接入：** 沿用现有工程／场景和Canvas基准；首页Approved组件与收藏Gallery生产绑定复用已确认资源。Core新增Appearance目录／v5数据及版本化14款皮肤抽奖收据，旧CollectionPoolV1目录与校验不改，旧权益按品质一致的一对一外观别名保留；当前局名单保持，新装备下一局应用。Unity船皮和ShipWakePresentation只读取模型状态，不影响Grid占格。74项EditMode、182项正式组件运行检查通过；范围、测试存档隔离、旧版本迁移、未接入渠道见[正式接入验证](验证记录/20260923_正式UI接入/VALIDATION.md)。下方“仅小样”的旧日期记录不代表最新状态。
+
+**2026-09-23 船体皮肤小样：** 新增用户提供的 31 款真实船图，预览分为默认 1／关卡 12／分享 4／抽奖 14，白／蓝／紫／金（黄）／红为 5／11／8／4／3；四列品质底色、五槽装备预览、放大图与统一抽奖入口已制作。只作用于 VisualSamples，正式 16 款皮肤目录、概率、首蓝、存档与局内表现未更改；新 ID 映射与渠道授予待后续。见[同一选型报告新增船体皮肤节](UI_ASSET_SELECTION_20260923.md#2026-09-23-船体皮肤分区与五档品质已制作待视觉确认)。
+
+**2026-09-23 场景小样：** 用户授权设计场景弹窗及命名/获取分配；已纳入 11 张新图＋原阳光海港，共 12 场景，按默认 1／关卡 4／分享 2／抽奖 5 展示。两列来源分区、完整图预览及三态在独立 Unity 小样完成；正式场景授予、存档和首页引用未接入。见[同一选型报告新增场景节](UI_ASSET_SELECTION_20260923.md#2026-09-23-场景弹窗设计与真实小样待视觉确认)，视觉与具体方案待确认。
+
+**2026-09-23 主页船整套补充：** 已纳入用户提供的 21 张独立船图，连同原 4 艘共 25 艘。默认只拥有 H01，原 3／6／10 关权益保留；新增船全部未获取，关卡／抽奖／分享分配已确认并用于四个来源分区，新增获取渠道尚未接入，不改变皮肤抽奖或存档格式。目录和建议见[展示船规则追加](设计分镜/20260920_V2制作准备/SHOWCASE_D1_RULES.md#2026-09-23-补充完整船图目录与获取分配建议)。新视觉仍通过独立小样评审，未批量替换正式首页。
+
+**2026-09-23 D1-A高清船图续接完成：** 从断网任务恢复H02／H03／H04透明素材，补齐H01并接入主页、收藏形象及结算共用展示；采用透明图片＋轻摆／水纹／倒影的2.5D呈现，原程序3D保留缺图回退，局内3D船不变。四图以1024上限导入，修复旧图标规则压到256的问题；解锁仍是默认＋通关3／6／10，复用现有选择与存档。本轮相关PlayMode 25/25通过，详见[高清船图接入验证](验证记录/V2D1A_高清船图接入/VALIDATION.md)。不是24款或高精度3D全部完工，真机／性能未验收。
+
+**2026-09-22 D1-A继续推进：** 用户“继续吧”并明确选择默认＋第3／6／10关解锁首批四艘主页船。本轮接入独立展示船目录、v4兼容选择字段、收藏形象卡片、主页／结算模型及船名同步；授予依据已提交胜利进度，旧玩家无须重刷。第一批程序模型不等于24款正式美术已完成。规则见[首批展示船](设计分镜/20260920_V2制作准备/SHOWCASE_D1_RULES.md)，验证见[本轮记录](验证记录/V2D1A_展示船解锁与选择/VALIDATION.md)。此条更新此前D1暂缓／形象仅空壳的状态；拖尾、场景和D2平台分享仍未实施。
+
 **C2展示船推进（2026-09-21）：** 已改善主页独立船体曲面、窗框／玻璃／金属反光、取景和局部水线；17/17相关PlayMode通过，并归档中英两档截图、水线开关对照与实际运行短动图。局内模型／存档不变，C2视觉和真机仍未验收。见[船体与水线记录](验证记录/V2C2_主页船体与水线/SHOWCASE_VALIDATION.md)。
 
 **C2视觉纠偏（2026-09-21）：** 用户指出主页偏离目标，当前留在C2修正视觉，D1暂缓。已补主页立体按钮／按压与图标浮动、金色透明底图、独立待开放标签和主页展示船细节；相关PlayMode 22/22通过。精修船体、水线与完整艺术表现仍未验收，之前C2“完成”仅指功能接入。见[主页修正记录](验证记录/V2C2_主页立体修正/VISUAL_CORRECTION.md)。
@@ -403,3 +429,39 @@ y=0   1  1  .  2
 - `simulate_economy.py`以生产固定池为基线，候选曲线／扩池仅存在离线模型。道具按类型计库存和组合包，抽取按完整批次锁价，兑换在批后；装备策略与玩家预算为外生假设，不修改游戏行为。每关校验金币／券／道具库存守恒。
 - 输出包含55方案和3／10／30／100／300关分位数、首次事件达成比例、支出／请求缺口／库存等。`test_economy.py`14项测试，`plot_report.py`可选Matplotlib生成可复核静态图；工具不进入玩家构建。
 - 本轮未改Runtime、存档schema、生产价格、收益公式或SDK。C3候选参数与采用版本边界见[I5-C3报告](验证记录/I5C3_经济校准/I5C3_VALIDATION.md)，不得直接修改旧SinglePrice／FirstClear使历史回执失效。
+
+## V2-C2 共用弹窗与结算呈现（2026-09-22）
+
+HarborUI.Control / Popup 实例化新增 UI_Tab、UI_ItemCard、UI_Popup。HarborImage 在固定触区内生成圆角、厚度、卡片图像区域；HarborControlState 处理按压与焦点，选中由页面传入。木牌标题为独立透明图，不进入九宫格。Frame bitmap 透明检查失败，运行时使用网格金边，不导入带棋盘格素材。
+
+CollectionPanel 的分类和三级导航固定于底部，内容独立滚动；交易遮罩置于最后，TransactionScroll 根据本地化文本 preferredHeight 调整高度，只在文本／视口变化时重设滚动。DrawHero 是独立展示船，不改变所选标准皮肤、五槽配置或结果身份。
+
+VictoryResultPanel 只读取已提交 VictoryResult：新增未来外观分类预告和本地分享预览。IsSharePreviewOpen 同时阻断按钮回调与 PortraitPuzzleGraybox.ContinueFromResult；未接平台服务、未生成金币或解锁回执。预告没有虚构关卡阈值，等待 D1/D2 目录。轻动效由可读状态、减少动效、焦点及预览遮罩控制。复用展示船的独立渲染层、资源释放机制，不改局内逻辑尺寸。
+
+## D1-A 展示船存档与渲染（2026-09-22）
+
+ShowcaseCatalog定义独立稳定ID、名称、通关条件和表现索引。OwnsShowcase读取已验证的HighestClearedLevel；该值只能随原胜利结算原子提交，不引入另一套可重复授予的钱包／领取回执。新增选择字段为PlayerSaveData的v4兼容扩展，缺字段默认H01；Validate拒绝未知或未解锁的选择。SelectShowcase复用Commit与运行中事务保护，只有保存成功才发布新选择，重复选择直接返回AlreadySelected。
+
+CollectionPanel.Showcase在独立分类网格中构建256预览，已拥有卡片调用选择服务。CollectionShipPreview.PresentShowcase只在ID变化时替换模型，先隐藏旧模型，再由原OnDestroy释放网格与材质；保留相机与RenderTexture，按新网格重新取景。主页与结算读取同一SelectedShowcaseId，不读取装备槽推断展示外观。
+
+
+## 2026-09-27 星数与无背板结算
+
+`PlayerSaveData.ClearStars` 是 `HighestClearedLevel` 的只读投影，不增序列化字段；既有胜利回执唯一性、连续性验证和原子Checkpoint提供幂等保障。`VictoryResult`增加TotalStars、AwardedStars、PreviousStars和奖励节点，只允许从已持久化且验证通过的胜利构建。
+
+Core的`ClearRewardMilestones`只读合并`ShowcaseCatalog`与`AppearanceCatalog`中Level来源，按星数分组，保留每一项ID／类型／名称；只显示大于当前星数且不超过installed catalog的前三个门槛。这里没有第二套解锁配置，也不调用领取接口。
+
+Unity `VictoryResultPanel`负责响应式布局、同目录的美术绑定、星数过渡、详情遮罩和按钮。`HarborVictoryGraphic`绘制旋转放射光与金星，无贴图依赖和输入；`HarborVictoryButton`复用暂停页的厚度、描边和按压反馈。`CollectionShipPreview.UseCelebrationMotion`仅由主页与结果调用，其他卡片保持默认节奏。`RestoreResultIfComplete`跳过已保存结果的入场飞星。现有金币、下一关提交、首蓝拦截、存档失败和无存档练习兜底均保留。
+
+验证工具`Editor/UI/VictoryReview`使用内存档案和正式100关目录，截图不访问用户存档；PlayMode验证动效中断、详情输入遮挡和星数幂等。证据见`验证记录/20260927_胜利结算接入/`。
+
+
+## 2026-09-27 首页新开局与连击正式表现
+
+`PlayerSaveService.StartFromHome` 在用户点击首页主按钮时加载 `CurrentLevel` 的已安装内容，先可靠写入新尝试再切换视图。未完成旧尝试经共享 `ReplaceAttempt` 使用原重开收据与额度；失败保留原持久数据，不使用新收据类型、不改变存档schema。`Start` 与底层 `SavedGameRuntime.Restore` 仍服务既有内部回归和非首页入口，不能继续推断正式首页会恢复尝试。历史GUI回放脚本中按旧首页恢复结算的断言属于旧版本证据，本轮使用 `GameplayFixReview`。
+
+`ExitComboState` 是独立纯表现计数器，以SessionId／ShipId去重并保留每船离场档位；`ComboBattleView` 订阅真实离场／命中／结束事件，用 `FleetCombatSystem.Time` 驱动文字、计时、星锚和GPU火焰，不使用Unity墙钟影响暂停。该模型无Boss、金币或道具写入能力。每次新战斗创建新实例，结束时清空，销毁时释放事件订阅和两个材质。
+
+`ComboFlame.shader` 从已确认v3小样的原创噪声密度场移植，以两个共享材质绘制徽章与船体；`ComboEmberGraphic` 在固定数量网格中绘制上浮火星。粒子仅用于视觉，无新增依赖。攻击图形查询离场档位，既有AttackToken、命中时序和数值不变。
+
+`GameplayHudGraphic` 单独绘制暂停、金币、血条及金色道具样式；关卡牌继续使用已确认的 `UI_HarborHeader_v1` 高清资源。全屏背景、棋盘逻辑和百关数据未替换。`PortraitBoardLayout` 为方形道具增加底区空间并对极短窗口收缩；绘制仍不反向决定Grid占格。

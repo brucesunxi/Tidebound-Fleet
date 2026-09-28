@@ -1,10 +1,11 @@
 using System;
 using System.Linq;
 using Tidebound.Board;
+using Tidebound.LevelDesign;
 
 namespace Tidebound.Tools
 {
-    /// <summary>Read-only, board-snapshot-scoped assistance. Never runs a solver or makes a move.</summary>
+    /// <summary>Read-only assistance. Optional exit peeling suppresses unsafe hints on stopper puzzles; never makes a move.</summary>
     public sealed class BoardAssistance
     {
         public const double IdleDelay = 5;
@@ -13,6 +14,8 @@ namespace Tidebound.Tools
         private string directExit;
         private double idle, visible;
         private bool hinted, announced;
+        private readonly bool requireExitOnlySolution;
+        public BoardAssistance(bool requireExitOnlySolution = false) { this.requireExitOnlySolution = requireExitOnlySolution; }
         public string HighlightedShipId { get; private set; }
         public bool NoMoves { get; private set; }
 
@@ -47,7 +50,7 @@ namespace Tidebound.Tools
             if (!hinted && idle + 1e-9 >= IdleDelay)
             {
                 hinted = true; visible = 0;
-                HighlightedShipId = directExit;
+                HighlightedShipId = !requireExitOnlySolution || directExit != null && LevelDifficultyAnalysis.Peel(board).IsComplete ? directExit : null;
             }
         }
         public bool TryAnnounceDeadlock()

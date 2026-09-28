@@ -1,0 +1,97 @@
+{
+  "version": "DifficultyPrototypeV2.1",
+  "levelId": "DV2_P4",
+  "role": "mechanism",
+  "kind": "RequiresPartial",
+  "fingerprint": "390DC03B09CDE93B7519A000F5C80484DFD6D2081D5CB6B44507305EA152D429",
+  "ships": 4,
+  "longShips": 0,
+  "occupiedCells": 8,
+  "boardCells": 36,
+  "placementMask": null,
+  "maskMeaning": "Initial placement only; all board cells remain traversable.",
+  "pureExitResidual": 4,
+  "minimumPartialLowerBound": 1,
+  "minimumPartialUpperBound": 1,
+  "minimumPartialExact": true,
+  "analysisMethod": "BreadthFirstSearch",
+  "releaseTraces": [
+    {
+      "strategy": "verified-witness",
+      "shipIds": [
+        "A",
+        "D",
+        "C",
+        "B",
+        "A"
+      ],
+      "steps": [
+        {
+          "ShipId": "A",
+          "Outcome": 0,
+          "RemainingBefore": 4,
+          "ExitsBefore": 0,
+          "PartialBefore": 4,
+          "ExitShare": 0.0,
+          "NewExits": 1,
+          "LostExits": 0
+        },
+        {
+          "ShipId": "D",
+          "Outcome": 1,
+          "RemainingBefore": 4,
+          "ExitsBefore": 1,
+          "PartialBefore": 2,
+          "ExitShare": 0.25,
+          "NewExits": 1,
+          "LostExits": 0
+        },
+        {
+          "ShipId": "C",
+          "Outcome": 1,
+          "RemainingBefore": 3,
+          "ExitsBefore": 1,
+          "PartialBefore": 1,
+          "ExitShare": 0.33333333333333331,
+          "NewExits": 1,
+          "LostExits": 0
+        },
+        {
+          "ShipId": "B",
+          "Outcome": 1,
+          "RemainingBefore": 2,
+          "ExitsBefore": 1,
+          "PartialBefore": 0,
+          "ExitShare": 0.5,
+          "NewExits": 1,
+          "LostExits": 0
+        },
+        {
+          "ShipId": "A",
+          "Outcome": 1,
+          "RemainingBefore": 1,
+          "ExitsBefore": 1,
+          "PartialBefore": 0,
+          "ExitShare": 1.0,
+          "NewExits": 0,
+          "LostExits": 0
+        }
+      ],
+      "first60MeanExits": 0.66666666666666663,
+      "first60MeanExitShare": 0.19444444444444442,
+      "first60PeakExits": 1
+    }
+  ],
+  "structure": {
+    "InitialExits": 0,
+    "DeepShips": 0,
+    "CrossAxisRatio": 1.0,
+    "CrossRegionRatio": 1.0,
+    "MaximumInitialUnlock": 0,
+    "BridgingLongShips": 0
+  },
+  "humanPlaytest": "Pending",
+  "sourceLevelId": null,
+  "sourceLayoutFingerprint": null,
+  "sourceGeometryOverlap": null
+}

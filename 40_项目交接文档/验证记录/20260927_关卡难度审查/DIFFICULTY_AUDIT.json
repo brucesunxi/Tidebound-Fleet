@@ -1,0 +1,5556 @@
+{
+  "date": "2026-09-27",
+  "scope": "Read-only inspection of current saved assets and recorded traces; no new runtime replay, solver run, Unity tests, or human difficulty certification. Only documentation evidence is written.",
+  "method": {
+    "input": "Current manifest-100.json and all referenced layout/proof JSON; first ten resolved in Phase5R_TenLevelCandidates.",
+    "hash": "SHA-256 of file bytes, compared with current manifest.",
+    "traceMetric": "Mean of availableBefore[0:ceil(shipCount*0.6)] for each saved trace; verify against stored first60PercentMeanExits.",
+    "grouping": "Levels 11-100 only, by manifest pace; all have 80 ships and 3 traces.",
+    "lowChoice": "Count sampled prefix steps with <=2 direct exits, divided by total prefix steps; correlated recorded strategies, not player probabilities.",
+    "structureGates": "Compare saved manifest features against current family thresholds, for every new level regardless of assigned family. Features are not recalculated by this audit."
+  },
+  "manifest": {
+    "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/manifest-100.json",
+    "sha256": "781C3807D0D53789E9ABDF210BBF18FBF398D0674BFEED09EC56FD58D2417B7C",
+    "status": "AutomatedValidatedNeedsPlaytest"
+  },
+  "summary": {
+    "levels": 100,
+    "filesMatched": 200,
+    "totalShips": 7927,
+    "allSavedProofsAreNExits": true,
+    "stepOutcomes": {
+      "Exit": 7927
+    },
+    "groups11To100": {
+      "Relief": {
+        "levels": 18,
+        "initialExitMin": 14,
+        "initialExitMax": 18,
+        "initialExitMean": 17.22222222222222,
+        "atRecipeMaximumExits": 9,
+        "first60PercentMeanExits": 10.945216049382717,
+        "sampledSteps": 2592,
+        "stepsAtMost2Exits": 6,
+        "stepsAtMost2ExitsPercent": 0.23148148148148148,
+        "stepsWith1Exit": 0
+      },
+      "Regular": {
+        "levels": 45,
+        "initialExitMin": 12,
+        "initialExitMax": 15,
+        "initialExitMean": 14.488888888888889,
+        "atRecipeMaximumExits": 29,
+        "first60PercentMeanExits": 8.873611111111112,
+        "sampledSteps": 6480,
+        "stepsAtMost2Exits": 116,
+        "stepsAtMost2ExitsPercent": 1.7901234567901234,
+        "stepsWith1Exit": 19
+      },
+      "Challenge": {
+        "levels": 27,
+        "initialExitMin": 7,
+        "initialExitMax": 11,
+        "initialExitMean": 10.518518518518519,
+        "atRecipeMaximumExits": 18,
+        "first60PercentMeanExits": 7.085648148148148,
+        "sampledSteps": 3888,
+        "stepsAtMost2Exits": 153,
+        "stepsAtMost2ExitsPercent": 3.935185185185185,
+        "stepsWith1Exit": 31
+      }
+    },
+    "structureGates11To100": {
+      "CrossAxisRatio": {
+        "threshold": 0.3,
+        "passingLevels": 90,
+        "totalLevels": 90,
+        "minimum": 0.5874439461883408,
+        "maximum": 0.7789473684210526
+      },
+      "CrossRegionRatio": {
+        "threshold": 0.2,
+        "passingLevels": 90,
+        "totalLevels": 90,
+        "minimum": 0.4308510638297872,
+        "maximum": 0.5845410628019324
+      },
+      "BridgingLongShips": {
+        "threshold": 3,
+        "passingLevels": 90,
+        "totalLevels": 90,
+        "minimum": 3,
+        "maximum": 8
+      },
+      "MaximumInitialUnlock": {
+        "threshold": 2,
+        "passingLevels": 87,
+        "totalLevels": 90,
+        "minimum": 1,
+        "maximum": 4
+      },
+      "DeepShips": {
+        "threshold": 8,
+        "passingLevels": 88,
+        "totalLevels": 90,
+        "minimum": 5,
+        "maximum": 34
+      }
+    },
+    "challengeByChapter": [
+      {
+        "first": 11,
+        "last": 30,
+        "meanExits": 6.40625
+      },
+      {
+        "first": 31,
+        "last": 60,
+        "meanExits": 7.733796296296296
+      },
+      {
+        "first": 61,
+        "last": 100,
+        "meanExits": 6.939236111111111
+      }
+    ]
+  },
+  "levels": [
+    {
+      "number": 1,
+      "id": "P5R_Ten_001",
+      "pace": "Relief",
+      "structure": "Legacy",
+      "ships": 7,
+      "solutionSteps": 7,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 3,
+      "completeDepth": 3,
+      "threeTraceMeanExits": 2.2666666666666666,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 5,
+          "meanExits": 2,
+          "maximumExits": 3,
+          "stepsAtMost2Exits": 4,
+          "stepsWith1Exit": 1
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 5,
+          "meanExits": 2.6,
+          "maximumExits": 3,
+          "stepsAtMost2Exits": 2,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 5,
+          "meanExits": 2.2,
+          "maximumExits": 3,
+          "stepsAtMost2Exits": 4,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 3,
+        "DeepShips": 0,
+        "CrossAxisRatio": 0.6666666666666666,
+        "CrossRegionRatio": 0.6666666666666666,
+        "MaximumInitialUnlock": 1,
+        "BridgingLongShips": 0
+      }
+    },
+    {
+      "number": 2,
+      "id": "P5R_Ten_002",
+      "pace": "Regular",
+      "structure": "Legacy",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 15,
+      "completeDepth": 8,
+      "threeTraceMeanExits": 10.180555555555555,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 10.729166666666666,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 9.416666666666666,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 10.395833333333334,
+          "maximumExits": 16,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 15,
+        "DeepShips": 6,
+        "CrossAxisRatio": 0.6502463054187192,
+        "CrossRegionRatio": 0.5369458128078818,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 0
+      }
+    },
+    {
+      "number": 3,
+      "id": "P5R_Ten_003",
+      "pace": "Regular",
+      "structure": "Legacy",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 14,
+      "completeDepth": 9,
+      "threeTraceMeanExits": 9.458333333333334,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 8.833333333333334,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 8.833333333333334,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 2,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 10.708333333333334,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 14,
+        "DeepShips": 11,
+        "CrossAxisRatio": 0.7171717171717171,
+        "CrossRegionRatio": 0.4393939393939394,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 0
+      }
+    },
+    {
+      "number": 4,
+      "id": "P5R_Ten_004",
+      "pace": "Regular",
+      "structure": "Legacy",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 14,
+      "completeDepth": 10,
+      "threeTraceMeanExits": 8.73611111111111,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 8.895833333333334,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 1,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 8.145833333333334,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 9.166666666666666,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 14,
+        "DeepShips": 11,
+        "CrossAxisRatio": 0.6979166666666666,
+        "CrossRegionRatio": 0.453125,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 4
+      }
+    },
+    {
+      "number": 5,
+      "id": "P5R_Ten_005",
+      "pace": "Regular",
+      "structure": "Legacy",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 11,
+      "completeDepth": 12,
+      "threeTraceMeanExits": 7.131944444444445,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 9.0625,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 5.333333333333333,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 7,
+          "stepsWith1Exit": 2
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 7,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 11,
+        "DeepShips": 22,
+        "CrossAxisRatio": 0.6893617021276596,
+        "CrossRegionRatio": 0.5319148936170213,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 4
+      }
+    },
+    {
+      "number": 6,
+      "id": "P5R_Ten_006",
+      "pace": "Relief",
+      "structure": "Legacy",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 16,
+      "completeDepth": 9,
+      "threeTraceMeanExits": 10.07638888888889,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 9.25,
+          "maximumExits": 16,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 10.333333333333334,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 10.645833333333334,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 16,
+        "DeepShips": 6,
+        "CrossAxisRatio": 0.6555023923444976,
+        "CrossRegionRatio": 0.5933014354066986,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 4
+      }
+    },
+    {
+      "number": 7,
+      "id": "P5R_Ten_007",
+      "pace": "Regular",
+      "structure": "Legacy",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 12,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 7.805555555555555,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 6.666666666666667,
+          "maximumExits": 12,
+          "stepsAtMost2Exits": 4,
+          "stepsWith1Exit": 1
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 9.8125,
+          "maximumExits": 16,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 6.9375,
+          "maximumExits": 13,
+          "stepsAtMost2Exits": 6,
+          "stepsWith1Exit": 2
+        }
+      ],
+      "features": {
+        "InitialExits": 12,
+        "DeepShips": 24,
+        "CrossAxisRatio": 0.7136363636363636,
+        "CrossRegionRatio": 0.5045454545454545,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 8,
+      "id": "P5R_Ten_008",
+      "pace": "Regular",
+      "structure": "Legacy",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 10,
+      "completeDepth": 15,
+      "threeTraceMeanExits": 6.958333333333333,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 5.666666666666667,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 3,
+          "stepsWith1Exit": 1
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 8.625,
+          "maximumExits": 13,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 6.583333333333333,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 10,
+        "DeepShips": 28,
+        "CrossAxisRatio": 0.6637554585152838,
+        "CrossRegionRatio": 0.5109170305676856,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 9,
+      "id": "P5R_Ten_009",
+      "pace": "Regular",
+      "structure": "Legacy",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 10,
+      "completeDepth": 15,
+      "threeTraceMeanExits": 8.041666666666666,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 7.4375,
+          "maximumExits": 12,
+          "stepsAtMost2Exits": 4,
+          "stepsWith1Exit": 2
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 8.416666666666666,
+          "maximumExits": 12,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 8.270833333333334,
+          "maximumExits": 12,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 10,
+        "DeepShips": 22,
+        "CrossAxisRatio": 0.7154811715481172,
+        "CrossRegionRatio": 0.5271966527196653,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 10,
+      "id": "P5R_Ten_010",
+      "pace": "Regular",
+      "structure": "Legacy",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 10,
+      "completeDepth": 17,
+      "threeTraceMeanExits": 8.319444444444445,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 9.541666666666666,
+          "maximumExits": 13,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 7.916666666666667,
+          "maximumExits": 13,
+          "stepsAtMost2Exits": 2,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 7.5,
+          "maximumExits": 13,
+          "stepsAtMost2Exits": 1,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 10,
+        "DeepShips": 19,
+        "CrossAxisRatio": 0.7616822429906542,
+        "CrossRegionRatio": 0.48130841121495327,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 8
+      }
+    },
+    {
+      "number": 11,
+      "id": "TF_Campaign_011",
+      "pace": "Relief",
+      "structure": "Flow",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 15,
+      "completeDepth": 10,
+      "threeTraceMeanExits": 9.520833333333334,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 9.395833333333334,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 8.645833333333334,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 3,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 10.520833333333334,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 15,
+        "DeepShips": 14,
+        "CrossAxisRatio": 0.6407766990291263,
+        "CrossRegionRatio": 0.49514563106796117,
+        "MaximumInitialUnlock": 1,
+        "BridgingLongShips": 4
+      }
+    },
+    {
+      "number": 12,
+      "id": "TF_Campaign_012",
+      "pace": "Regular",
+      "structure": "Crossed",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 15,
+      "completeDepth": 12,
+      "threeTraceMeanExits": 9.3125,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 10.125,
+          "maximumExits": 16,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 7.604166666666667,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 10.208333333333334,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 15,
+        "DeepShips": 17,
+        "CrossAxisRatio": 0.7087378640776699,
+        "CrossRegionRatio": 0.49029126213592233,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 13,
+      "id": "TF_Campaign_013",
+      "pace": "Regular",
+      "structure": "KeyUnlock",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 14,
+      "completeDepth": 9,
+      "threeTraceMeanExits": 9.083333333333334,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 8.020833333333334,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 9.625,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 9.604166666666666,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 14,
+        "DeepShips": 11,
+        "CrossAxisRatio": 0.6563876651982379,
+        "CrossRegionRatio": 0.43612334801762115,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 5
+      }
+    },
+    {
+      "number": 14,
+      "id": "TF_Campaign_014",
+      "pace": "Challenge",
+      "structure": "Layers",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 11,
+      "completeDepth": 17,
+      "threeTraceMeanExits": 6.097222222222222,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 5.4375,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 6,
+          "stepsWith1Exit": 1
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 6.166666666666667,
+          "maximumExits": 13,
+          "stepsAtMost2Exits": 5,
+          "stepsWith1Exit": 1
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 6.6875,
+          "maximumExits": 12,
+          "stepsAtMost2Exits": 8,
+          "stepsWith1Exit": 3
+        }
+      ],
+      "features": {
+        "InitialExits": 11,
+        "DeepShips": 30,
+        "CrossAxisRatio": 0.6589861751152074,
+        "CrossRegionRatio": 0.5023041474654378,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 15,
+      "id": "TF_Campaign_015",
+      "pace": "Relief",
+      "structure": "Flow",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 18,
+      "completeDepth": 10,
+      "threeTraceMeanExits": 11.354166666666666,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 10.104166666666666,
+          "maximumExits": 18,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 11.125,
+          "maximumExits": 19,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 12.833333333333334,
+          "maximumExits": 18,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 18,
+        "DeepShips": 12,
+        "CrossAxisRatio": 0.6666666666666666,
+        "CrossRegionRatio": 0.5845410628019324,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 4
+      }
+    },
+    {
+      "number": 16,
+      "id": "TF_Campaign_016",
+      "pace": "Regular",
+      "structure": "LinkedRegions",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 14,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 8.270833333333334,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 8.604166666666666,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 7,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 4,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 9.208333333333334,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 14,
+        "DeepShips": 20,
+        "CrossAxisRatio": 0.7110091743119266,
+        "CrossRegionRatio": 0.536697247706422,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 17,
+      "id": "TF_Campaign_017",
+      "pace": "Regular",
+      "structure": "LongBridge",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 15,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 9.0,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 10.041666666666666,
+          "maximumExits": 16,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 7.4375,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 1,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 9.520833333333334,
+          "maximumExits": 16,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 15,
+        "DeepShips": 25,
+        "CrossAxisRatio": 0.6582278481012658,
+        "CrossRegionRatio": 0.5485232067510548,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 8
+      }
+    },
+    {
+      "number": 18,
+      "id": "TF_Campaign_018",
+      "pace": "Challenge",
+      "structure": "KeyUnlock",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 11,
+      "completeDepth": 16,
+      "threeTraceMeanExits": 7.0625,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 6.833333333333333,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 3,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 6.520833333333333,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 5,
+          "stepsWith1Exit": 3
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 7.833333333333333,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 11,
+        "DeepShips": 30,
+        "CrossAxisRatio": 0.6440677966101694,
+        "CrossRegionRatio": 0.5084745762711864,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 19,
+      "id": "TF_Campaign_019",
+      "pace": "Regular",
+      "structure": "Crossed",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 14,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 8.527777777777779,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 7.9375,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 4,
+          "stepsWith1Exit": 1
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 7.4375,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 3,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 10.208333333333334,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 14,
+        "DeepShips": 22,
+        "CrossAxisRatio": 0.7090163934426229,
+        "CrossRegionRatio": 0.5245901639344263,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 20,
+      "id": "TF_Campaign_020",
+      "pace": "Challenge",
+      "structure": "LongBridge",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 9,
+      "completeDepth": 15,
+      "threeTraceMeanExits": 6.145833333333333,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 6.416666666666667,
+          "maximumExits": 10,
+          "stepsAtMost2Exits": 2,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 5.625,
+          "maximumExits": 10,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 6.395833333333333,
+          "maximumExits": 9,
+          "stepsAtMost2Exits": 1,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 9,
+        "DeepShips": 22,
+        "CrossAxisRatio": 0.7605633802816901,
+        "CrossRegionRatio": 0.4694835680751174,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 7
+      }
+    },
+    {
+      "number": 21,
+      "id": "TF_Campaign_021",
+      "pace": "Relief",
+      "structure": "Flow",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 17,
+      "completeDepth": 10,
+      "threeTraceMeanExits": 10.375,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 11.041666666666666,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 9.041666666666666,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 11.041666666666666,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 17,
+        "DeepShips": 9,
+        "CrossAxisRatio": 0.7244897959183674,
+        "CrossRegionRatio": 0.5255102040816326,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 4
+      }
+    },
+    {
+      "number": 22,
+      "id": "TF_Campaign_022",
+      "pace": "Regular",
+      "structure": "LinkedRegions",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 15,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 9.944444444444445,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 10.25,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 9.729166666666666,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 9.854166666666666,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 15,
+        "DeepShips": 22,
+        "CrossAxisRatio": 0.7521739130434782,
+        "CrossRegionRatio": 0.508695652173913,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 23,
+      "id": "TF_Campaign_023",
+      "pace": "Regular",
+      "structure": "KeyUnlock",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 15,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 8.743055555555555,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 11.166666666666666,
+          "maximumExits": 16,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 8.166666666666666,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 6.895833333333333,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 3,
+          "stepsWith1Exit": 1
+        }
+      ],
+      "features": {
+        "InitialExits": 15,
+        "DeepShips": 24,
+        "CrossAxisRatio": 0.7358490566037735,
+        "CrossRegionRatio": 0.5141509433962265,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 24,
+      "id": "TF_Campaign_024",
+      "pace": "Challenge",
+      "structure": "Layers",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 10,
+      "completeDepth": 16,
+      "threeTraceMeanExits": 5.833333333333333,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 6.208333333333333,
+          "maximumExits": 10,
+          "stepsAtMost2Exits": 2,
+          "stepsWith1Exit": 1
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 5.333333333333333,
+          "maximumExits": 10,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 5.958333333333333,
+          "maximumExits": 10,
+          "stepsAtMost2Exits": 1,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 10,
+        "DeepShips": 30,
+        "CrossAxisRatio": 0.7236842105263158,
+        "CrossRegionRatio": 0.543859649122807,
+        "MaximumInitialUnlock": 1,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 25,
+      "id": "TF_Campaign_025",
+      "pace": "Relief",
+      "structure": "Flow",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 18,
+      "completeDepth": 10,
+      "threeTraceMeanExits": 11.51388888888889,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 10.5,
+          "maximumExits": 18,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 11.375,
+          "maximumExits": 18,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 12.666666666666666,
+          "maximumExits": 19,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 18,
+        "DeepShips": 12,
+        "CrossAxisRatio": 0.6220095693779905,
+        "CrossRegionRatio": 0.48325358851674644,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 4
+      }
+    },
+    {
+      "number": 26,
+      "id": "TF_Campaign_026",
+      "pace": "Regular",
+      "structure": "Crossed",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 15,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 9.881944444444445,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 7.4375,
+          "maximumExits": 16,
+          "stepsAtMost2Exits": 2,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 10.020833333333334,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 12.1875,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 15,
+        "DeepShips": 21,
+        "CrossAxisRatio": 0.6811594202898551,
+        "CrossRegionRatio": 0.5362318840579711,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 27,
+      "id": "TF_Campaign_027",
+      "pace": "Regular",
+      "structure": "LongBridge",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 15,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 10.243055555555555,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 9.416666666666666,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 9.625,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 11.6875,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 15,
+        "DeepShips": 15,
+        "CrossAxisRatio": 0.684931506849315,
+        "CrossRegionRatio": 0.5525114155251142,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 7
+      }
+    },
+    {
+      "number": 28,
+      "id": "TF_Campaign_028",
+      "pace": "Challenge",
+      "structure": "LinkedRegions",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 10,
+      "completeDepth": 17,
+      "threeTraceMeanExits": 6.659722222222222,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 6.645833333333333,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 5,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 6.291666666666667,
+          "maximumExits": 10,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 7.041666666666667,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 10,
+        "DeepShips": 26,
+        "CrossAxisRatio": 0.6978723404255319,
+        "CrossRegionRatio": 0.5106382978723404,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 29,
+      "id": "TF_Campaign_029",
+      "pace": "Regular",
+      "structure": "KeyUnlock",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 12,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 10.569444444444445,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 10.520833333333334,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 7.5,
+          "maximumExits": 12,
+          "stepsAtMost2Exits": 1,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 13.6875,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 12,
+        "DeepShips": 15,
+        "CrossAxisRatio": 0.6538461538461539,
+        "CrossRegionRatio": 0.5213675213675214,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 5
+      }
+    },
+    {
+      "number": 30,
+      "id": "TF_Campaign_030",
+      "pace": "Challenge",
+      "structure": "LongBridge",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 11,
+      "completeDepth": 17,
+      "threeTraceMeanExits": 6.638888888888889,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 6.5625,
+          "maximumExits": 12,
+          "stepsAtMost2Exits": 8,
+          "stepsWith1Exit": 3
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 6.416666666666667,
+          "maximumExits": 12,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 6.9375,
+          "maximumExits": 13,
+          "stepsAtMost2Exits": 5,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 11,
+        "DeepShips": 32,
+        "CrossAxisRatio": 0.7083333333333334,
+        "CrossRegionRatio": 0.48148148148148145,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 8
+      }
+    },
+    {
+      "number": 31,
+      "id": "TF_Campaign_031",
+      "pace": "Relief",
+      "structure": "Flow",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 18,
+      "completeDepth": 10,
+      "threeTraceMeanExits": 11.930555555555555,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 10.5625,
+          "maximumExits": 18,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 11.979166666666666,
+          "maximumExits": 19,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 13.25,
+          "maximumExits": 18,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 18,
+        "DeepShips": 8,
+        "CrossAxisRatio": 0.6954022988505747,
+        "CrossRegionRatio": 0.45977011494252873,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 4
+      }
+    },
+    {
+      "number": 32,
+      "id": "TF_Campaign_032",
+      "pace": "Regular",
+      "structure": "Crossed",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 15,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 8.083333333333334,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 8.958333333333334,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 6.916666666666667,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 5,
+          "stepsWith1Exit": 2
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 8.375,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 1,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 15,
+        "DeepShips": 29,
+        "CrossAxisRatio": 0.6736401673640168,
+        "CrossRegionRatio": 0.5564853556485355,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 5
+      }
+    },
+    {
+      "number": 33,
+      "id": "TF_Campaign_033",
+      "pace": "Regular",
+      "structure": "KeyUnlock",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 15,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 8.23611111111111,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 7.5625,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 3,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 7.604166666666667,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 2,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 9.541666666666666,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 15,
+        "DeepShips": 16,
+        "CrossAxisRatio": 0.6724890829694323,
+        "CrossRegionRatio": 0.5545851528384279,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 34,
+      "id": "TF_Campaign_034",
+      "pace": "Challenge",
+      "structure": "Layers",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 10,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 6.9375,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 6.625,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 5.854166666666667,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 1,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 8.333333333333334,
+          "maximumExits": 12,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 10,
+        "DeepShips": 23,
+        "CrossAxisRatio": 0.7224669603524229,
+        "CrossRegionRatio": 0.5242290748898678,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 35,
+      "id": "TF_Campaign_035",
+      "pace": "Relief",
+      "structure": "Flow",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 17,
+      "completeDepth": 10,
+      "threeTraceMeanExits": 11.354166666666666,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 10.979166666666666,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 12.375,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 10.708333333333334,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 17,
+        "DeepShips": 14,
+        "CrossAxisRatio": 0.6188118811881188,
+        "CrossRegionRatio": 0.5346534653465347,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 3
+      }
+    },
+    {
+      "number": 36,
+      "id": "TF_Campaign_036",
+      "pace": "Regular",
+      "structure": "LinkedRegions",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 14,
+      "completeDepth": 12,
+      "threeTraceMeanExits": 8.152777777777779,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 9.4375,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 2,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 6.979166666666667,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 5,
+          "stepsWith1Exit": 2
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 8.041666666666666,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 14,
+        "DeepShips": 22,
+        "CrossAxisRatio": 0.6455696202531646,
+        "CrossRegionRatio": 0.5822784810126582,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 5
+      }
+    },
+    {
+      "number": 37,
+      "id": "TF_Campaign_037",
+      "pace": "Regular",
+      "structure": "LongBridge",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 15,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 9.208333333333334,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 8.604166666666666,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 8.75,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 10.270833333333334,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 15,
+        "DeepShips": 23,
+        "CrossAxisRatio": 0.7142857142857143,
+        "CrossRegionRatio": 0.5108225108225108,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 8
+      }
+    },
+    {
+      "number": 38,
+      "id": "TF_Campaign_038",
+      "pace": "Challenge",
+      "structure": "KeyUnlock",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 10,
+      "completeDepth": 16,
+      "threeTraceMeanExits": 10.0625,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 11.291666666666666,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 6.583333333333333,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 3,
+          "stepsWith1Exit": 1
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 12.3125,
+          "maximumExits": 16,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 10,
+        "DeepShips": 18,
+        "CrossAxisRatio": 0.7553191489361702,
+        "CrossRegionRatio": 0.4308510638297872,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 5
+      }
+    },
+    {
+      "number": 39,
+      "id": "TF_Campaign_039",
+      "pace": "Regular",
+      "structure": "Crossed",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 15,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 8.395833333333334,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 8.208333333333334,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 7.979166666666667,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 2,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 9,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 15,
+        "DeepShips": 28,
+        "CrossAxisRatio": 0.6470588235294118,
+        "CrossRegionRatio": 0.5339366515837104,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 5
+      }
+    },
+    {
+      "number": 40,
+      "id": "TF_Campaign_040",
+      "pace": "Challenge",
+      "structure": "LongBridge",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 10,
+      "completeDepth": 18,
+      "threeTraceMeanExits": 7.8125,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 8.604166666666666,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 1,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 6.708333333333333,
+          "maximumExits": 10,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 8.125,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 2,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 10,
+        "DeepShips": 31,
+        "CrossAxisRatio": 0.6958333333333333,
+        "CrossRegionRatio": 0.525,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 7
+      }
+    },
+    {
+      "number": 41,
+      "id": "TF_Campaign_041",
+      "pace": "Relief",
+      "structure": "Flow",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 14,
+      "completeDepth": 10,
+      "threeTraceMeanExits": 8.92361111111111,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 7.333333333333333,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 9.916666666666666,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 9.520833333333334,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 14,
+        "DeepShips": 14,
+        "CrossAxisRatio": 0.6454545454545455,
+        "CrossRegionRatio": 0.5409090909090909,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 3
+      }
+    },
+    {
+      "number": 42,
+      "id": "TF_Campaign_042",
+      "pace": "Regular",
+      "structure": "KeyUnlock",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 14,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 9.993055555555555,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 10,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 9.145833333333334,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 10.833333333333334,
+          "maximumExits": 16,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 14,
+        "DeepShips": 12,
+        "CrossAxisRatio": 0.680952380952381,
+        "CrossRegionRatio": 0.49047619047619045,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 5
+      }
+    },
+    {
+      "number": 43,
+      "id": "TF_Campaign_043",
+      "pace": "Regular",
+      "structure": "Layers",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 15,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 8.42361111111111,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 9.5625,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 6.916666666666667,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 8.791666666666666,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 15,
+        "DeepShips": 18,
+        "CrossAxisRatio": 0.6388888888888888,
+        "CrossRegionRatio": 0.44907407407407407,
+        "MaximumInitialUnlock": 1,
+        "BridgingLongShips": 5
+      }
+    },
+    {
+      "number": 44,
+      "id": "TF_Campaign_044",
+      "pace": "Challenge",
+      "structure": "LinkedRegions",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 11,
+      "completeDepth": 17,
+      "threeTraceMeanExits": 8.354166666666666,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 6.8125,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 2,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 10.229166666666666,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 8.020833333333334,
+          "maximumExits": 12,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 11,
+        "DeepShips": 25,
+        "CrossAxisRatio": 0.7009345794392523,
+        "CrossRegionRatio": 0.5420560747663551,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 45,
+      "id": "TF_Campaign_045",
+      "pace": "Relief",
+      "structure": "Flow",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 18,
+      "completeDepth": 9,
+      "threeTraceMeanExits": 12.034722222222223,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 14.145833333333334,
+          "maximumExits": 20,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 11.5,
+          "maximumExits": 18,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 10.458333333333334,
+          "maximumExits": 19,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 18,
+        "DeepShips": 8,
+        "CrossAxisRatio": 0.6486486486486487,
+        "CrossRegionRatio": 0.5315315315315315,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 4
+      }
+    },
+    {
+      "number": 46,
+      "id": "TF_Campaign_046",
+      "pace": "Regular",
+      "structure": "LongBridge",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 15,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 8.097222222222221,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 8.125,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 3,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 8.375,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 1,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 7.791666666666667,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 4,
+          "stepsWith1Exit": 1
+        }
+      ],
+      "features": {
+        "InitialExits": 15,
+        "DeepShips": 25,
+        "CrossAxisRatio": 0.7121771217712177,
+        "CrossRegionRatio": 0.5387453874538746,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 7
+      }
+    },
+    {
+      "number": 47,
+      "id": "TF_Campaign_047",
+      "pace": "Regular",
+      "structure": "Crossed",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 14,
+      "completeDepth": 11,
+      "threeTraceMeanExits": 9.75,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 11,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 8.125,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 10.125,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 14,
+        "DeepShips": 16,
+        "CrossAxisRatio": 0.6757990867579908,
+        "CrossRegionRatio": 0.5205479452054794,
+        "MaximumInitialUnlock": 4,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 48,
+      "id": "TF_Campaign_048",
+      "pace": "Challenge",
+      "structure": "Layers",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 11,
+      "completeDepth": 15,
+      "threeTraceMeanExits": 8.04861111111111,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 5.083333333333333,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 2,
+          "stepsWith1Exit": 1
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 10.354166666666666,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 8.708333333333334,
+          "maximumExits": 13,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 11,
+        "DeepShips": 20,
+        "CrossAxisRatio": 0.7307692307692307,
+        "CrossRegionRatio": 0.5,
+        "MaximumInitialUnlock": 4,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 49,
+      "id": "TF_Campaign_049",
+      "pace": "Regular",
+      "structure": "KeyUnlock",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 13,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 8.493055555555555,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 7.75,
+          "maximumExits": 13,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 9.1875,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 8.541666666666666,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 13,
+        "DeepShips": 23,
+        "CrossAxisRatio": 0.6844660194174758,
+        "CrossRegionRatio": 0.49514563106796117,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 50,
+      "id": "TF_Campaign_050",
+      "pace": "Challenge",
+      "structure": "Crossed",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 11,
+      "completeDepth": 18,
+      "threeTraceMeanExits": 7.041666666666666,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 5.958333333333333,
+          "maximumExits": 13,
+          "stepsAtMost2Exits": 7,
+          "stepsWith1Exit": 2
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 6.5,
+          "maximumExits": 12,
+          "stepsAtMost2Exits": 1,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 8.666666666666666,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 11,
+        "DeepShips": 28,
+        "CrossAxisRatio": 0.7063829787234043,
+        "CrossRegionRatio": 0.4978723404255319,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 3
+      }
+    },
+    {
+      "number": 51,
+      "id": "TF_Campaign_051",
+      "pace": "Relief",
+      "structure": "Flow",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 18,
+      "completeDepth": 10,
+      "threeTraceMeanExits": 11.659722222222223,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 11.645833333333334,
+          "maximumExits": 18,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 11.958333333333334,
+          "maximumExits": 18,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 11.375,
+          "maximumExits": 18,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 18,
+        "DeepShips": 13,
+        "CrossAxisRatio": 0.6223404255319149,
+        "CrossRegionRatio": 0.5319148936170213,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 3
+      }
+    },
+    {
+      "number": 52,
+      "id": "TF_Campaign_052",
+      "pace": "Regular",
+      "structure": "Layers",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 15,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 8.993055555555555,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 8.375,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 9.208333333333334,
+          "maximumExits": 16,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 9.395833333333334,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 15,
+        "DeepShips": 21,
+        "CrossAxisRatio": 0.6221198156682027,
+        "CrossRegionRatio": 0.5069124423963134,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 5
+      }
+    },
+    {
+      "number": 53,
+      "id": "TF_Campaign_053",
+      "pace": "Regular",
+      "structure": "LinkedRegions",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 15,
+      "completeDepth": 12,
+      "threeTraceMeanExits": 8.5,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 8.5,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 9.041666666666666,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 7.958333333333333,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 15,
+        "DeepShips": 18,
+        "CrossAxisRatio": 0.6731707317073171,
+        "CrossRegionRatio": 0.5317073170731708,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 5
+      }
+    },
+    {
+      "number": 54,
+      "id": "TF_Campaign_054",
+      "pace": "Challenge",
+      "structure": "LongBridge",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 11,
+      "completeDepth": 18,
+      "threeTraceMeanExits": 7.590277777777778,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 6.895833333333333,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 6.854166666666667,
+          "maximumExits": 13,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 9.020833333333334,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 11,
+        "DeepShips": 24,
+        "CrossAxisRatio": 0.7333333333333333,
+        "CrossRegionRatio": 0.5333333333333333,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 8
+      }
+    },
+    {
+      "number": 55,
+      "id": "TF_Campaign_055",
+      "pace": "Relief",
+      "structure": "Flow",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 17,
+      "completeDepth": 10,
+      "threeTraceMeanExits": 11.180555555555555,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 8.8125,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 12.041666666666666,
+          "maximumExits": 18,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 12.6875,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 17,
+        "DeepShips": 12,
+        "CrossAxisRatio": 0.6199095022624435,
+        "CrossRegionRatio": 0.5203619909502263,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 3
+      }
+    },
+    {
+      "number": 56,
+      "id": "TF_Campaign_056",
+      "pace": "Regular",
+      "structure": "Crossed",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 15,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 7.576388888888889,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 7.5,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 7.6875,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 5,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 7.541666666666667,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 2,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 15,
+        "DeepShips": 31,
+        "CrossAxisRatio": 0.6926829268292682,
+        "CrossRegionRatio": 0.5317073170731708,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 4
+      }
+    },
+    {
+      "number": 57,
+      "id": "TF_Campaign_057",
+      "pace": "Regular",
+      "structure": "KeyUnlock",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 15,
+      "completeDepth": 12,
+      "threeTraceMeanExits": 9.70138888888889,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 8.4375,
+          "maximumExits": 16,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 10.333333333333334,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 10.333333333333334,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 15,
+        "DeepShips": 21,
+        "CrossAxisRatio": 0.6941747572815534,
+        "CrossRegionRatio": 0.48058252427184467,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 4
+      }
+    },
+    {
+      "number": 58,
+      "id": "TF_Campaign_058",
+      "pace": "Challenge",
+      "structure": "LinkedRegions",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 11,
+      "completeDepth": 18,
+      "threeTraceMeanExits": 7.25,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 6.3125,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 2,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 7.041666666666667,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 2,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 8.395833333333334,
+          "maximumExits": 13,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 11,
+        "DeepShips": 23,
+        "CrossAxisRatio": 0.6919191919191919,
+        "CrossRegionRatio": 0.4797979797979798,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 5
+      }
+    },
+    {
+      "number": 59,
+      "id": "TF_Campaign_059",
+      "pace": "Regular",
+      "structure": "Layers",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 14,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 9.0,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 9.916666666666666,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 6.791666666666667,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 4,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 10.291666666666666,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 14,
+        "DeepShips": 20,
+        "CrossAxisRatio": 0.6965811965811965,
+        "CrossRegionRatio": 0.5299145299145299,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 5
+      }
+    },
+    {
+      "number": 60,
+      "id": "TF_Campaign_060",
+      "pace": "Challenge",
+      "structure": "KeyUnlock",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 11,
+      "completeDepth": 15,
+      "threeTraceMeanExits": 6.506944444444445,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 5.791666666666667,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 7,
+          "stepsWith1Exit": 1
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 6.4375,
+          "maximumExits": 12,
+          "stepsAtMost2Exits": 1,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 7.291666666666667,
+          "maximumExits": 12,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 11,
+        "DeepShips": 28,
+        "CrossAxisRatio": 0.7027027027027027,
+        "CrossRegionRatio": 0.5540540540540541,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 61,
+      "id": "TF_Campaign_061",
+      "pace": "Relief",
+      "structure": "Flow",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 17,
+      "completeDepth": 10,
+      "threeTraceMeanExits": 11.256944444444445,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 13.0625,
+          "maximumExits": 20,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 6.875,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 1,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 13.833333333333334,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 17,
+        "DeepShips": 8,
+        "CrossAxisRatio": 0.6863905325443787,
+        "CrossRegionRatio": 0.514792899408284,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 3
+      }
+    },
+    {
+      "number": 62,
+      "id": "TF_Campaign_062",
+      "pace": "Regular",
+      "structure": "LinkedRegions",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 14,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 8.180555555555555,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 7.541666666666667,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 8.520833333333334,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 1,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 8.479166666666666,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 14,
+        "DeepShips": 25,
+        "CrossAxisRatio": 0.6981981981981982,
+        "CrossRegionRatio": 0.527027027027027,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 4
+      }
+    },
+    {
+      "number": 63,
+      "id": "TF_Campaign_063",
+      "pace": "Regular",
+      "structure": "LongBridge",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 14,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 9.805555555555555,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 11.3125,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 8.270833333333334,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 4,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 9.833333333333334,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 1,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 14,
+        "DeepShips": 25,
+        "CrossAxisRatio": 0.6698113207547169,
+        "CrossRegionRatio": 0.47641509433962265,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 8
+      }
+    },
+    {
+      "number": 64,
+      "id": "TF_Campaign_064",
+      "pace": "Challenge",
+      "structure": "Crossed",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 10,
+      "completeDepth": 18,
+      "threeTraceMeanExits": 6.763888888888888,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 6.458333333333333,
+          "maximumExits": 10,
+          "stepsAtMost2Exits": 1,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 6.375,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 7.458333333333333,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 10,
+        "DeepShips": 29,
+        "CrossAxisRatio": 0.7222222222222222,
+        "CrossRegionRatio": 0.5811965811965812,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 65,
+      "id": "TF_Campaign_065",
+      "pace": "Relief",
+      "structure": "Flow",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 18,
+      "completeDepth": 10,
+      "threeTraceMeanExits": 11.381944444444445,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 11.916666666666666,
+          "maximumExits": 18,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 10.875,
+          "maximumExits": 18,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 11.354166666666666,
+          "maximumExits": 18,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 18,
+        "DeepShips": 11,
+        "CrossAxisRatio": 0.665158371040724,
+        "CrossRegionRatio": 0.5339366515837104,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 3
+      }
+    },
+    {
+      "number": 66,
+      "id": "TF_Campaign_066",
+      "pace": "Regular",
+      "structure": "KeyUnlock",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 15,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 9.42361111111111,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 9.291666666666666,
+          "maximumExits": 16,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 9.083333333333334,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 9.895833333333334,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 15,
+        "DeepShips": 19,
+        "CrossAxisRatio": 0.6455026455026455,
+        "CrossRegionRatio": 0.5608465608465608,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 4
+      }
+    },
+    {
+      "number": 67,
+      "id": "TF_Campaign_067",
+      "pace": "Regular",
+      "structure": "Layers",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 15,
+      "completeDepth": 11,
+      "threeTraceMeanExits": 10.125,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 9.479166666666666,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 9.9375,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 10.958333333333334,
+          "maximumExits": 16,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 15,
+        "DeepShips": 14,
+        "CrossAxisRatio": 0.7297297297297297,
+        "CrossRegionRatio": 0.5081081081081081,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 68,
+      "id": "TF_Campaign_068",
+      "pace": "Challenge",
+      "structure": "LongBridge",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 11,
+      "completeDepth": 17,
+      "threeTraceMeanExits": 6.375,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 4.770833333333333,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 13,
+          "stepsWith1Exit": 1
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 7.375,
+          "maximumExits": 13,
+          "stepsAtMost2Exits": 2,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 6.979166666666667,
+          "maximumExits": 12,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 11,
+        "DeepShips": 30,
+        "CrossAxisRatio": 0.7393364928909952,
+        "CrossRegionRatio": 0.5023696682464455,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 8
+      }
+    },
+    {
+      "number": 69,
+      "id": "TF_Campaign_069",
+      "pace": "Regular",
+      "structure": "LinkedRegions",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 15,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 7.652777777777778,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 7.75,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 8.041666666666666,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 7.166666666666667,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 15,
+        "DeepShips": 30,
+        "CrossAxisRatio": 0.5875,
+        "CrossRegionRatio": 0.5375,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 4
+      }
+    },
+    {
+      "number": 70,
+      "id": "TF_Campaign_070",
+      "pace": "Challenge",
+      "structure": "Layers",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 11,
+      "completeDepth": 17,
+      "threeTraceMeanExits": 6.8125,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 6.9375,
+          "maximumExits": 12,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 6.416666666666667,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 7.083333333333333,
+          "maximumExits": 12,
+          "stepsAtMost2Exits": 1,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 11,
+        "DeepShips": 32,
+        "CrossAxisRatio": 0.6893617021276596,
+        "CrossRegionRatio": 0.548936170212766,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 71,
+      "id": "TF_Campaign_071",
+      "pace": "Relief",
+      "structure": "Flow",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 18,
+      "completeDepth": 10,
+      "threeTraceMeanExits": 11.243055555555555,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 10.854166666666666,
+          "maximumExits": 19,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 11.229166666666666,
+          "maximumExits": 18,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 11.645833333333334,
+          "maximumExits": 19,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 18,
+        "DeepShips": 5,
+        "CrossAxisRatio": 0.7333333333333333,
+        "CrossRegionRatio": 0.4888888888888889,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 3
+      }
+    },
+    {
+      "number": 72,
+      "id": "TF_Campaign_072",
+      "pace": "Regular",
+      "structure": "LongBridge",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 15,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 8.57638888888889,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 8.625,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 7.770833333333333,
+          "maximumExits": 16,
+          "stepsAtMost2Exits": 3,
+          "stepsWith1Exit": 1
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 9.333333333333334,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 15,
+        "DeepShips": 14,
+        "CrossAxisRatio": 0.7789473684210526,
+        "CrossRegionRatio": 0.48947368421052634,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 7
+      }
+    },
+    {
+      "number": 73,
+      "id": "TF_Campaign_073",
+      "pace": "Regular",
+      "structure": "Crossed",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 15,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 7.354166666666667,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 6.666666666666667,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 1,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 7.541666666666667,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 3,
+          "stepsWith1Exit": 1
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 7.854166666666667,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 2,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 15,
+        "DeepShips": 29,
+        "CrossAxisRatio": 0.6533333333333333,
+        "CrossRegionRatio": 0.56,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 5
+      }
+    },
+    {
+      "number": 74,
+      "id": "TF_Campaign_074",
+      "pace": "Challenge",
+      "structure": "KeyUnlock",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 11,
+      "completeDepth": 18,
+      "threeTraceMeanExits": 7.083333333333334,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 8.395833333333334,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 5.5,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 6,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 7.354166666666667,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 11,
+        "DeepShips": 29,
+        "CrossAxisRatio": 0.614406779661017,
+        "CrossRegionRatio": 0.5254237288135594,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 75,
+      "id": "TF_Campaign_075",
+      "pace": "Relief",
+      "structure": "Flow",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 18,
+      "completeDepth": 10,
+      "threeTraceMeanExits": 9.51388888888889,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 8.25,
+          "maximumExits": 18,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 9.416666666666666,
+          "maximumExits": 19,
+          "stepsAtMost2Exits": 1,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 10.875,
+          "maximumExits": 18,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 18,
+        "DeepShips": 18,
+        "CrossAxisRatio": 0.6970954356846473,
+        "CrossRegionRatio": 0.5062240663900415,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 4
+      }
+    },
+    {
+      "number": 76,
+      "id": "TF_Campaign_076",
+      "pace": "Regular",
+      "structure": "Layers",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 14,
+      "completeDepth": 12,
+      "threeTraceMeanExits": 8.23611111111111,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 7.875,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 8.270833333333334,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 8.5625,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 14,
+        "DeepShips": 17,
+        "CrossAxisRatio": 0.6829268292682927,
+        "CrossRegionRatio": 0.4878048780487805,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 5
+      }
+    },
+    {
+      "number": 77,
+      "id": "TF_Campaign_077",
+      "pace": "Regular",
+      "structure": "LinkedRegions",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 13,
+      "completeDepth": 12,
+      "threeTraceMeanExits": 7.451388888888888,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 7.270833333333333,
+          "maximumExits": 13,
+          "stepsAtMost2Exits": 3,
+          "stepsWith1Exit": 1
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 7.270833333333333,
+          "maximumExits": 13,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 7.8125,
+          "maximumExits": 13,
+          "stepsAtMost2Exits": 1,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 13,
+        "DeepShips": 23,
+        "CrossAxisRatio": 0.7017543859649122,
+        "CrossRegionRatio": 0.5263157894736842,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 78,
+      "id": "TF_Campaign_078",
+      "pace": "Challenge",
+      "structure": "Crossed",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 10,
+      "completeDepth": 16,
+      "threeTraceMeanExits": 7.236111111111111,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 7.166666666666667,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 1,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 7.645833333333333,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 6.895833333333333,
+          "maximumExits": 10,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 10,
+        "DeepShips": 25,
+        "CrossAxisRatio": 0.6839622641509434,
+        "CrossRegionRatio": 0.5047169811320755,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 79,
+      "id": "TF_Campaign_079",
+      "pace": "Regular",
+      "structure": "LongBridge",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 15,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 8.472222222222221,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 7.645833333333333,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 1,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 9.375,
+          "maximumExits": 18,
+          "stepsAtMost2Exits": 4,
+          "stepsWith1Exit": 1
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 8.395833333333334,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 15,
+        "DeepShips": 12,
+        "CrossAxisRatio": 0.6571428571428571,
+        "CrossRegionRatio": 0.5047619047619047,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 7
+      }
+    },
+    {
+      "number": 80,
+      "id": "TF_Campaign_080",
+      "pace": "Challenge",
+      "structure": "LinkedRegions",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 11,
+      "completeDepth": 16,
+      "threeTraceMeanExits": 8.847222222222221,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 6.541666666666667,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 4,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 10.375,
+          "maximumExits": 13,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 9.625,
+          "maximumExits": 13,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 11,
+        "DeepShips": 23,
+        "CrossAxisRatio": 0.663594470046083,
+        "CrossRegionRatio": 0.5023041474654378,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 81,
+      "id": "TF_Campaign_081",
+      "pace": "Relief",
+      "structure": "Flow",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 17,
+      "completeDepth": 10,
+      "threeTraceMeanExits": 9.88888888888889,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 9.770833333333334,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 9.895833333333334,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 10,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 17,
+        "DeepShips": 12,
+        "CrossAxisRatio": 0.6601941747572816,
+        "CrossRegionRatio": 0.5,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 4
+      }
+    },
+    {
+      "number": 82,
+      "id": "TF_Campaign_082",
+      "pace": "Regular",
+      "structure": "Crossed",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 12,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 7.041666666666667,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 5.479166666666667,
+          "maximumExits": 12,
+          "stepsAtMost2Exits": 3,
+          "stepsWith1Exit": 1
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 7.791666666666667,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 7.854166666666667,
+          "maximumExits": 12,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 12,
+        "DeepShips": 23,
+        "CrossAxisRatio": 0.7103174603174603,
+        "CrossRegionRatio": 0.5238095238095238,
+        "MaximumInitialUnlock": 4,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 83,
+      "id": "TF_Campaign_083",
+      "pace": "Regular",
+      "structure": "KeyUnlock",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 15,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 11.347222222222221,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 9,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 11.25,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 13.791666666666666,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 15,
+        "DeepShips": 15,
+        "CrossAxisRatio": 0.5963302752293578,
+        "CrossRegionRatio": 0.5504587155963303,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 84,
+      "id": "TF_Campaign_084",
+      "pace": "Challenge",
+      "structure": "Layers",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 11,
+      "completeDepth": 18,
+      "threeTraceMeanExits": 6.548611111111112,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 7.479166666666667,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 2,
+          "stepsWith1Exit": 1
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 5.666666666666667,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 7,
+          "stepsWith1Exit": 3
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 6.5,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 11,
+        "DeepShips": 32,
+        "CrossAxisRatio": 0.6746031746031746,
+        "CrossRegionRatio": 0.5396825396825397,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 85,
+      "id": "TF_Campaign_085",
+      "pace": "Relief",
+      "structure": "Flow",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 17,
+      "completeDepth": 10,
+      "threeTraceMeanExits": 10.847222222222221,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 10.729166666666666,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 10.104166666666666,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 11.708333333333334,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 17,
+        "DeepShips": 13,
+        "CrossAxisRatio": 0.6764705882352942,
+        "CrossRegionRatio": 0.5245098039215687,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 4
+      }
+    },
+    {
+      "number": 86,
+      "id": "TF_Campaign_086",
+      "pace": "Regular",
+      "structure": "LinkedRegions",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 14,
+      "completeDepth": 12,
+      "threeTraceMeanExits": 7.868055555555555,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 7.25,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 2,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 8.25,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 8.104166666666666,
+          "maximumExits": 14,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 14,
+        "DeepShips": 20,
+        "CrossAxisRatio": 0.6832579185520362,
+        "CrossRegionRatio": 0.49321266968325794,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 5
+      }
+    },
+    {
+      "number": 87,
+      "id": "TF_Campaign_087",
+      "pace": "Regular",
+      "structure": "LongBridge",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 15,
+      "completeDepth": 11,
+      "threeTraceMeanExits": 9.020833333333334,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 7.729166666666667,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 2,
+          "stepsWith1Exit": 1
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 9.4375,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 9.895833333333334,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 15,
+        "DeepShips": 12,
+        "CrossAxisRatio": 0.6401673640167364,
+        "CrossRegionRatio": 0.5146443514644351,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 7
+      }
+    },
+    {
+      "number": 88,
+      "id": "TF_Campaign_088",
+      "pace": "Challenge",
+      "structure": "KeyUnlock",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 11,
+      "completeDepth": 15,
+      "threeTraceMeanExits": 7.708333333333334,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 6.416666666666667,
+          "maximumExits": 12,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 9.208333333333334,
+          "maximumExits": 12,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 7.5,
+          "maximumExits": 12,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 11,
+        "DeepShips": 27,
+        "CrossAxisRatio": 0.7117117117117117,
+        "CrossRegionRatio": 0.5045045045045045,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 5
+      }
+    },
+    {
+      "number": 89,
+      "id": "TF_Campaign_089",
+      "pace": "Regular",
+      "structure": "Crossed",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 15,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 9.597222222222223,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 8.875,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 9.020833333333334,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 4,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 10.895833333333334,
+          "maximumExits": 16,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 15,
+        "DeepShips": 17,
+        "CrossAxisRatio": 0.5874439461883408,
+        "CrossRegionRatio": 0.5112107623318386,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 90,
+      "id": "TF_Campaign_090",
+      "pace": "Challenge",
+      "structure": "LongBridge",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 7,
+      "completeDepth": 18,
+      "threeTraceMeanExits": 5.347222222222222,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 4.458333333333333,
+          "maximumExits": 7,
+          "stepsAtMost2Exits": 1,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 5.916666666666667,
+          "maximumExits": 10,
+          "stepsAtMost2Exits": 6,
+          "stepsWith1Exit": 3
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 5.666666666666667,
+          "maximumExits": 8,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 7,
+        "DeepShips": 29,
+        "CrossAxisRatio": 0.7161016949152542,
+        "CrossRegionRatio": 0.5296610169491526,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 8
+      }
+    },
+    {
+      "number": 91,
+      "id": "TF_Campaign_091",
+      "pace": "Relief",
+      "structure": "Flow",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 17,
+      "completeDepth": 9,
+      "threeTraceMeanExits": 12.041666666666668,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 10.458333333333334,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 11.145833333333334,
+          "maximumExits": 18,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 14.520833333333334,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 17,
+        "DeepShips": 7,
+        "CrossAxisRatio": 0.7120418848167539,
+        "CrossRegionRatio": 0.450261780104712,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 3
+      }
+    },
+    {
+      "number": 92,
+      "id": "TF_Campaign_092",
+      "pace": "Regular",
+      "structure": "KeyUnlock",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 15,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 7.979166666666667,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 7.229166666666667,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 9,
+          "stepsWith1Exit": 3
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 7.5,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 2,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 9.208333333333334,
+          "maximumExits": 16,
+          "stepsAtMost2Exits": 5,
+          "stepsWith1Exit": 3
+        }
+      ],
+      "features": {
+        "InitialExits": 15,
+        "DeepShips": 29,
+        "CrossAxisRatio": 0.6406926406926406,
+        "CrossRegionRatio": 0.47186147186147187,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 5
+      }
+    },
+    {
+      "number": 93,
+      "id": "TF_Campaign_093",
+      "pace": "Regular",
+      "structure": "Layers",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 15,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 9.090277777777779,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 7.979166666666667,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 9.229166666666666,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 2,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 10.0625,
+          "maximumExits": 17,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 15,
+        "DeepShips": 21,
+        "CrossAxisRatio": 0.6886792452830188,
+        "CrossRegionRatio": 0.46226415094339623,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 4
+      }
+    },
+    {
+      "number": 94,
+      "id": "TF_Campaign_094",
+      "pace": "Challenge",
+      "structure": "LinkedRegions",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 11,
+      "completeDepth": 17,
+      "threeTraceMeanExits": 7.270833333333333,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 5.895833333333333,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 3,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 8.291666666666666,
+          "maximumExits": 13,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 7.625,
+          "maximumExits": 13,
+          "stepsAtMost2Exits": 7,
+          "stepsWith1Exit": 3
+        }
+      ],
+      "features": {
+        "InitialExits": 11,
+        "DeepShips": 34,
+        "CrossAxisRatio": 0.680672268907563,
+        "CrossRegionRatio": 0.5042016806722689,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 95,
+      "id": "TF_Campaign_095",
+      "pace": "Relief",
+      "structure": "Flow",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 18,
+      "completeDepth": 10,
+      "threeTraceMeanExits": 10.993055555555555,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 12.145833333333334,
+          "maximumExits": 18,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 9.291666666666666,
+          "maximumExits": 18,
+          "stepsAtMost2Exits": 1,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 11.541666666666666,
+          "maximumExits": 18,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 18,
+        "DeepShips": 9,
+        "CrossAxisRatio": 0.680628272251309,
+        "CrossRegionRatio": 0.5235602094240838,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 4
+      }
+    },
+    {
+      "number": 96,
+      "id": "TF_Campaign_096",
+      "pace": "Regular",
+      "structure": "LongBridge",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 15,
+      "completeDepth": 13,
+      "threeTraceMeanExits": 9.5,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 9.395833333333334,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 8.5625,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 10.541666666666666,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 15,
+        "DeepShips": 21,
+        "CrossAxisRatio": 0.6435185185185185,
+        "CrossRegionRatio": 0.49074074074074076,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 5
+      }
+    },
+    {
+      "number": 97,
+      "id": "TF_Campaign_097",
+      "pace": "Regular",
+      "structure": "Crossed",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 15,
+      "completeDepth": 12,
+      "threeTraceMeanExits": 10.034722222222221,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 12.229166666666666,
+          "maximumExits": 18,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 7.0625,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 5,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 10.8125,
+          "maximumExits": 16,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 15,
+        "DeepShips": 24,
+        "CrossAxisRatio": 0.6540284360189573,
+        "CrossRegionRatio": 0.5071090047393365,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 98,
+      "id": "TF_Campaign_098",
+      "pace": "Challenge",
+      "structure": "Layers",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 11,
+      "completeDepth": 18,
+      "threeTraceMeanExits": 6.430555555555555,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 5.354166666666667,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 2,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 7.166666666666667,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 6.770833333333333,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 2,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 11,
+        "DeepShips": 31,
+        "CrossAxisRatio": 0.7100840336134454,
+        "CrossRegionRatio": 0.5210084033613446,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 6
+      }
+    },
+    {
+      "number": 99,
+      "id": "TF_Campaign_099",
+      "pace": "Regular",
+      "structure": "KeyUnlock",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 13,
+      "completeDepth": 12,
+      "threeTraceMeanExits": 8.375,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 7.208333333333333,
+          "maximumExits": 13,
+          "stepsAtMost2Exits": 1,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 8.833333333333334,
+          "maximumExits": 15,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 9.083333333333334,
+          "maximumExits": 13,
+          "stepsAtMost2Exits": 0,
+          "stepsWith1Exit": 0
+        }
+      ],
+      "features": {
+        "InitialExits": 13,
+        "DeepShips": 15,
+        "CrossAxisRatio": 0.665158371040724,
+        "CrossRegionRatio": 0.49321266968325794,
+        "MaximumInitialUnlock": 3,
+        "BridgingLongShips": 4
+      }
+    },
+    {
+      "number": 100,
+      "id": "TF_Campaign_100",
+      "pace": "Challenge",
+      "structure": "Crossed",
+      "ships": 80,
+      "solutionSteps": 80,
+      "partialStepsInSavedProof": 0,
+      "initialExits": 11,
+      "completeDepth": 17,
+      "threeTraceMeanExits": 6.847222222222222,
+      "traces": [
+        {
+          "strategy": "solver-ascending",
+          "prefixSteps": 48,
+          "meanExits": 5.375,
+          "maximumExits": 11,
+          "stepsAtMost2Exits": 7,
+          "stepsWith1Exit": 2
+        },
+        {
+          "strategy": "construction-descending",
+          "prefixSteps": 48,
+          "meanExits": 7.375,
+          "maximumExits": 13,
+          "stepsAtMost2Exits": 2,
+          "stepsWith1Exit": 0
+        },
+        {
+          "strategy": "seeded-exits",
+          "prefixSteps": 48,
+          "meanExits": 7.791666666666667,
+          "maximumExits": 12,
+          "stepsAtMost2Exits": 4,
+          "stepsWith1Exit": 1
+        }
+      ],
+      "features": {
+        "InitialExits": 11,
+        "DeepShips": 30,
+        "CrossAxisRatio": 0.6456692913385826,
+        "CrossRegionRatio": 0.5236220472440944,
+        "MaximumInitialUnlock": 2,
+        "BridgingLongShips": 6
+      }
+    }
+  ],
+  "assetChecks": [
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/LevelPrototypes/Phase5R_TenLevelCandidates/P5R_Ten_001.json",
+      "sha256": "40E118D31759144861A9CDB1766110C21C4C72F97D9EAD5FC499AA6B475C5267"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/LevelPrototypes/Phase5R_TenLevelCandidates/P5R_Ten_001.solution.json",
+      "sha256": "098CAD2ABD07470613892B8C80C0BEB4311522A3701189C3C59ECFD4C2D0C9EE"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/LevelPrototypes/Phase5R_TenLevelCandidates/P5R_Ten_002.json",
+      "sha256": "9D9768870A1F942FF77A1133E8A07BF24E0E6D2FBC23C3175731A08626E5F81A"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/LevelPrototypes/Phase5R_TenLevelCandidates/P5R_Ten_002.solution.json",
+      "sha256": "DEB68EB886F1B6A9AF2F5C2DD7CF450B86B52D322EDEEE13C416AFAE046708C0"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/LevelPrototypes/Phase5R_TenLevelCandidates/P5R_Ten_003.json",
+      "sha256": "5FADA042FE0D0172062AC2447CFCA0F6A849208C5D43B725D7F3845B0AF9160F"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/LevelPrototypes/Phase5R_TenLevelCandidates/P5R_Ten_003.solution.json",
+      "sha256": "59213606395BB686915D295CE08E3B3C0FB815C2E1C377E439B0AA20C520DBAF"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/LevelPrototypes/Phase5R_TenLevelCandidates/P5R_Ten_004.json",
+      "sha256": "1DA62F7F77995C3E20390B7445901AEBD02E8AE05E74408CB0D021C9D050F0FD"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/LevelPrototypes/Phase5R_TenLevelCandidates/P5R_Ten_004.solution.json",
+      "sha256": "8C12CB1F17EF71908789ED33069C850AC6A6202579BA9BB6C32AECDC95056C2D"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/LevelPrototypes/Phase5R_TenLevelCandidates/P5R_Ten_005.json",
+      "sha256": "81A8725329A9301B575B184FC3C0EF6E4CD1562A3564EA2D2339766CC14443FC"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/LevelPrototypes/Phase5R_TenLevelCandidates/P5R_Ten_005.solution.json",
+      "sha256": "8D67550987D84F7126DEB0C8C23755E6EDAF570556C5DD470ABB3673B7C6BAA7"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/LevelPrototypes/Phase5R_TenLevelCandidates/P5R_Ten_006.json",
+      "sha256": "D25330BC24538F6F7B39C738ACB584D25C3433930B2FF35EE81ABFA9E46E53C3"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/LevelPrototypes/Phase5R_TenLevelCandidates/P5R_Ten_006.solution.json",
+      "sha256": "9E5C3B2356199524B9E1DB2C3B28EFAFBDB575F95B6AC3512D9D0B8FD98D3545"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/LevelPrototypes/Phase5R_TenLevelCandidates/P5R_Ten_007.json",
+      "sha256": "7BF5E511E69E937FB3351483A203E6C9FD025B0A07F4A7B71BBF80D096B9FFDB"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/LevelPrototypes/Phase5R_TenLevelCandidates/P5R_Ten_007.solution.json",
+      "sha256": "44F3014A292B2280A468B14FED81951044F9B670E95D04646D6946F59EEA1B17"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/LevelPrototypes/Phase5R_TenLevelCandidates/P5R_Ten_008.json",
+      "sha256": "365133DE3B20E3E0515F6711994D268C97ABF650F19261D2EEFCB0CD10EC2415"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/LevelPrototypes/Phase5R_TenLevelCandidates/P5R_Ten_008.solution.json",
+      "sha256": "1AB68013958E11AC137D5D2C3BC6A542FCEE531350A0E7203CEF70B1CE38BF75"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/LevelPrototypes/Phase5R_TenLevelCandidates/P5R_Ten_009.json",
+      "sha256": "8FBEF52A48063D03AB184761840734ACCFF69DEBCD02D5C283530E4F2B86B257"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/LevelPrototypes/Phase5R_TenLevelCandidates/P5R_Ten_009.solution.json",
+      "sha256": "0F85C622BE597995B1B8C1D0EDACC42B369CB84A1052FA5B3548509EA5EC2B87"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/LevelPrototypes/Phase5R_TenLevelCandidates/P5R_Ten_010.json",
+      "sha256": "38A7D234C02EFCD73A3B9E5F48B80DAC45C0E4443DF6F9D66B217A940B8ECDC1"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/LevelPrototypes/Phase5R_TenLevelCandidates/P5R_Ten_010.solution.json",
+      "sha256": "C3C7783B9F7F48D6D9FA3A99EF769FCB84B365DA35607EA191F8A6E966A57F74"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_011.json",
+      "sha256": "E7EAE286A8579234F022BC31F8BADBDF5527E15B46768A7602520E36E9090F4F"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_011.solution.json",
+      "sha256": "5883FCA724DA1202B433F15D0A4CB3A67A7663D4A903F5C6D2B8E12C949A79E2"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_012.json",
+      "sha256": "1E883549171945B679EE1E52029C7C3C84213689228E52324529F52103038E03"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_012.solution.json",
+      "sha256": "581E355AEC34A2CA48E7638E18D89BB5528301E742D7D6E905F0A406150F578D"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_013.json",
+      "sha256": "BBB4F14B5BC88CDECA70368C2011360C4129648E1D9AFA055C424847287A03B8"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_013.solution.json",
+      "sha256": "E3406E4119B1E6AE4ED93C1B61D711749EDF14502F789A1872C687C5BD3A0902"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_014.json",
+      "sha256": "53064D44760E6074D5D1B3A9912EC326946928C1AB90DB1973CE57024892F7BE"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_014.solution.json",
+      "sha256": "12D113848F98C9FC56857F1ACD3172918D2EFAA67B9E26C50257580621F9AB7F"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_015.json",
+      "sha256": "56E4E9ED4674D45725D736AF95FD3635B7928F07B020FCB25757474BC9BFD748"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_015.solution.json",
+      "sha256": "691B868C265B92E3C19AAD25E07BDF9E7CBED33A8CF5CB7335C24C06FEAD13C3"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_016.json",
+      "sha256": "0EA4B38BFC247133F4CD960C677B9140B44EFE011148F008DBDA1B96BA8B90AF"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_016.solution.json",
+      "sha256": "85E00681564A21C43C4CD630274DA0157A870AD20722814682C987D4C482E9BA"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_017.json",
+      "sha256": "6FEADB40955430A1AEE230EE783FDFCE14D8C0C42CFC9E9F7924B26F62D5B18D"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_017.solution.json",
+      "sha256": "F60F3EF5DF25ED2A5A05E7A23481BE7EF45E4A14A3D26E3B6329AAC635B4BE56"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_018.json",
+      "sha256": "0424178DC6B1D8BC38CB001DBDD90C627B9E00C8EC2EB31E39EDFA80E1CDC8C0"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_018.solution.json",
+      "sha256": "53B3E05624BC0A8FE6ED3A8FE0E1BA23B4A1806C497C5EF212EF432C35151CAD"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_019.json",
+      "sha256": "71078E2083E61537E1D03132FF604B60B8F6C8C3572C2B4D6C7C907DECC67A9A"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_019.solution.json",
+      "sha256": "A5FF759F4439B2F57FB93B28FCCD40C3AB934712EE68992795498FDCC3CC28CA"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_020.json",
+      "sha256": "375D9CCD1403045DAE9E24E01AEB8328AD72D9C3A5DC14FD76C8380F78F96672"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_020.solution.json",
+      "sha256": "8853072DE568A76CA91EBCCFC8D6BD3A168EA0757A855714629425A4E500E9F3"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_021.json",
+      "sha256": "430E524CF116B416BD08016550882EFD1A67CC28B7E41A5632D50097B153BABC"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_021.solution.json",
+      "sha256": "58EFF52875CFF305CA334500ACABAF9B3098B035C426499D2E8F6AC40FCFCD50"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_022.json",
+      "sha256": "C46D4AD29D353C4AA637EA0CF8B78049EC096B2CBE0C0D3BCB56BA213A356D67"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_022.solution.json",
+      "sha256": "3C6429394B4662B03990F675C4203A9B3C0AA4DB17D172C2E21CC09FE97FB7DA"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_023.json",
+      "sha256": "CEEC80F3AD04AA238073ED39CA27326A15A31E56E4AC3F512498A7173E40B7AF"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_023.solution.json",
+      "sha256": "36EBD6F3289F85D9D9CAB1E121A5102E1E185DD70AAE6CD18E93299B315913AA"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_024.json",
+      "sha256": "9759341DC9A3D7768EB41D80DA23F29CD21FCF2F120F428EB006CD0B66482A48"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_024.solution.json",
+      "sha256": "98E2593E34E1FD8F531961135A05E995BDE677579C2BB890C8DF97D6EF6F20C2"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_025.json",
+      "sha256": "A2A20C28CFE709006BE5E29C59F3E0B4DBFE3618CFE1C71CDA50475821BE2B97"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_025.solution.json",
+      "sha256": "522A187B304569B6E7BAA93C6EBBEA2E09D110D16F751BA80C1178C1FAB33289"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_026.json",
+      "sha256": "AC3B934D3068235401E674E118DE583C3D565BE5037ED503BE87CCFBD2687F78"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_026.solution.json",
+      "sha256": "74EBECAA3D4CD6D045430002F6525AFC46FC106A5134F5D7BB4F07909A622D1A"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_027.json",
+      "sha256": "270DF9419696397D4ECC664EE9F2D2FC0FCC0DD87C9CA3FFDC6EA0744A50CEE2"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_027.solution.json",
+      "sha256": "B5A1AD787696C3FEBA3BC8E890374017032AD34944A8A9F9BA4BEA639D5944BC"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_028.json",
+      "sha256": "82AB67848B57F08FACC6C1C8F161ECF6EF586A52763C5CFAE616C22D4D79576E"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_028.solution.json",
+      "sha256": "028B5DC72AD180A957C11B90BD7E032DCACC4D9AFB5B464B9BAC068DE9BC6F4F"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_029.json",
+      "sha256": "E6AB5E928FC932DCEC344725D9984A7791F8B4DE6475B4375B09CAC904718D88"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_029.solution.json",
+      "sha256": "49AD1D5D15EFFDD3494EDA715913284C4545119A58D2CEB3FC8BF13C3BDA7978"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_030.json",
+      "sha256": "56295CB163ECDDB2208B147CFEC8CA5206D2F105270A656D76AECE375F0A8F52"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_030.solution.json",
+      "sha256": "80EB97FAAFC48A4C13273C0444B64A264CE225E9E0196DC9A4305694D96479F1"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_031.json",
+      "sha256": "67405DE9394B4C8B7B7736F828BFA479EAE6E9D0A7267EAC8864B22FCFB63181"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_031.solution.json",
+      "sha256": "1E6522DD49C8E5B26B38E28FB122A79ACC2A764FCB4A58CA6801E8D38BE5EF95"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_032.json",
+      "sha256": "9648B64DB590DB49F0EB97E3FB98056A6B813EE9239175242E3762E8B0F2F333"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_032.solution.json",
+      "sha256": "B0AFE85EF7EED60810C8518035F97ED9E8DA14556B61F430308E06F6939AB81D"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_033.json",
+      "sha256": "CDEE3E5508DA8AA4BD4151ABCDF384D2C1A9B653166E85EAFE991CCD1496EA24"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_033.solution.json",
+      "sha256": "A1E1DF227F38CA3869C5C373F29F0806680447DA8993D4B6DD1BE7DE84E9D81A"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_034.json",
+      "sha256": "BBE8872C1B7C4695E06037F0C01FC90CD2A369F983DB173F9CD8DC04A83133F1"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_034.solution.json",
+      "sha256": "9BC916E16E98E644499B829E34237A11BE978C214CD50155F7CF6FDAB19549D2"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_035.json",
+      "sha256": "85AA3EA60953A92B3D8A266B8B5A9144F89CEC1E12853F3CE04E821985BE8327"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_035.solution.json",
+      "sha256": "4FF82CA162EAEAC64C53C9CDB70D8B3346D903BC218678D7408DA5C4AB58E476"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_036.json",
+      "sha256": "9EDA35E5CB83EF853032D584547698444B481A66024A233F635558E0847692D6"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_036.solution.json",
+      "sha256": "CA7D6CBAADF1B4864AAE6E82267B916485463B76F4B0E0D4AE57BE0B12405204"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_037.json",
+      "sha256": "6652A1F7EB9598DF89C14984876396FB0F36FD8203DA9CD96102CC7F91FA9580"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_037.solution.json",
+      "sha256": "A02183CB5E75C7012C2231A7A30A80AAE45847C2B1A7AF6DB242149D8238DBBB"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_038.json",
+      "sha256": "7C751326AE7DA3275CE6B05FAE434203CC82EB3F3ABA26874DFAB209B8A888CE"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_038.solution.json",
+      "sha256": "16386F6B18A0EC9B39848C6B54E218207AA0136C5C22C1B8C3E73F26C8E821AB"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_039.json",
+      "sha256": "B98B78F1C9159C183278DB40B345EDBCE4ADA1C774A112D217975357AE443031"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_039.solution.json",
+      "sha256": "413AF06C0B06AB1308BB6A251447F1C3700F9905CFDCDAD8FE125D6E03840D8B"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_040.json",
+      "sha256": "43084F2D95D49BDE745497D9EE334594EBBDA8B455397DD7130E5B439D1F1C2A"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_040.solution.json",
+      "sha256": "762C2C3C6D1F8E646FA2283A46B59EFB3562AF10A51CA5D91A93D56FFE2FD0B1"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_041.json",
+      "sha256": "A84058C36C1065A9EAABEF9E20F3FDEBF791D5859F33B7C39462E833B7ABBED1"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_041.solution.json",
+      "sha256": "4563B058CE292F9E91DBDE64DF09E1FFFC76B3CF45F7803EDEA29BD209F8D80E"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_042.json",
+      "sha256": "7E940EDA9B10B0E90F8477B20798BA8D8BEFB53392A52BDF19B56D2FC8BDAC2F"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_042.solution.json",
+      "sha256": "0C904A4C7F00B7E5B64DCE59CD7DAC9C0A782D576B43B29D3C35968539B020CB"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_043.json",
+      "sha256": "EA0BBC80C1926CF0FF9E2B3CD72A4A670F76141F7E29EB31BB7855B1CBC24473"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_043.solution.json",
+      "sha256": "E8D145EBFC7BCDF823A63303788018A2F7C088B4D585703CAE6D6798EDBD6AFB"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_044.json",
+      "sha256": "1F932D5EA3AE25D448DE70E46CC0691ED86348AEE1B58D1FE3B5D15F976D8860"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_044.solution.json",
+      "sha256": "DF27B6FA36B87A7D2DE64015020A4319CECFE24D2CEBBBAA6C3927C2E854FEEA"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_045.json",
+      "sha256": "68A3A67028D5ADBDEE9CA98ACA5B65FA0E582FCE4A6D1A16ECE52F53BCEB3FFB"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_045.solution.json",
+      "sha256": "9A16655BE200A4A2EC08DB798B5EE1CD89020C1B561B13AC6073ECFE61457BCA"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_046.json",
+      "sha256": "5BD06098D7A9724F799164597356B6ACB203BC503F66799E478F2DF9F23E849C"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_046.solution.json",
+      "sha256": "39AAABA5A17DF70E50DB7B92D85B891C9D69A7507FF22CDAE71BE31FC1F4C79E"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_047.json",
+      "sha256": "B8AAE97269B23BE4BC4813AD612FAC88D7B9BC29208FD21AE2CE40DA2941D68C"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_047.solution.json",
+      "sha256": "41B3C9CC3F09133C8EE5884097CEEE033E2753C6A8D3057A7DACCD90736F93B4"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_048.json",
+      "sha256": "09A9DAA0862CBC2DEC6C2EA07840C6F87B2428B490AF78244A8BF214A00DA596"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_048.solution.json",
+      "sha256": "27D6330D9A7827B81BE34F75BE1012D833ACA3E9657406ABD7733D47FADC3A03"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_049.json",
+      "sha256": "80AB609FA071FD47EB837012F778A46134D31D8F43368B5BFB693FA99FFF794B"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_049.solution.json",
+      "sha256": "B903C404AB8FB33C3BCCCD2DAD95EA7D9DCFF2AD86A9B4994F0400C49F4CEC7C"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_050.json",
+      "sha256": "87E0592D5550FB987B95611DF46D4375CA76CB46CA272E79DFEBE1A753DA7AB3"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_050.solution.json",
+      "sha256": "B9F6393284D8C506CB927A4D329D74F056A17CD87C8267EF0E981A663B12B9C2"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_051.json",
+      "sha256": "D29CB91BF7E96AAA2D446715AA720800AE39AD1F768F53402B54163CC149A096"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_051.solution.json",
+      "sha256": "2141FB42AB0153D37C34B81475D63424BF3D322DAAA4F3E64A6B58E308357657"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_052.json",
+      "sha256": "27788B28646F7BC6BE1321A480FEAA83C14FB0F8C9024ACB387B736CB59F5053"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_052.solution.json",
+      "sha256": "A145374EEDBF75ADE1FEFDE089FE1053FE2F9FA20F95B5DDF5E19AC351544671"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_053.json",
+      "sha256": "235D176493D7C96323891C41970CC32F2990D90EE3FFB84E65DC1D4157AC1E2E"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_053.solution.json",
+      "sha256": "CE0C11E171C253D55C89FD5672C6E993E605462C6600ED6A164B1234E573D623"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_054.json",
+      "sha256": "0C8D86DAAA27789D441DDFF7720EA308463B6AB3FDF246985BFF566DAFF4D6AD"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_054.solution.json",
+      "sha256": "18699CA48C6EF65427844BB126A52706843201C5D56FD01D901B7942DA21D49D"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_055.json",
+      "sha256": "589AA5A2CF1B45CDEDAB33E1DB17FDE4B7E507C77FE83DC45249C9D2DD0AB19E"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_055.solution.json",
+      "sha256": "6BB68716EF410799FD09C97332F7264C088D534F106C468C27B06A4316865349"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_056.json",
+      "sha256": "82236687D85CD43E65E28EAFC4C555CC1E650AFE444FC80575FCF6ABD5E3AF23"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_056.solution.json",
+      "sha256": "732B940ADE38BD2BA8B82D3F1A82B1ED0B7CFAE0DFF03052D0C0C7A993093F0D"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_057.json",
+      "sha256": "60C0F2581D112B737A546902989F5501D37A9183B20B0B9DDCD91F85EA516144"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_057.solution.json",
+      "sha256": "50D56BCBEE61459B54E5DDF6AAA855DDCDCC4F05710BF41E9014E42E7369A7AA"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_058.json",
+      "sha256": "385DBDDD5E28047932395DF7618085D745546E578116A361586063C3748C8C94"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_058.solution.json",
+      "sha256": "8BF80C71679AA194BF9C1F48AF314379E64961CBD6C4699A9E04124472E5AF20"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_059.json",
+      "sha256": "7110BDB6C7CB6F013DD8D76D214F2334E737BC6F9A5635E559867A294B3E276C"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_059.solution.json",
+      "sha256": "8E5A4554B64D70E361941F7414151C8AF441AA5FD78CE822404D01C0FD4FF6CB"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_060.json",
+      "sha256": "09DCF1AF9EBBC5FA3D80BDC55BDEF33F4119F8DE26A99D77CB073542E21475CF"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_060.solution.json",
+      "sha256": "92AB1661A33B7D92CEDAC82DE373B34B118FDFD9D862FE7E0473F9CCF967982A"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_061.json",
+      "sha256": "32E3293CD86BAE98766181F1DE31D5720C2C5106187A37E054F4DFBB52330E84"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_061.solution.json",
+      "sha256": "1F9ED5004DEABF5BBAE4EB4F5C1C1DA5D848AF87034D15448EEBFF12291D2446"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_062.json",
+      "sha256": "87E407A8D5993F828DF60472980F2A29F119D8D0167F5277496A80319E71A1F4"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_062.solution.json",
+      "sha256": "05E04C9FEBEBEEF007BD537E80B6109BCBB12C10282DFD768ADA94DE6603D6F1"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_063.json",
+      "sha256": "CC46DFEF7D8DDB0264D075FB90C2FA1754097AECF610B4F56F97694433E732D6"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_063.solution.json",
+      "sha256": "E961D1CAD18898E883D7BBA2006C56307E1F7FC392E5063DC7FA0C562F8954D8"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_064.json",
+      "sha256": "36F0A20CD4D8FA57DD7D1CF14F8E6453C5804434220CAFD7F8A94A4625AEEF2C"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_064.solution.json",
+      "sha256": "982B0C0AC6B2F97116669192F6B62600DEAE5F3F2712F87DBAD49EC32FE73F23"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_065.json",
+      "sha256": "F77FE4804446DB1421BC2CB46F8712E9C952876C62006405A2A31C1D28B9752D"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_065.solution.json",
+      "sha256": "F5AE1E432A1A251462B8A050E365327BFD9915EC00B04D9625C3DF2979380F17"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_066.json",
+      "sha256": "49E5FD4BDD53373F327036EEFA6AEB8F0CAA0EB263C5A64E747850CA91D617D6"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_066.solution.json",
+      "sha256": "A69F53CE3C6A80276C3C55FC74485994E74518AA24861FA49A38014919631AA5"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_067.json",
+      "sha256": "63E410CDE6A84A205BDC5C16EC9C5876F3599FD66E120DD48687BAE3F56D3DB3"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_067.solution.json",
+      "sha256": "9BF9DE2F748D6EA4D36DE96C123A583A00AD3F36A57702A2D20DB49340B7FC71"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_068.json",
+      "sha256": "1F86E37C00B1CC6D1B6BAD1F923133AB362BED5481DC894EDE007A247ECC47AA"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_068.solution.json",
+      "sha256": "471DD105789A2883D789097480E12B77A0779F34580D9B64E435CC7D95E69ADA"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_069.json",
+      "sha256": "200FEEDA7C250AF7B5CFB73EAE9EACBA2CA92BAF6868C97F86700B5302A22D11"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_069.solution.json",
+      "sha256": "9803811E1EBE04C70A6B9AD14B6E75EE3F589A6F7D0C220DE5FD4B5B46706FC4"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_070.json",
+      "sha256": "D2FF2B483A824EC07308572F949429B591B7909ABDA68599AC0CDF7AA25AE6CF"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_070.solution.json",
+      "sha256": "E327C0070E398E90D107F8933DE7B1C7C1405355081F469FF8CB4D9A8E5BB56F"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_071.json",
+      "sha256": "DEB161602D48E2B1A6B820F4921B9914D44D47212AC24DBA7CF20852954D80E7"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_071.solution.json",
+      "sha256": "1BFFB0FFBF1657ACA02664D575977908C7EAA9FF6CDF9E10AE6B4E164345DF68"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_072.json",
+      "sha256": "1E1D57B6A3D0BF4D5EE71ED6E1B28953C0F6E823BB35AF3DFC228D4BAA9685BD"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_072.solution.json",
+      "sha256": "F8EC011A89216A7E4FDBF8B087FEA2A51A5F0EA491C624690062D119732A7507"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_073.json",
+      "sha256": "8815FC46B09210E7111B2B751F0D7F2BEF826AC8136FB9C60B126CDBB2172134"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_073.solution.json",
+      "sha256": "B8EF19551376DA62DF8BD45AC0B9C9AF92C14E2C2FC8E08DEEED5ADA3D215738"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_074.json",
+      "sha256": "C968592AF45034AA3369C973BFE71F3339D93E03F782ABD139BA220B24AD08E3"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_074.solution.json",
+      "sha256": "456A3ECBD1288E7506D8890E7DC4B92697F1AFC7F2B560751F9424FE6DCAF57E"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_075.json",
+      "sha256": "05984B238657CAA55E6BD4F6CB7F05F378CC24F2F8B28139088A3113654B5DE9"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_075.solution.json",
+      "sha256": "E8960AE5E8D264FCCA947259A86D823DC7AAEA1A8935418AF4577AE22A7FB5A8"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_076.json",
+      "sha256": "DFECAFC6893C4C631CB61DD620DEB347866B858921B7D506F51DDFF707EF7842"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_076.solution.json",
+      "sha256": "39E1BF6407FCE851945FE32FF2FB80E350405D15F7560DDFB50B60F31FD66BC7"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_077.json",
+      "sha256": "416ADFDD1BC6D50AD1BC5D4DE2A268AD4A65A7D14D7B2618013B82C31E351F02"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_077.solution.json",
+      "sha256": "8254DFB5718B761B8C9452BA8A5EA4222835B639931AEF9A98A7F4E35B72E8EC"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_078.json",
+      "sha256": "68D404DC2E21379A7CD89A4AF003ABC59D25D349F2088A8330625242E70F537C"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_078.solution.json",
+      "sha256": "3AB67E9E0151165562F9B65A24AA3A510C30410EBDB550A1FE70563109BC324A"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_079.json",
+      "sha256": "D899DFFAF7582798C77107CB806C6967E2E7ADBB0BB9A4B45CA0A9DEC3626DD5"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_079.solution.json",
+      "sha256": "8F69D4CA7CC19D04069572F2EF5D3BE0E79A85EE182946DBFE4C9B41310DE777"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_080.json",
+      "sha256": "5E4631AE8D889E619AC3183341D8BFE0498C313259412B3C553491B524461BEC"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_080.solution.json",
+      "sha256": "165C8A4351C0A4A8754E19E43E390C8145B220EB0EB9F1185DD1FD7C95528137"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_081.json",
+      "sha256": "020E9F381B2A5E85E5D7CA19D87F7F17899ED4B7D8AC8FDC8DB95F03D8625ED5"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_081.solution.json",
+      "sha256": "1167329CFAABA6239D96144FE14E0771B469BD805375A691ACF87E36DED3921F"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_082.json",
+      "sha256": "2AEC9823EF2B8EC5C5C05EB98096B91745EE6721AAF1D2D4D10BB03494BFA941"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_082.solution.json",
+      "sha256": "CCD6768539FD7703910BE6510455C4736C10126678253317B1B46740B8C25BD7"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_083.json",
+      "sha256": "3F9B06A4C10ADFC04FBFE0736B6C478789E6673C08FDC4879607145EDA6F53C8"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_083.solution.json",
+      "sha256": "151AB89AEEB69930235C7DB89052C3CE7F0AA313BF17A9073062B6FB8BCB908A"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_084.json",
+      "sha256": "E67C7278F832C32B8F0D9F2A97BCCEA37AF928A61F25693467AFAFBC0B3B1801"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_084.solution.json",
+      "sha256": "4B7B400B66B462AB0D9E10847D13F05B61D3DB5F3D87AEA91108CD046D176CD7"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_085.json",
+      "sha256": "D1D8E8FFC1C9276D379C8DBD57A7C74F65C947F9C4AD6362DFBAA127222469F8"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_085.solution.json",
+      "sha256": "DDE41BC2F264E5705C98933FB74A77BEE75EB8A9C4A1147E342B0DDAB07BF8BF"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_086.json",
+      "sha256": "BB4B92EB1FAF56F3469A58FCB4D7D06C4DCC0676EC9DAACAA0A6B7D987390691"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_086.solution.json",
+      "sha256": "8BDEA288BDBA4FA7CC38FA42D6A372F0EB3F92B5B2A3A798F1E03CE42795EF51"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_087.json",
+      "sha256": "78B60DA82CF8303925F6BA45B6E25714328C675F078D82DBFBBB38C6E13C0E33"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_087.solution.json",
+      "sha256": "14DF7830EB0B7782E8A1A9E235F6F7293BA7D8E6A2630A15F4043773EB552E7A"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_088.json",
+      "sha256": "73D653829C505831155109C2D5AC64729DC7F63EC1F49D159A14783A26667DE3"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_088.solution.json",
+      "sha256": "F1520A343A79F8957D85981B64B9E98821BA3DC038319DD5849A2CAC34F959BE"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_089.json",
+      "sha256": "A19A1EF77998BF5932D4070847101A47FB02C82E62638CA1811CBBE1D3753D0C"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_089.solution.json",
+      "sha256": "CEEA3DE456307FE59EF53A9CBDF0628E8F61B7B94ADEE3DC3E9079113071456B"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_090.json",
+      "sha256": "7E5A76E3B39A8EDCB59EF134BD3C89C3A9F7B11029C28B94DF7424CA497CCA2B"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_090.solution.json",
+      "sha256": "81CDD125BF212AA29172919A581D436AC2EC86F9025AB1BC5051A11368015F1C"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_091.json",
+      "sha256": "064D19C2CFAA22F88A6D93C37BC708DAA4B0332934E3A49D0AA7AF6CB1875B58"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_091.solution.json",
+      "sha256": "40EAB3B3CFEEF2EFFE3D75047622DF539ABF3FBAFDA6E477D6C45C2E2BF179E9"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_092.json",
+      "sha256": "EBF12B4EA9620E37AD098EC159617DE171A17EB32A9344989B0C504B38CE7369"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_092.solution.json",
+      "sha256": "C28F7066530B7922FFE237CC6CB5B48F1B4984788BD8708EF13A936189FABB98"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_093.json",
+      "sha256": "E95F7EB43762DB9F87FCA5C464A0BEC626B7A921E954BF0F15831F2F3E8523F3"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_093.solution.json",
+      "sha256": "832546B9501415E6C62D0957D07BF19E3C5407D29433A60442DBE104A7DED66E"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_094.json",
+      "sha256": "6BC79548E898D4CC2CB232AD8915549938FADB83A3282B03DE803CB7E0A83EE4"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_094.solution.json",
+      "sha256": "B69BDD1D8C78BCFE962CE278A28A6B9C807B9CD04A59DAAD85C097DF4C60F5C4"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_095.json",
+      "sha256": "CB0FFD85C6583A1E9AC29745C1DEEC74BF9A2D7262EA9DDD971CFDD7251DFAE8"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_095.solution.json",
+      "sha256": "452B2DB09A98A53D313DF900702B35F7E235DCAD8DFF2B2C28C66C74E924CA4C"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_096.json",
+      "sha256": "679F4AB39856B25BEE1D22F6DC0F700B683809B292C246213C363E463BDAA747"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_096.solution.json",
+      "sha256": "866AC7BA1190B3B18AA6C31839CC8370750C1C6862FFF4E0C55F14CCD7C64D27"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_097.json",
+      "sha256": "DC233F0C8BDC289606C3FCCC381DAE37AD0E2487984B44DEAEDF4C1729EB2CB6"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_097.solution.json",
+      "sha256": "E01945CE6E8403365410BF061D0C74915F5A14D9BAE7F6859C37B70913E28643"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_098.json",
+      "sha256": "AAA01BDFF9219B386F9AF30EBC3E683F6793964EE904248F68CBAFB82F2393D9"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_098.solution.json",
+      "sha256": "62384C2E2CD99CB55B2CC88C062E8FF3626C9AFA344C4ABBA25AE7C21B05C43D"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_099.json",
+      "sha256": "025F6B59CFE26D068D56133E09D914ACA46AC631E39355ED25B0277BD55197AE"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_099.solution.json",
+      "sha256": "6528344463B5129AA9DF27884A979CF07E488D969C305E804131F40E875C60F9"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_100.json",
+      "sha256": "F097A30C24FEDF76AEC16AB9F2336897F9B3C263FED21097E29998D76A68253D"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Config/Levels/Campaign/TF_Campaign_100.solution.json",
+      "sha256": "5DA1A7F857C66F517ECCE8E510336847C4F2E57FD3F8AA0FAC4F206C965324CC"
+    }
+  ],
+  "reviewedSourceHashes": [
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Editor/LevelStudio/TideboundLevelStudio.cs",
+      "sha256": "A5499F953A1A81BB1109864B9FF713360A9AE3E87D63D0A0AB8CA792FEED4CA2"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/CampaignLevelPlan.cs",
+      "sha256": "F6E96D4D5A5CD3F8351B406CA50122F41845170A1011AA8F5B1EDD13FB00443D"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/LevelRecipe.cs",
+      "sha256": "B1422A81C6CD9E7E2F45C2BC7B121E25799CD2D4BB13611577DEF545B156A894"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/RecipeLevelGenerator.cs",
+      "sha256": "79B3101A57A49FB980650479E4AFBAA1C26206E1ADA55C0513D818C32B66A204"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Core/LevelDesign/LevelSolver.cs",
+      "sha256": "551949C669C7CDD925D30F22E5724783462DDCC341C5933E1FF806A1F7BBBFE0"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Unity/Loading/LevelCandidateJson.cs",
+      "sha256": "F5B6E324AC9188049C40800EE32921704CC8C862D3C2D7D1D088CD7A41BBC107"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Assets/Tidebound/Runtime/Unity/Loading/CampaignPackValidator.cs",
+      "sha256": "0D4835EDEE00B9C1D520C493CA1075C1769ED6E642ADB104549D8E9352E2A253"
+    },
+    {
+      "path": "10_开发工作区/TideboundFleet_Unity/Tools/Levels/CampaignPipeline.cs",
+      "sha256": "FAEC4CD7714FE9EEDE178EDA61D914AD87A83330C913A4043B402F3C362784FE"
+    }
+  ]
+}

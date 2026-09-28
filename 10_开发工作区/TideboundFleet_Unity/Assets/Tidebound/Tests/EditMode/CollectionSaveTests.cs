@@ -128,7 +128,7 @@ namespace Tidebound.Tests
                 var json=JObject.FromObject(d);json.Remove("Collection");if(version==2)json.Remove("Purchases");var original=Envelope(json);File.WriteAllText(path,original);
                 var blocked=new PlayerSaveService(new PlayerSaveFileStore(path,()=>throw new IOException()));
                 Assert.That(blocked.IsAvailable,Is.False);Assert.That(File.ReadAllText(path),Is.EqualTo(original));Assert.That(File.Exists(path+".tmp"),Is.False);
-                var s=new PlayerSaveService(new PlayerSaveFileStore(path));Assert.That(s.IsAvailable,Is.True);Assert.That(s.Snapshot.Version,Is.EqualTo(4));
+                var s=new PlayerSaveService(new PlayerSaveFileStore(path));Assert.That(s.IsAvailable,Is.True);Assert.That(s.Snapshot.Version,Is.EqualTo(PlayerSaveData.CurrentVersion));
                 Assert.That(File.ReadAllText(path+".bak"),Is.EqualTo(original));Assert.That(s.Coins,Is.EqualTo(d.Coins));Assert.That(s.Snapshot.Tools.Rescue,Is.EqualTo(2));
                 var seed=s.Snapshot.Collection.ProfileSeed;var rev=s.Snapshot.Revision;s=new PlayerSaveService(new PlayerSaveFileStore(path));
                 Assert.That(s.Snapshot.Revision,Is.EqualTo(rev));Assert.That(s.Snapshot.Collection.ProfileSeed,Is.EqualTo(seed));Assert.That(s.CanClaimFirstBlue,Is.True);

@@ -43,6 +43,21 @@ namespace Tidebound.Tests
                 Assert.That(a.HighlightedShipId,Is.EqualTo("C"));Assert.That(a.NoMoves,Is.False);
             }
         }
+        [Test]
+        public void ProductionHintsWaitUntilTheRemainingBoardHasAnExitOnlySolution()
+        {
+            using(var s=ShipMovementSystemTests.CreateSession(8,8,Ship("A",0,2,ShipDirection.Right),Ship("B",4,3,ShipDirection.Down),
+                Ship("C",5,0,ShipDirection.Left),Ship("D",1,0,ShipDirection.Up),Ship("Exit",7,6,ShipDirection.Up)))
+            {
+                var a=new BoardAssistance(requireExitOnlySolution:true);a.Advance(s.Board,5,true,false,true);
+                Assert.That(a.HighlightedShipId,Is.Null,"An available exit is not a safe hint for a stopper puzzle.");
+            }
+            using(var s=ShipMovementSystemTests.CreateSession(8,8,Ship("Exit",7,6,ShipDirection.Up)))
+            {
+                var a=new BoardAssistance(requireExitOnlySolution:true);a.Advance(s.Board,5,true,false,true);
+                Assert.That(a.HighlightedShipId,Is.EqualTo("Exit"));
+            }
+        }
         [TestCase(false,false,true)][TestCase(true,true,true)][TestCase(true,false,false)]
         public void IneligibleInputOrDisabledHintsResetTimer(bool eligible,bool input,bool enabled)
         {

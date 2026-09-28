@@ -15,13 +15,13 @@ using UnityEngine.UIElements;
 
 namespace Tidebound.EditorTools
 {
-    public sealed class TideboundLevelStudio : EditorWindow
+    public sealed partial class TideboundLevelStudio : EditorWindow
     {
         private readonly ShipDefinition[] shipCatalog =
             { new ShipDefinition(FoundationLimits.BaseShipTypeId, FoundationLimits.BaseShipDamage) };
         private readonly BossDefinition[] bossCatalog = { new BossDefinition("TF_KRAKEN_01") };
         private LevelData level;
-        private TextAsset sourceAsset;
+        [SerializeField] private TextAsset sourceAsset;
         private ShipDirection brushDirection = ShipDirection.Right;
         private int brushLength = 2;
         private SolutionProofRecorder playRecorder;
@@ -42,8 +42,15 @@ namespace Tidebound.EditorTools
         [MenuItem("Tools/Tidebound/Level Studio")]
         public static void Open() => GetWindow<TideboundLevelStudio>("Tidebound Level Studio");
 
+        public void OpenAsset(TextAsset asset)
+        {
+            if (sourceField == null) CreateGUI();
+            sourceField.SetValueWithoutNotify(asset); LoadSelected();
+        }
+
         public void CreateGUI()
         {
+            rootVisualElement.Clear();
             rootVisualElement.style.paddingLeft = 8;
             rootVisualElement.style.paddingRight = 8;
             rootVisualElement.style.paddingTop = 8;
@@ -51,6 +58,7 @@ namespace Tidebound.EditorTools
             BuildToolbar();
             BuildSettings();
             BuildDiagnosticSettings();
+            BuildDifficultyTools();
             statistics = new Label { style = { whiteSpace = WhiteSpace.Normal } };
             validation = new Label { style = { whiteSpace = WhiteSpace.Normal } };
             rootVisualElement.Add(statistics);
@@ -61,7 +69,8 @@ namespace Tidebound.EditorTools
             grid = new VisualElement();
             scroll.Add(grid);
             rootVisualElement.Add(scroll);
-            NewLevel();
+            if (level == null) NewLevel();
+            else { SyncFields(); RefreshGrid(); }
         }
 
         private void BuildToolbar()
@@ -69,7 +78,7 @@ namespace Tidebound.EditorTools
             var bar = Row();
             sourceField = new ObjectField("JSON") { objectType = typeof(TextAsset), allowSceneObjects = false };
             sourceField.style.minWidth = 250;
-            sourceField.RegisterValueChangedCallback(evt => sourceAsset = evt.newValue as TextAsset);
+            sourceField.SetValueWithoutNotify(sourceAsset);
             bar.Add(sourceField);
             bar.Add(new Button(NewLevel) { text = "New" });
             bar.Add(new Button(LoadSelected) { text = "Open" });
@@ -104,8 +113,8 @@ namespace Tidebound.EditorTools
             settings.Add(lengthField);
             rootVisualElement.Add(settings);
 
-            levelIdField.RegisterValueChangedCallback(evt => { if (level != null) level.LevelId = evt.newValue; StopPlaytest(); RefreshStatus(); });
-            bossIdField.RegisterValueChangedCallback(evt => { if (level != null) level.BossId = evt.newValue; StopPlaytest(); RefreshStatus(); });
+            levelIdField.RegisterValueChangedCallback(evt => { if (level != null) { BeforeEdit(); level.LevelId = evt.newValue; } RefreshStatus(); });
+            bossIdField.RegisterValueChangedCallback(evt => { if (level != null) { BeforeEdit(); level.BossId = evt.newValue; } RefreshStatus(); });
             widthField.RegisterValueChangedCallback(evt => Resize(evt.newValue, level?.Height ?? 6));
             heightField.RegisterValueChangedCallback(evt => Resize(level?.Width ?? 4, evt.newValue));
             directionField.RegisterValueChangedCallback(evt => brushDirection = (ShipDirection)evt.newValue);
@@ -173,6 +182,7 @@ namespace Tidebound.EditorTools
 
         private void NewLevel()
         {
+            if (!ConfirmDiscard()) return;
             sourceAsset = null;
             playRecorder = null;
             if (sourceField != null) sourceField.SetValueWithoutNotify(null);
@@ -185,17 +195,23 @@ namespace Tidebound.EditorTools
                 BossId = "TF_KRAKEN_01",
                 Ships = Array.Empty<ShipPlacementData>()
             };
+            ResetDocumentHistory();
             SyncFields();
             RefreshGrid();
         }
 
         private void LoadSelected()
         {
-            if (sourceAsset == null) { validation.text = "Select a level JSON TextAsset first."; return; }
+            var selectedAsset = sourceField.value as TextAsset;
+            if (selectedAsset == null) { validation.text = "Select a level JSON TextAsset first."; return; }
+            if (!ConfirmDiscard()) return;
             try
             {
-                level = LevelJsonReader.Read(sourceAsset.text);
+                var loaded = LevelJsonReader.Read(selectedAsset.text);
+                sourceAsset = selectedAsset;
+                level = loaded;
                 playRecorder = null;
+                ResetDocumentHistory();
                 SyncFields();
                 RefreshGrid();
                 validation.text = $"Loaded {AssetDatabase.GetAssetPath(sourceAsset)}";
@@ -214,7 +230,7 @@ namespace Tidebound.EditorTools
         private void Resize(int width, int height)
         {
             if (level == null) return;
-            playRecorder = null;
+            BeforeEdit();
             level.Width = Mathf.Clamp(width, 1, FoundationLimits.MaxTechnicalBoardWidth);
             level.Height = Mathf.Clamp(height, 1, FoundationLimits.MaxTechnicalBoardHeight);
             widthField.SetValueWithoutNotify(level.Width);
@@ -228,6 +244,7 @@ namespace Tidebound.EditorTools
             if (grid == null || level == null) return;
             grid.Clear();
             var occupancy = Occupancy();
+            PrepareSelectionOverlay();
             for (var y = level.Height - 1; y >= 0; y--)
             {
                 var row = Row();
@@ -247,11 +264,13 @@ namespace Tidebound.EditorTools
                         button.style.backgroundColor = playRecorder == null
                             ? new Color(0.20f, 0.62f, 0.82f)
                             : new Color(0.20f, 0.72f, 0.42f);
+                    PaintDiagnosticCell(button, cell);
                     row.Add(button);
                 }
                 grid.Add(row);
             }
             RefreshStatus();
+            RefreshInspection();
         }
 
         private void OnCellMouseDown(MouseDownEvent evt)
@@ -262,20 +281,25 @@ namespace Tidebound.EditorTools
             {
                 if (evt.button == 0 && occupancy.TryGetValue(cell, out var playable))
                 {
-                    if (playRecorder.TryApply(playable.Id, out var path))
-                        validation.text = path.CanExit ? $"{playable.Id} exited." :
-                            $"{playable.Id} moved {path.TravelDistance} cells and stopped before {path.BlockerShipId}.";
-                    else validation.text = $"{playable.Id} is blocked with no legal travel.";
-                    RefreshGrid();
+                    selectedShipId = playable.Id;
+                    ApplyPlaytestMove(playable.Id, true);
                 }
                 evt.StopPropagation();
                 return;
             }
 
+            if (evt.button == 0 && occupancy.TryGetValue(cell, out var selected))
+            { selectedShipId = selected.Id; RefreshGrid(); evt.StopPropagation(); return; }
+            if (evt.button == 0 && !placementMode.value)
+            { selectedShipId = null; RefreshGrid(); evt.StopPropagation(); return; }
+
             if (evt.button == 1)
             {
                 if (occupancy.TryGetValue(cell, out var existing))
+                {
+                    BeforeEdit();
                     level.Ships = level.Ships.Where(x => !string.Equals(x.Id, existing.Id, StringComparison.Ordinal)).ToArray();
+                }
                 RefreshGrid();
                 evt.StopPropagation();
                 return;
@@ -288,6 +312,7 @@ namespace Tidebound.EditorTools
                 return;
             }
             var items = level.Ships.ToList();
+            BeforeEdit();
             items.Add(new ShipPlacementData
             {
                 Id = NextShipId(items), TypeId = FoundationLimits.BaseShipTypeId, Length = brushLength,
@@ -347,6 +372,8 @@ namespace Tidebound.EditorTools
         private void RefreshStatus()
         {
             ClearLayoutDiagnostics();
+            RefreshDirtyState();
+            RefreshBattleBudget();
             if (statistics == null || level == null) return;
             if (playRecorder != null)
             {
@@ -386,9 +413,18 @@ namespace Tidebound.EditorTools
             var summary = $"Data valid. Hash {BoardStateFingerprint.Compute(board)}  Ships {report.ShipCount}  " +
                           $"Occupancy {report.OccupancyRatio:P1}  Entropy {report.DirectionEntropy:0.000}  " +
                           $"Clustering {report.DirectionClustering:0.000}  Exits {report.Dependencies.InitialExitCount}  " +
-                          $"Moves {report.Dependencies.InitialMoveCount}  Depth {report.Dependencies.DependencyDepth}  " +
-                          $"Cycles {report.Dependencies.Cycles.Count} (hard {report.Dependencies.HardLockedCycleCount}).";
-            if (LevelProductionProfiles.TryGetCandidate(board.Width, board.Height, out var profile))
+                          $"Moves {report.Dependencies.InitialMoveCount}  Complete depth {report.Dependencies.CompleteDependencyDepth}  " +
+                          $"Complete cycles {report.Dependencies.CompleteCycles.Count}.";
+            var campaignDesign = CampaignLevelPlan.All.FirstOrDefault(d => d.Recipe.LevelId == level.LevelId);
+            if (campaignDesign != null)
+            {
+                var issues = campaignDesign.Recipe.Check(board).Concat(campaignDesign.CheckStructure(board)).ToArray();
+                summary += Environment.NewLine + $"Campaign {campaignDesign.Number}: {campaignDesign.Structure}/{campaignDesign.Pace}. Use Analyze A/B for the independent solver. " +
+                    (issues.Length == 0 ? "Recipe/structure passed. Human review remains required." : string.Join(", ", issues));
+            }
+            else if (!LevelDifficultyAnalysis.Peel(board).IsComplete)
+                summary += " Dynamic candidate: legacy A-only production thresholds are not a B acceptance test. Verify a full-rule solution.";
+            else if (LevelProductionProfiles.TryGetCandidate(board.Width, board.Height, out var profile))
             {
                 var production = LevelProductionValidator.Validate(board, profile);
                 summary += production.IsValid ? $" Production profile {profile.Id} passed." :
@@ -407,6 +443,8 @@ namespace Tidebound.EditorTools
                 return;
             }
             playRecorder = new SolutionProofRecorder(CreateInitialBoard());
+            playTimeline.Clear();
+            InvalidateDifficulty();
             validation.text = "Playtest started. Click an occupied cell to execute the real board transaction.";
             RefreshGrid();
         }
@@ -415,6 +453,8 @@ namespace Tidebound.EditorTools
         {
             if (playRecorder == null) { StartPlaytest(); return; }
             playRecorder.Reset();
+            playTimeline.Clear();
+            InvalidateDifficulty();
             validation.text = "Playtest reset to canonical JSON.";
             RefreshGrid();
         }
@@ -423,6 +463,8 @@ namespace Tidebound.EditorTools
         {
             if (playRecorder == null) return;
             playRecorder = null;
+            playTimeline.Clear();
+            InvalidateDifficulty();
             RefreshGrid();
         }
 
@@ -440,15 +482,15 @@ namespace Tidebound.EditorTools
         {
             var replay = VerifyRecordedProof();
             if (replay == null || !replay.IsComplete) return;
-            var proof = playRecorder.CreateProof(level.LevelId);
+            var proof = LevelSolutionProof.Create(level.LevelId, CreateInitialBoard(), playRecorder.ShipIds);
             var defaultName = string.IsNullOrWhiteSpace(level.LevelId) ? "Level.solution" : level.LevelId + ".solution";
             var path = EditorUtility.SaveFilePanelInProject("Save verified solution proof", defaultName, "json",
                 "Save beside the canonical level JSON.", "Assets/Tidebound/Config/Levels");
             if (string.IsNullOrEmpty(path)) return;
-            var file = new ProofFile { levelId = proof.LevelId, layoutFingerprint = proof.LayoutFingerprint, shipIds = proof.ShipIds.ToArray() };
-            AtomicWrite(Path.GetFullPath(path), JsonUtility.ToJson(file, true) + Environment.NewLine);
+            if (IsPublishedPath(path)) { validation.text = "Published proof is immutable. Save into an independent prototype folder."; return; }
+            AtomicWrite(Path.GetFullPath(path), LevelProofJson.Write(proof));
             AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
-            validation.text = "Verified proof saved to " + path;
+            validation.text = "Versioned proof saved to " + path + ". Edited campaign content must be re-screened and its pack re-certified.";
         }
 
         private void Save()
@@ -468,6 +510,7 @@ namespace Tidebound.EditorTools
 
         private void SaveTo(string path)
         {
+            if (IsPublishedPath(path)) { validation.text = "Published content is immutable. Use Save As in an independent prototype folder, then certify a revision."; return; }
             var result = ValidateData();
             if (!result.IsValid)
             {
@@ -478,7 +521,7 @@ namespace Tidebound.EditorTools
             AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
             sourceAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(path);
             sourceField.SetValueWithoutNotify(sourceAsset);
-            playRecorder = null;
+            savedDraft = LevelJsonWriter.Write(level);
             validation.text = "Saved " + path;
             RefreshGrid();
         }
@@ -505,12 +548,5 @@ namespace Tidebound.EditorTools
             { Id = id; Position = position; Direction = direction; Length = length; }
         }
 
-        [Serializable]
-        private sealed class ProofFile
-        {
-            public string levelId;
-            public string layoutFingerprint;
-            public string[] shipIds;
-        }
     }
 }
