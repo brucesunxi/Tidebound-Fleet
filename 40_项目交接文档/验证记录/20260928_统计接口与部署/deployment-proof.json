@@ -1,0 +1,22 @@
+{
+  "firstSuccessfulGitDeployment": "dpl_3L2FhRyJnvJTxoXRm95nHFK8NkQJ",
+  "gitCommit": "60469e433068535d59080683023a9a2c39d0a30a",
+  "source": "git",
+  "readyState": "READY",
+  "productionBranch": "codex/phase5r-reuse-roadmap",
+  "endpoint": "https://tidebound-fleet.vercel.app",
+  "rootDirectory": "10_开发工作区/TideboundFleet_Unity/Tools/AnalyticsBackend",
+  "productionVariables": [
+    "DATABASE_URL",
+    "ANALYTICS_ADMIN_TOKEN",
+    "ANALYTICS_RATE_SALT",
+    "CRON_SECRET"
+  ],
+  "previewUsesProductionSecrets": false,
+  "cron": {
+    "enabled": true,
+    "path": "/api/cleanup",
+    "scheduleUtc": "20 3 * * *",
+    "firstScheduledRunObserved": false
+  }
+}

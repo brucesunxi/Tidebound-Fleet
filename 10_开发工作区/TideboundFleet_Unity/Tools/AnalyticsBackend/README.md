@@ -4,6 +4,8 @@ Unity负责原生游戏和Android AAB；本目录是独立Node服务，不构建
 
 ## 运行与部署
 
+生产API已部署到 https://tidebound-fleet.vercel.app ，健康检查为`/api/health`。Git生产分支已设为`codex/phase5r-reuse-roadmap`，推送自动发布已验证。管理员可在本目录运行`npm run summary -- --from=2026-09-01 --to=2026-09-29`查询聚合结果；省略日期默认近30天，凭据从本地私密配置读取，不出现在命令行。
+
 - Node 22；`npm ci --ignore-scripts`，`npm test`。
 - Vercel项目根目录设为 `10_开发工作区/TideboundFleet_Unity/Tools/AnalyticsBackend`；Framework选Other；安装命令与测试命令由 `vercel.json` 提供。
 - 接入原仓库 `brucesunxi/Tidebound-Fleet`。本轮代码在 `codex/phase5r-reuse-roadmap`；只有将它设为Production Branch，推送它才发布到正式域名。以后切回main需先正常合并，再更新Production Branch。

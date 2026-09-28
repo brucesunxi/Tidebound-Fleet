@@ -1,6 +1,6 @@
 # Tidebound Fleet — Unity 架构与关卡体系基础
 
-**2026-09-28 可选行为统计：** Unity新增独立Analytics模块及有界队列，默认关闭，明确成年确认与选择加入后才向HTTPS API上报固定事件；与Core、存档和经济事务隔离。Vercel只运行`Tools/AnalyticsBackend`，Neon使用独立`tidebound_analytics` schema；没有WebGL发布依赖。管理员认证查询关卡／道具／UTC安装留存，设备凭据仅能上报与删除本安装。生产受限角色及密钥待用户授权，当前尚未启用公网链路。见[实施验证](验证记录/20260928_统计接口与部署/VALIDATION.md)。
+**2026-09-28 可选行为统计：** Unity新增独立Analytics模块及有界队列，默认关闭，明确成年确认与选择加入后才向HTTPS API上报固定事件；与Core、存档和经济事务隔离。Vercel只运行`Tools/AnalyticsBackend`，Neon使用独立`tidebound_analytics` schema；没有WebGL发布依赖。管理员认证查询关卡／道具／UTC安装留存，设备凭据仅能上报与删除本安装。生产受限角色与Vercel加密配置已按用户授权完成，公网API认证／写入／查询／删除联调通过；Git推送自动发布已实证。见[实施验证](验证记录/20260928_统计接口与部署/VALIDATION.md)。
 
 **2026-09-28 连击／抽奖／道具反馈：** `HarborDrawPanel.BeginDraw`从奖池直接调用既有原子交易；结果页拦截重复点击，保存失败保留同一request重试，不足走已有充值导航。`PortraitPuzzleGraybox`在洗牌前后对比方向，仅成功且实际转向的船启动`ShipFloatPresentation`的3秒Alpha轮廓；`ShipHighlight`材质保留Alpha、以纯红替代RGB，避免深色船体把描边染暗。出船时按钮保持交互及正常颜色，Core的Busy互斥继续拒绝并发道具变更，界面给出等待提示。连击徽章移至血条左下方并恢复完整火焰及星饰。Core、Config、场景、经济数值及存档格式未改。
 
