@@ -3,6 +3,7 @@
   "framework": null,
   "installCommand": "npm ci --ignore-scripts",
   "buildCommand": "npm test",
+  "outputDirectory": "public",
   "rewrites": [{ "source": "/", "destination": "/api/health" }],
   "functions": { "api/*.js": { "maxDuration": 15 } },
   "crons": [{ "path": "/api/cleanup", "schedule": "20 3 * * *" }]
