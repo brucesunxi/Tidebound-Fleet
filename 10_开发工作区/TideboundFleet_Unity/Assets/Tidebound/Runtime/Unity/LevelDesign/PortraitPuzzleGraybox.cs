@@ -82,6 +82,7 @@ namespace Tidebound.Unity.LevelDesign
         private CombatTiming combatTiming;
         private float elapsedSinceDemo;
         private bool initialized;
+        private Tidebound.Unity.Analytics.TideboundAnalytics analytics;
 
         public GameSession Session => session;
         public Camera BoardCamera => boardCamera;
@@ -122,6 +123,8 @@ namespace Tidebound.Unity.LevelDesign
                     x=>x.name+".json", x=>(Func<string>)(()=>x.text), StringComparer.Ordinal)),
                     saveService:new PlayerSaveService(new PlayerSaveFileStore(Path.Combine(saveRoot,"player-save-v2.json")),
                         new ToolInventoryFileStore(Path.Combine(saveRoot,"tool-inventory-v1.json"))),campaign:true, animateEntry:true, useHomeNavigation:true);
+                analytics=gameObject.AddComponent<Tidebound.Unity.Analytics.TideboundAnalytics>();
+                analytics.Initialize(this);homeSettingsView?.AttachAnalytics(analytics);
             }
             catch (Exception e) { Debug.LogError("Graybox candidate validation failed: " + e.Message); enabled = false; }
         }
@@ -233,7 +236,7 @@ namespace Tidebound.Unity.LevelDesign
             if (IsHomeOpen || IsCollectionOpen || ResultOwnsInput || !IsEntryReady || IsEntrySaveBlocked || session == null || IsPaused || IsBusy || demo != null) return;
             if(tools.Selection!=ShipTool.None)
             {
-                ApplyToolResult(tools.UseSelected(id));return;
+                var selectedTool=tools.Selection;ApplyToolResult(tools.UseSelected(id),selectedTool);return;
             }
             if(saveService?.IsAvailable==true && !saveService.PrepareMove(id)){notice="Cannot save move. Retry.";UpdateLabels();return;}
             var result = movement.RequestMove(id);
@@ -262,7 +265,7 @@ namespace Tidebound.Unity.LevelDesign
             input.CancelSelection();
             var directions=tool==ShipTool.Shuffle?session.Board.Ships.ToDictionary(s=>s.Id,s=>s.Direction):null;
             var result=tool==ShipTool.Rescue ? tools.Rescue() : tool==ShipTool.Shuffle ? tools.Shuffle() : tools.Select(tool);
-            ApplyToolResult(result);
+            ApplyToolResult(result,tool);
             if(result==ToolUseStatus.Applied&&directions!=null)
                 foreach(var ship in session.Board.Ships)
                     if(directions[ship.Id]!=ship.Direction)
@@ -290,10 +293,11 @@ namespace Tidebound.Unity.LevelDesign
             acquisitionPauseOwned=false;world.PresentationPause=false;NotifyUserActivity();SaveCheckpoint(true);UpdateLabels();
         }
         public void CancelTool() { NotifyUserActivity();tools.CancelSelection();notice="Tool cancelled.";UpdateLabels(); }
-        private void ApplyToolResult(ToolUseStatus result)
+        private void ApplyToolResult(ToolUseStatus result,ShipTool appliedTool=ShipTool.None)
         {
             if(result==ToolUseStatus.Applied)
             {
+                analytics?.TrackTool(appliedTool);
                 foreach(var ship in session.Board.Ships)
                 {
                     var view=shipViews[ship.Id].transform;view.position=mapper.TailToWorld(ship.Position);

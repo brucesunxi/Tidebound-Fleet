@@ -82,6 +82,7 @@ namespace Tidebound.Unity.LevelDesign
                     entryErrorPanel.gameObject.SetActive(true); UpdateLabels(); return false;
                 }
                 pendingEntry = null;
+                if(restart && world!=next)analytics?.TrackRestart();
                 if (world != next) { if (restart) progress?.EndForRestart(); ClearSession(); BindWorld(next, index); }
                 if (entryPauseOwned) { movement.Resume(); world.PresentationPause = false; entryPauseOwned = false; }
                 entryErrorPanel.gameObject.SetActive(false); BeginEntry(false); return true;

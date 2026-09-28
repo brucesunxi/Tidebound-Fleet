@@ -226,6 +226,7 @@ namespace Tidebound.Unity.LevelDesign
                     saveService.Snapshot.Attempt!=null && !saveService.Snapshot.Attempt.Victory);
                 if(!saveService.StartFromHome(next,(prior,replacement)=>PlayableLevelCatalog.CanReplaceAttempt(catalog,prior,replacement)))
                 {next.Dispose();homeNotice.text="Unable to save. Please retry.";return;}
+                if(world!=null && !IsCleared)analytics?.TrackRestart();
                 progress?.EndForRestart();ClearSession();BindWorld(next,index);
                 homePauseOwned=false;BeginEntry(false);
                 homeRoot.gameObject.SetActive(false);

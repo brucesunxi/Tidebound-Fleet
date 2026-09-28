@@ -1,5 +1,7 @@
 # Tidebound Fleet — Unity 架构与关卡体系基础
 
+**2026-09-28 可选行为统计：** Unity新增独立Analytics模块及有界队列，默认关闭，明确成年确认与选择加入后才向HTTPS API上报固定事件；与Core、存档和经济事务隔离。Vercel只运行`Tools/AnalyticsBackend`，Neon使用独立`tidebound_analytics` schema；没有WebGL发布依赖。管理员认证查询关卡／道具／UTC安装留存，设备凭据仅能上报与删除本安装。生产受限角色及密钥待用户授权，当前尚未启用公网链路。见[实施验证](验证记录/20260928_统计接口与部署/VALIDATION.md)。
+
 **2026-09-28 连击／抽奖／道具反馈：** `HarborDrawPanel.BeginDraw`从奖池直接调用既有原子交易；结果页拦截重复点击，保存失败保留同一request重试，不足走已有充值导航。`PortraitPuzzleGraybox`在洗牌前后对比方向，仅成功且实际转向的船启动`ShipFloatPresentation`的3秒Alpha轮廓；`ShipHighlight`材质保留Alpha、以纯红替代RGB，避免深色船体把描边染暗。出船时按钮保持交互及正常颜色，Core的Busy互斥继续拒绝并发道具变更，界面给出等待提示。连击徽章移至血条左下方并恢复完整火焰及星饰。Core、Config、场景、经济数值及存档格式未改。
 
 **2026-09-28 关卡版本切换：** 新增CampaignV3独立目录／100份布局与证明；场景仅替换关卡引用，保留最新新海面／窄航道／五海怪界面。PlayableLevelCatalog的100个活跃关位另带previousRevisions，旧尝试按关号、ID、文件hash与布局指纹验证恢复。PlayerSaveService只有目录验证回调通过才允许同关跨内容版本重开／首页新开，保存失败保持旧attempt、库存和结算原子性。BoardAssistance在动态局抑制未经完整纯出海验证的闲置提示。V3生成、质量／死局／真实道具／战斗／恢复验证独立于旧A型CampaignPackValidator。实现、100项EditMode及9130步真实回放见[本轮记录](验证记录/20260928_新版百关映射/VALIDATION.md)。

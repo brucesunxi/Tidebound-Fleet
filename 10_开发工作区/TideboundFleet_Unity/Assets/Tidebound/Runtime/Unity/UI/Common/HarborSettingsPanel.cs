@@ -31,6 +31,18 @@ namespace Tidebound.Unity.UI
         public string LegalText => legalBody != null ? legalBody.text : "";
         private bool privacy;
         private Button legalOrigin;
+        private Button analyticsChoice;
+        private Tidebound.Unity.Analytics.AnalyticsPrivacyPanel analyticsPanel;
+
+        public void AttachAnalytics(Tidebound.Unity.Analytics.TideboundAnalytics service)
+        {
+            if (inGame || legalRoot == null || analyticsChoice != null) return;
+            var root=HarborUI.Rect("AnalyticsChoices",legalRoot);HarborUI.Fill(root);
+            analyticsPanel=root.gameObject.AddComponent<Tidebound.Unity.Analytics.AnalyticsPrivacyPanel>();
+            analyticsPanel.Initialize(service);root.gameObject.SetActive(false);
+            analyticsChoice=ActionButton("Analytics",legalRoot,"Data choices",HarborUI.Gold,null,()=>analyticsPanel.Open());
+            LayoutLegal();
+        }
 
         public void Initialize(bool paused, HarborAudio audio, Action onClose, Action restart = null, Action exit = null)
         {
@@ -177,7 +189,7 @@ namespace Tidebound.Unity.UI
         public void OpenLegal(bool isPrivacy)
         {privacy=isPrivacy;legalOrigin=isPrivacy?PrivacyButton:TermsButton;legalRoot.gameObject.SetActive(true);legalRoot.SetAsLastSibling();content.gameObject.SetActive(false);closeButton.gameObject.SetActive(false);LoadLegal();legalScroll.verticalNormalizedPosition=1;HarborUI.Focus(legalBack);}
         public void CloseLegal()
-        {legalRoot.gameObject.SetActive(false);content.gameObject.SetActive(true);closeButton.gameObject.SetActive(true);HarborUI.Focus(legalOrigin);}
+        {if(analyticsPanel!=null)analyticsPanel.gameObject.SetActive(false);legalRoot.gameObject.SetActive(false);content.gameObject.SetActive(true);closeButton.gameObject.SetActive(true);HarborUI.Focus(legalOrigin);}
         private void LoadLegal()
         {
             legalTitle.text=privacy?"Privacy Policy":"Terms of Use";
@@ -193,6 +205,16 @@ namespace Tidebound.Unity.UI
             var needed=Mathf.Max(h-218,legalBody.preferredHeight+20);legalContent.sizeDelta=new Vector2(w-98,needed);
             legalBody.rectTransform.anchorMin=legalBody.rectTransform.anchorMax=legalBody.rectTransform.pivot=new Vector2(0,1);legalBody.rectTransform.anchoredPosition=Vector2.zero;legalBody.rectTransform.sizeDelta=new Vector2(w-98,needed);
             HarborUI.Place((RectTransform)legalBack.transform,new Rect((w-230)/2,44,230,48));
+            if(analyticsChoice!=null)
+            {
+                analyticsChoice.gameObject.SetActive(privacy);
+                analyticsChoice.GetComponentInChildren<Text>().text=UILanguage.IsChinese?"统计选择":"Data choices";
+                if(privacy)
+                {
+                    HarborUI.Place((RectTransform)legalBack.transform,new Rect(38,44,(w-88)/2,48));
+                    HarborUI.Place((RectTransform)analyticsChoice.transform,new Rect(w/2+6,44,(w-88)/2,48));
+                }
+            }
         }
         private void OnEnable(){Present();}
         private void Update(){if(UnityEngine.Input.GetKeyDown(KeyCode.Escape)){if(IsLegalOpen)CloseLegal();else close?.Invoke();}}
